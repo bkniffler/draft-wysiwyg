@@ -17,7 +17,7 @@ var path = require('path');
 var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 
-var APP_PORT = process.env.port||3000;
+var APP_PORT = process.env.PORT||3000;
 
 var app;
 if(process.env.NODE_ENV !== 'production'){
