@@ -1,7 +1,8 @@
 {
   "private": true,
+  "main": "./server.js",
   "scripts": {
-    "start": "babel-node ./server.js",
+    "start": "node ./server.js",
     "xxpostinstall": "npm install ../.."
   },
   "dependencies": {
@@ -15,7 +16,6 @@
     "eslint-plugin-react": "^3.2.0",
     "express": "^4.13.1",
     "immutable": "^3.7.4",
-    "katex": "^0.5.1",
     "react": "^0.14.0",
     "react-dom": "^0.14.7",
     "react-portal-tooltip": "^1.0.4",

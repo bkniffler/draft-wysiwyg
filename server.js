@@ -12,12 +12,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import express from 'express';
-import path from 'path';
-import webpack from 'webpack';
-import WebpackDevServer from 'webpack-dev-server';
+var express = require('express');
+var path = require('path');
+var webpack = require('webpack');
+var WebpackDevServer = require('webpack-dev-server');
 
-const APP_PORT = process.env.port||3000;
+var APP_PORT = process.env.port||3000;
 
 // Serve the TeX Editor app
 var compiler = webpack({
@@ -48,6 +48,6 @@ var app = new WebpackDevServer(compiler, {
 // Serve static resources
 app.use('/', express.static('public'));
 app.use('/node_modules', express.static('node_modules'));
-app.listen(APP_PORT, () => {
-  console.log(`TeX Editor is now running on http://localhost:${APP_PORT}`);
+app.listen(APP_PORT, function(){
+  console.log('Server is now running on http://localhost:'+APP_PORT);
 });
