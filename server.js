@@ -17,7 +17,7 @@ import path from 'path';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
 
-const APP_PORT = 3000;
+const APP_PORT = process.env.port||3000;
 
 // Serve the TeX Editor app
 var compiler = webpack({
