@@ -19,32 +19,31 @@ var WebpackDevServer = require('webpack-dev-server');
 
 var APP_PORT = process.env.port||3000;
 
-// Serve the TeX Editor app
-var compiler = webpack({
-  entry: path.resolve(__dirname, 'js', 'app.js'),
-  /*eslint: {
-    configFile: '.eslintrc'
-  },*/
-  module: {
-    loaders: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel',
-      }/*,
-      {
-        test: /\.js$/,
-        loader: 'eslint'
-      }*/
-    ]
-  },
-  output: {filename: 'app.js', path: '/'}
-});
-var app = new WebpackDevServer(compiler, {
-  contentBase: '/public/',
-  publicPath: '/js/',
-  stats: {colors: true}
-});
+var app;
+if(process.env.NODE_ENV !== 'production'){
+  var compiler = webpack({
+    debug: false,
+    entry: path.resolve(__dirname, 'js', 'app.js'),
+    module: {
+      loaders: [
+        {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          loader: 'babel',
+        }
+      ]
+    },
+    output: {filename: './app.js', path: '/'}
+  });
+  app = new WebpackDevServer(compiler, {
+    contentBase: '/public/',
+    publicPath: '/js/',
+    stats: {colors: true}
+  });
+}
+else {
+  app = express();
+}
 // Serve static resources
 app.use('/', express.static('public'));
 app.use('/node_modules', express.static('node_modules'));
