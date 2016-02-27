@@ -5,10 +5,10 @@
   "scripts": {
     "start": "node ./example",
     "build": "babel --presets es2015,stage-0,react src/ --out-dir lib/",
-    "heroku": "build:example & git push heroku master",
+    "heroku": "git push heroku master",
     "start:production": "NODE_ENV=production node ./example",
     "build:example": "webpack --config example/webpack.js",
-    "patch": "build & npm version patch --force & npm publish"
+    "patch": "npm run build; npm version patch --force; npm publish"
   },
   "dependencies": {
     "draft-js": "^0.1.0",
