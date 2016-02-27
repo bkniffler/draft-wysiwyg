@@ -1,12 +1,18 @@
 # draft-wysiwyg
 Draft-JS is really hot right now and here is a try for reproducing wysiwyg functionality using draft.
 
-## Warning, this is WIP! The API will most likely change.
+**Warning, this repo is WIP! The API will most likely change.**
+
+## Demo
+https://draft-wysiwyg.herokuapp.com/
+
+## Features
 Currently, these are the features that work
 - Inline toolbar for text
 - Block drag/drop
 - Block resizing (horizontal/vertical)
 - Block toolbars
+- Some more things
 
 ## Installation
 ```
@@ -29,3 +35,6 @@ There is a lot of stuff that needs to be done
 - Clean and optimize code, figure out proper API, make it more customizable
 - Drag/Drop handling of files on editor (maybe)
 - Write documentation ...
+
+## Contributing
+Pull requests are very welcome, feel free to commit your ideas!
