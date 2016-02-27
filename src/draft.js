@@ -3,7 +3,7 @@ import {Editor, EditorState, CompositeDecorator, ContentState, convertToRaw, con
 import {Modifier, SelectionState, Entity, CharacterMetadata, ContentBlock, genKey, BlockMapBuilder} from "draft-js";
 import generateBlockKey from "draft-js/lib/generateBlockKey";
 import {List, Repeat} from 'immutable';
-import ToolTip from './components/tooltip'
+import Tooltip from './components/tooltip'
 
 const decorator = new CompositeDecorator([]);
 
@@ -139,9 +139,9 @@ export default class ExtendedDraft extends Component {
       return (
          <div onClick={this.focus} onDrop={drop} onMouseUp={this.mouseUp.bind(this)} onBlur={()=>{this.setState({toolbar: null, active: null})}}>
             <Editor editorState={this.state.value} onChange={this.onChange} ref="editor" blockRendererFn={this.blockRenderer.bind(this)}/>
-            {this.state.toolbar ? <ToolTip {...this.state.toolbar}>
+            {this.state.toolbar ? <Tooltip {...this.state.toolbar}>
                {React.cloneElement(this.props.toolbar, {editorState: this.state.value, onChange: this.onChange.bind(this)})}
-            </ToolTip> : null}
+            </Tooltip> : null}
          </div>
       );
    }

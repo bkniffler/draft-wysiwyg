@@ -5,17 +5,17 @@
   "scripts": {
     "start": "node ./example",
     "build": "babel --presets es2015,stage-0,react src/ --out-dir lib/",
-    "heroku": "git push heroku master",
+    "heroku": "build:example & git push heroku master",
     "start:production": "NODE_ENV=production node ./example",
     "build:example": "webpack --config example/webpack.js",
-    "patch": "npm version patch --force & npm publish"
+    "patch": "build & npm version patch --force & npm publish"
   },
   "dependencies": {
     "draft-js": "^0.1.0",
     "immutable": "^3.7.4"
   },
   "devDependencies": {
-    "babel": "5.8.23",
+    "babel-cli": "^6.5.1",
     "babel-eslint": "^4.1.3",
     "babel-loader": "^6.2.4",
     "babel-preset-es2015": "^6.5.0",

@@ -1,5 +1,5 @@
 export Toolbar from './toolbar'
 export Draft from './draft'
-export ToolTip from './components/tooltip'
+export Tooltip from './components/tooltip'
 export ResizeableWrapper from './components/resizeable-wrapper'
 export ToolbarBase from './components/toolbar-base'
