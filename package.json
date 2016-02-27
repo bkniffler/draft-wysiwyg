@@ -1,6 +1,6 @@
 {
   "name": "draft-wysiwyg",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "./lib",
   "scripts": {
     "start": "node ./example",
