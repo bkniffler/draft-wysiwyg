@@ -1,26 +1,32 @@
 # draft-wysiwyg
-Draft-JS is really hot right now and here is a try for reproducing wysiwyg functionality using draft. 
-Its too early to tell wether this will, in future, only be an example, a package on NPM, a sandbox for new features. It mainly depends on what direction facebooks draft-js will take, what features they are going to implement. 
+Draft-JS is really hot right now and here is a try for reproducing wysiwyg functionality using draft.
 
-So take this as an example for now and keep a close look at the official draft-js repo, though I will also try to keep this repository up to date and give info about changes!
+**Warning, this repo is WIP! The API will most likely change.**
 
-## Warning, this is WIP!
+## Demo
+https://draft-wysiwyg.herokuapp.com/
+
+## Features
 Currently, these are the features that work
 - Inline toolbar for text
 - Block drag/drop
 - Block resizing (horizontal/vertical)
 - Block toolbars
+- Some more things
 
 ## Installation
-You can clone/download this project and
 ```
-node server.js
+npm install draft-wysiwyg
+or
+sudo npm install draft-wysiwyg
 ```
 
 ## Usage
-Just check out:
-- Importing/using the custom draft editor: https://github.com/bkniffler/draft-wysiwyg/blob/master/js/container.js
-- Wrapping blocks: https://github.com/bkniffler/draft-wysiwyg/blob/master/js/blocks/resizeable-div.js
+Just check out the example:
+- Importing/using the custom draft editor: https://github.com/bkniffler/draft-wysiwyg/blob/master/example/container.js
+- Wrapping blocks: https://github.com/bkniffler/draft-wysiwyg/blob/master/example/draft/resizeable-div.js
+
+Sorry, didn't get to write documentation yet!
 
 ## Todo
 There is a lot of stuff that needs to be done
@@ -28,5 +34,7 @@ There is a lot of stuff that needs to be done
 - Themes
 - Clean and optimize code, figure out proper API, make it more customizable
 - Drag/Drop handling of files on editor (maybe)
-- Write documentation
-- ...
+- Write documentation ...
+
+## Contributing
+Pull requests are very welcome, feel free to commit your ideas!
