@@ -45,10 +45,12 @@ export default class Tooltip extends Component {
          this.shouldUpdate = true;
          var refRect = ref.getBoundingClientRect();
 
+         var scrollY = window.scrollY ? window.scrollY : window.pageYOffset;
+         var scrollX = window.scrollX ? window.scrollX : window.pageXOffset;
          // Set state
          this.setState({
-            top: top-(refRect.height),
-            left: left-(refRect.width/2)+(width/2)
+            top: top-(refRect.height) + scrollY,
+            left: left-(refRect.width/2)+(width/2)+scrollX
          });
       }
    }
