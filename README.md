@@ -1,5 +1,8 @@
 # draft-wysiwyg
-Draft-JS is really hot right now and here is a try for reproducing wysiwyg functionality using draft.
+Draft-JS is really hot right now and here is a try for reproducing wysiwyg functionality using draft. 
+Its too early to tell wether this will, in future, only be an example, a package on NPM, a sandbox for new features that might or might not go into draft-js. It mainly depends on what direction facebooks draft-js will take, what features they are going to implement. 
+
+So take this as an example for now and keep a close look at the official draft-js repo, though I will also try to keep this repository up to date and give info about changes!
 
 ## Warning, this is WIP!
 Currently, these are the features that work
