@@ -9,23 +9,35 @@ class Wrapper extends Component {
          clicked: false
       };
    }
+   activateBlock(active){
+      if(this.props.blockProps.activate){
+         this.props.blockProps.activate(active);
+      }
+      else{
+         this.setState({active});
+      }
+   }
+   align(position){
+      var setEntityData = (this.props.setEntityData || this.props.blockProps.setEntityData);
+      setEntityData(this.props.block, {align: position});
+   }
    click(e){
       if(this.state.clicked || this.state.active) return;
       var component = ReactDOM.findDOMNode(this.refs.div);
-      this.setState({
-         active: true
-      });
-      component.parentElement.addEventListener('click', ()=>{
-         this.setState({
-            active: false
-         });
-      }, false);
+      this.activateBlock(true);
+      var listener = ()=>{
+         component.parentElement.removeEventListener('click', listener, false);
+         this.activateBlock(false);
+      };
+      component.parentElement.addEventListener('click', listener, false);
    }
    mouseDown(e){
       if(!this.state.hoverPosition.resize){
          return;
       }
-      const {resizeMode, resizeOptions, resizeSteps} = this.props;
+      const {resizeOptions, resizeSteps, vertical, horizontal} = this.props;
+      const {width, height, hoverPosition} = this.state;
+      const {isTop, isLeft, isRight, isBottom, resize} = hoverPosition;
 
       var component = ReactDOM.findDOMNode(this.refs.div);
       var startX, startY, startWidth, startHeight;
@@ -44,19 +56,22 @@ class Wrapper extends Component {
          var widthPerc = 100/b.clientWidth*width;
          var heightPerc = 100/b.clientHeight*height;
 
-         if(resizeMode === 'options' || resizeOptions){
-            var closest = Object.keys(resizeOptions).reduce(function (prev, curr) {
-               return (Math.abs(curr - widthPerc) < Math.abs(prev - widthPerc) ? curr : prev);
-            });
+         var newState = {};
+         if((isLeft||isRight) && horizontal === 'relative'){
+            newState.width = resizeSteps ? round(widthPerc, resizeSteps) : widthPerc;
+         }
+         else if((isLeft||isRight) && horizontal === 'absolute'){
+            newState.width = resizeSteps ? round(width, resizeSteps) : width;
+         }
 
-            this.setState({width: closest, height: heightPerc});
+         if((isTop||isBottom) && vertical === 'relative'){
+            newState.height = resizeSteps ? round(heightPerc, resizeSteps) : heightPerc;
          }
-         else if(resizeMode === 'relative'){
-            this.setState({width: resizeSteps ? round(widthPerc, resizeSteps) : widthPerc, height: heightPerc});
+         else if((isTop||isBottom) && vertical === 'absolute'){
+            newState.height = resizeSteps ? round(height, resizeSteps) : height;
          }
-         else{
-            this.setState({width: resizeSteps ? round(width, resizeSteps) : width, height});
-         }
+
+         this.setState(newState);
          e.stopPropagation();
          return false;
       }
@@ -82,6 +97,8 @@ class Wrapper extends Component {
       return false;
    }
    move(e){
+      const {vertical, horizontal} = this.props;
+
       var hoverPosition = this.state.hoverPosition;
       var tolerance = 6;
       var pane = ReactDOM.findDOMNode(this.refs.div);
@@ -90,10 +107,10 @@ class Wrapper extends Component {
       var x = e.clientX - b.left;
       var y = e.clientY - b.top;
 
-      var isTop = y < tolerance;
-      var isLeft = x < tolerance;
-      var isRight = x >= b.width - tolerance;
-      var isBottom = y >= b.height - tolerance;
+      var isTop = vertical ? y < tolerance : false;
+      var isLeft = horizontal ? x < tolerance : false;
+      var isRight = horizontal ? x >= b.width - tolerance : false;
+      var isBottom = vertical ? y >= b.height - tolerance : false;
 
       var resize = isTop||isLeft||isRight||isBottom;
 
@@ -109,11 +126,11 @@ class Wrapper extends Component {
       e.dataTransfer.setData("text", this.props.block.key);
    }
    render(){
-      const {width, hoverPosition, active} = this.state;
-      const {Children, options, blockProps, resizeOptions, resizeMode} = this.props;
+      const active = this.props.blockProps.active||this.state.active;
+      const {width, height, hoverPosition} = this.state;
+      const {Children, options, blockProps, resizeOptions, vertical, horizontal} = this.props;
       const {isTop, isLeft, isRight, isBottom, resize} = hoverPosition;
 
-      console.log('Active', active);
       var style = {
          display: 'block',
          height: '40px',
@@ -122,18 +139,40 @@ class Wrapper extends Component {
          marginBottom: '5px',
          zIndex: 2,
          ...(this.props.style||{}),
-         boxShadow: active ? '0 0 0 3px #FFC107' : null
+         outline: active ? '3px solid #FFC107' : null
       };
-      var className = [];
-      if(resizeMode === 'options' || resizeOptions){
-         className.push(resizeOptions[(width||blockProps.width||40)]);
-      }
-      else if(resizeMode === 'relative'){
-         style.width = (width||blockProps.width||40)+'%';
+
+      if(this.props.blockProps.align === 'left' || this.props.blockProps.align === 'right'){
+         style.float = this.props.blockProps.align;
+         style.margin = '5px';
       }
       else{
+         delete style.float;
+         style.margin = '0 auto';
+      }
+
+      var className = [];
+
+      if(horizontal === 'auto'){
+         style.width = 'auto';
+      }
+      else if(horizontal === 'relative') {
+         style.width = (width||blockProps.width||40)+'%';
+      }
+      else if(horizontal === 'absolute') {
          style.width = (width||blockProps.width||40)+'px';
       }
+
+      if(vertical === 'auto'){
+         style.height = 'auto';
+      }
+      else if(vertical === 'relative') {
+         style.height = (height||blockProps.height||40)+'%';
+      }
+      else if(vertical === 'absolute') {
+         style.height = (height||blockProps.height||40)+'px';
+      }
+
       if (isRight && isBottom || isLeft && isTop) {
          style.cursor = 'nwse-resize';
       } else if (isRight && isTop || isBottom && isLeft) {
@@ -145,6 +184,24 @@ class Wrapper extends Component {
       } else {
          style.cursor = 'default';
       }
+
+      var actions = [{
+         active: false,
+         icon: 'step backward',
+         toggle: ()=>this.align('left'),
+         label: 'Align left'
+      },{
+         active: true,
+         icon: 'stop',
+         toggle: ()=>this.align('center'),
+         label: 'Align center'
+      },{
+         active: false,
+         icon: 'step forward',
+         toggle: ()=>this.align('right'),
+         label: 'Align right'
+      }];
+
       return (
          <div ref="div"
               onClick={this.click.bind(this)}
@@ -155,13 +212,14 @@ class Wrapper extends Component {
               draggable={!resize}
               style={style}
               className={className.join(' ')}>
-            <Children {...this.state} {...this.props} uniqueId={'id-'+this.props.block.key}/>
+            <Children {...this.state} {...this.props} align={this.align.bind(this)} active={active} toolbarActions={actions} uniqueId={'id-'+this.props.block.key}/>
          </div>
       )
    }
 };
 Wrapper.defaultProps = {
-   resizeMode: 'relative',
+   horizontal: 'relative',
+   vertical: false,
    resizeSteps: 5
 }
 
@@ -177,24 +235,3 @@ function round(x, steps)
 {
    return Math.ceil(x/steps)*steps;
 }
-
-/*var resizeOptions = {
- bootstrap: {
- 16.6: 'col-md-2',
- 33.3: 'col-md-4',
- 50: 'col-md-6',
- 66.6: 'col-md-8',
- 83.3: 'col-md-10',
- 100: 'col-md-12'
- },
- semantic: {
- 12.5: 'two wide column',
- 25: 'four wide column',
- 37.5: 'six wide column',
- 50: 'eight wide column',
- 62.5: 'ten wide column',
- 75: 'twelve wide column',
- 87.5: 'fourteen wide column',
- 100: 'sixteen wide column'
- }
- }*/

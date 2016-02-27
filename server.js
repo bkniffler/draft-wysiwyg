@@ -1,12 +1,12 @@
 var express = require('express');
 var path = require('path');
-var webpack = require('webpack');
-var WebpackDevServer = require('webpack-dev-server');
 
 var APP_PORT = process.env.PORT||3000;
 
 var app;
 if(process.env.NODE_ENV !== 'production'){
+  var webpack = require('webpack');
+  var WebpackDevServer = require('webpack-dev-server');
   var compiler = webpack({
     debug: false,
     entry: path.resolve(__dirname, 'js', 'app.js'),
@@ -16,10 +16,15 @@ if(process.env.NODE_ENV !== 'production'){
           test: /\.js$/,
           exclude: /node_modules/,
           loader: 'babel',
+        },
+        {
+          test: /\.css$/,
+          exclude: /node_modules/,
+          loader: 'style!raw',
         }
       ]
     },
-    output: {filename: './app.js', path: '/'}
+    output: {filename: 'app.js', path: '/'}
   });
   app = new WebpackDevServer(compiler, {
     contentBase: '/public/',

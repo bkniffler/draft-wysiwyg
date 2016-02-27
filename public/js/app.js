@@ -5364,19 +5364,25 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _componentsDraft = __webpack_require__(350);
+	var _draftIndex = __webpack_require__(350);
 
-	var _componentsDraft2 = _interopRequireDefault(_componentsDraft);
+	var _draftIndex2 = _interopRequireDefault(_draftIndex);
 
-	var _dataContent = __webpack_require__(490);
+	var _data = __webpack_require__(490);
 
 	var _blocksResizeableDiv = __webpack_require__(491);
 
 	var _blocksResizeableDiv2 = _interopRequireDefault(_blocksResizeableDiv);
 
-	var _blocksResizeableDiv22 = __webpack_require__(496);
+	var _blocksResizeableDiv22 = __webpack_require__(498);
 
 	var _blocksResizeableDiv23 = _interopRequireDefault(_blocksResizeableDiv22);
+
+	var _draftToolbar = __webpack_require__(499);
+
+	var _draftToolbar2 = _interopRequireDefault(_draftToolbar);
+
+	_draftIndex2['default'].DisableWarnings();
 
 	var Example = (function (_React$Component) {
 	    _inherits(Example, _React$Component);
@@ -5385,9 +5391,8 @@
 	        _classCallCheck(this, Example);
 
 	        _get(Object.getPrototypeOf(Example.prototype), 'constructor', this).call(this, props);
-	        console.log(_dataContent.content);
 	        this.state = {
-	            data: _dataContent.content
+	            data: _data.Content
 	        };
 	    }
 
@@ -5415,6 +5420,7 @@
 
 	            var data = this.state.data;
 
+	            var draftToolbar = _react2['default'].createElement(_draftToolbar2['default'], null);
 	            return _react2['default'].createElement(
 	                'div',
 	                { className: 'TexEditor-container' },
@@ -5424,30 +5430,29 @@
 	                    _react2['default'].createElement(
 	                        'div',
 	                        { className: 'TeXEditor-editor' },
-	                        _react2['default'].createElement(_componentsDraft2['default'], { renderBlock: this.renderBlock.bind(this), updateValue: function (v) {
+	                        _react2['default'].createElement(_draftIndex2['default'], { toolbar: draftToolbar, renderBlock: this.renderBlock.bind(this), updateValue: function (v) {
 	                                return _this.setState({ data: v });
 	                            }, value: data })
 	                    )
 	                ),
 	                _react2['default'].createElement(
 	                    'button',
-	                    { className: 'TeXEditor-insert',
-	                        onClick: function () {
-	                            return _this.setState({ data: _componentsDraft2['default'].AddBlock(data, 'end', 'div', {}, true) });
+	                    { className: 'TeXEditor-insert', onClick: function () {
+	                            return _this.setState({ data: _draftIndex2['default'].AddBlock(data, 'end', 'div', {}, true) });
 	                        } },
-	                    'Add Floating'
+	                    'Horizontal+Vertical'
 	                ),
 	                _react2['default'].createElement(
 	                    'button',
 	                    { className: 'TeXEditor-insert2',
 	                        onClick: function () {
-	                            return _this.setState({ data: _componentsDraft2['default'].AddBlock(data, 'start', 'div2', {}, true) });
+	                            return _this.setState({ data: _draftIndex2['default'].AddBlock(data, 'start', 'div2', {}, true) });
 	                        } },
-	                    'Add Non-Floating'
+	                    'Add Horizontal only'
 	                ),
 	                _react2['default'].createElement(
 	                    'pre',
-	                    null,
+	                    { style: { whiteSpace: 'pre-wrap' } },
 	                    JSON.stringify(data, null, 3)
 	                )
 	            );
@@ -24989,28 +24994,29 @@
 
 	var _immutable = __webpack_require__(353);
 
-	var _tooltip = __webpack_require__(487);
+	var _componentsTooltip = __webpack_require__(487);
 
-	var _tooltip2 = _interopRequireDefault(_tooltip);
+	var _componentsTooltip2 = _interopRequireDefault(_componentsTooltip);
 
 	var decorator = new _draftJs.CompositeDecorator([]);
 
-	var DragDropDraft = (function (_Component) {
-	   _inherits(DragDropDraft, _Component);
+	var ExtendedDraft = (function (_Component) {
+	   _inherits(ExtendedDraft, _Component);
 
-	   function DragDropDraft(props) {
+	   function ExtendedDraft(props) {
 	      var _this = this;
 
-	      _classCallCheck(this, DragDropDraft);
+	      _classCallCheck(this, ExtendedDraft);
 
-	      _get(Object.getPrototypeOf(DragDropDraft.prototype), "constructor", this).call(this, props);
+	      _get(Object.getPrototypeOf(ExtendedDraft.prototype), "constructor", this).call(this, props);
 
 	      var value = _draftJs.EditorState.createEmpty(decorator);
+
 	      if (props.value) {
 	         value = _draftJs.EditorState.push(value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(props.value)));
 	      }
 
-	      this.state = { value: value };
+	      this.state = { value: value, active: null };
 
 	      this.focus = function () {
 	         return _this.refs.editor.focus();
@@ -25024,7 +25030,7 @@
 	      };
 	   }
 
-	   _createClass(DragDropDraft, [{
+	   _createClass(ExtendedDraft, [{
 	      key: "shouldComponentUpdate",
 	      value: function shouldComponentUpdate(props, state) {
 	         if (props.value !== this.lastState) {
@@ -25047,6 +25053,9 @@
 	      value: function mouseUp(e) {
 	         var _this2 = this;
 
+	         if (!this.props.toolbar) {
+	            return;
+	         }
 	         function getSelected() {
 	            var t = '';
 	            if (window.getSelection) {
@@ -25065,9 +25074,9 @@
 	            var rect = selected.getRangeAt(0).getBoundingClientRect();
 
 	            if (selection.isCollapsed()) {
-	               return _this2.setState({ toolbox: null });
+	               return _this2.setState({ toolbar: null });
 	            } else {
-	               _this2.setState({ toolbox: { left: rect.left, top: rect.top, width: rect.width } });
+	               _this2.setState({ toolbar: { left: rect.left, top: rect.top, width: rect.width } });
 	            }
 	         }, 1);
 	      }
@@ -25077,34 +25086,43 @@
 	         var entityKey = block.getEntityAt(0);
 	         if (entityKey) {
 	            _draftJs.Entity.mergeData(entityKey, _extends({}, data));
+	            // Force refresh
 	            this.onChange(_draftJs.EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
 	         }
 	         return _extends({}, data);
 	      }
 	   }, {
-	      key: "myBlockRenderer",
-	      value: function myBlockRenderer(contentBlock) {
+	      key: "blockRenderer",
+	      value: function blockRenderer(contentBlock) {
+	         var _this3 = this;
+
 	         var entityKey = contentBlock.getEntityAt(0);
 	         var data = entityKey ? _draftJs.Entity.get(entityKey).data : {};
 
 	         if (this.props.renderBlock) {
 	            return this.props.renderBlock(contentBlock, _extends({}, data, {
-	               setEntityData: this.setEntityData.bind(this)
+	               setEntityData: this.setEntityData.bind(this),
+	               activate: function activate(active) {
+	                  _this3.setState({ active: active ? contentBlock.key : null });
+	                  // Force refresh
+	                  _this3.onChange(_draftJs.EditorState.createWithContent(_this3.state.value.getCurrentContent(), decorator));
+	               },
+	               active: this.state.active === contentBlock.key
 	            }));
 	         }
 	      }
 	   }, {
 	      key: "render",
 	      value: function render() {
-	         var _this3 = this;
+	         var _this4 = this;
 
 	         var drop = function drop(e) {
 	            var blockKey = e.dataTransfer.getData("text");
 	            // Set timeout to allow cursor/selection to move to drop location
 	            setTimeout(function () {
 	               // Get content, selection, block
-	               var block = _this3.state.value.getCurrentContent().getBlockForKey(blockKey);
-	               var editorStateAfterInsert = DragDropDraft.AddBlock(_this3.state.value, null, block.getType(), _draftJs.Entity.get(block.getEntityAt(0)).data);
+	               var block = _this4.state.value.getCurrentContent().getBlockForKey(blockKey);
+	               var editorStateAfterInsert = ExtendedDraft.AddBlock(_this4.state.value, null, block.getType(), _draftJs.Entity.get(block.getEntityAt(0)).data);
 
 	               block = editorStateAfterInsert.getCurrentContent().getBlockForKey(blockKey);
 	               // Get block range and remove dragged block
@@ -25121,32 +25139,42 @@
 	               rawContent.blocks = rawContent.blocks.filter(function (x) {
 	                  return x.key !== block.getKey();
 	               });
-	               var newState = _draftJs.EditorState.push(_this3.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(rawContent)), 'remove-range');
-	               _this3.setState({ value: newState });
+	               var newState = _draftJs.EditorState.push(_this4.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(rawContent)), 'remove-range');
+	               _this4.setState({ value: newState });
 	            }, 1);
 	         };
 
 	         // Set drag/drop handlers to outer div as editor won't fire those
 	         return _react2["default"].createElement(
 	            "div",
-	            { onClick: this.focus, onDrop: drop, onMouseUp: this.mouseUp.bind(this), id: "asd" },
-	            _react2["default"].createElement(_draftJs.Editor, { editorState: this.state.value, onChange: this.onChange, ref: "editor", blockRendererFn: this.myBlockRenderer.bind(this) }),
-	            this.state.toolbox ? _react2["default"].createElement(
-	               _tooltip2["default"],
-	               this.state.toolbox,
-	               "Hallo"
+	            { onClick: this.focus, onDrop: drop, onMouseUp: this.mouseUp.bind(this), onBlur: function () {
+	                  _this4.setState({ toolbar: null, active: null });
+	               } },
+	            _react2["default"].createElement(_draftJs.Editor, { editorState: this.state.value, onChange: this.onChange, ref: "editor", blockRendererFn: this.blockRenderer.bind(this) }),
+	            this.state.toolbar ? _react2["default"].createElement(
+	               _componentsTooltip2["default"],
+	               this.state.toolbar,
+	               _react2["default"].cloneElement(this.props.toolbar, { editorState: this.state.value, onChange: this.onChange.bind(this) })
 	            ) : null
 	         );
 	      }
 	   }]);
 
-	   return DragDropDraft;
+	   return ExtendedDraft;
 	})(_react.Component);
 
-	exports["default"] = DragDropDraft;
+	exports["default"] = ExtendedDraft;
 
-	DragDropDraft.GenerateBlockKey = _draftJsLibGenerateBlockKey2["default"];
-	DragDropDraft.AddBlock = function (editorState, selection, type, data, asJson) {
+	ExtendedDraft.DisableWarnings = function () {
+	   var consoleError = console.error;
+	   console.error = function (err) {
+	      if (err !== 'Warning: A component is `contentEditable` and contains `children` managed by React. It is now your responsibility to guarantee that none of those nodes are unexpectedly modified or duplicated. This is probably not intentional.') {
+	         consoleError(err);
+	      }
+	   };
+	};
+	ExtendedDraft.GenerateBlockKey = _draftJsLibGenerateBlockKey2["default"];
+	ExtendedDraft.AddBlock = function (editorState, selection, type, data, asJson) {
 	   // Get editorstate
 	   // If none -> get empty
 	   if (!editorState) {
@@ -42843,20 +42871,21 @@
 	   _createClass(Tooltip, [{
 	      key: 'shouldComponentUpdate',
 	      value: function shouldComponentUpdate(newProps, newState) {
-	         if (this.update) {
-	            this.update = false;
+	         // Explicitly set to update in componentDidMount
+	         if (this.shouldUpdate) {
+	            this.shouldUpdate = false;
 	            return true;
 	         }
-	         if (this.props.parent !== newProps.parent) {
-	            this.update = true;
+	         // Relevant props changed
+	         if (this.props.parent !== newProps.parent || this.props.top !== newProps.top || this.props.left !== newProps.left || this.props.width !== newProps.width) {
+	            this.shouldUpdate = true;
 	            return true;
 	         }
-	         if (this.props.top !== newProps.top) {
-	            this.update = true;
+	         if (this.props.active !== newProps.active) {
+	            this.shouldUpdate = true;
 	            return true;
 	         }
-	         if (this.props.left !== newProps.left) {
-	            this.update = true;
+	         if (this.props.children !== newProps.children) {
 	            return true;
 	         }
 	         return false;
@@ -42869,6 +42898,7 @@
 	         var top = _props.top;
 	         var width = _props.width;
 
+	         // Was props.parent set? Query parent element and get its rect
 	         if (this.props.parent) {
 	            var parentEl = document.querySelector(this.props.parent);
 	            if (!parentEl) {
@@ -42877,36 +42907,45 @@
 	            var rect = parentEl.getBoundingClientRect();
 	            left = rect.left, top = rect.top, width = rect.width;
 	         }
-	         this.update = true;
 
+	         // Get tooltip ref for width centering
 	         var ref = _reactDom2['default'].findDOMNode(this.refs.tooltip);
-	         console.log(ref);
 	         if (ref) {
+	            // Should update next time
+	            this.shouldUpdate = true;
 	            var refRect = ref.getBoundingClientRect();
+
+	            var scrollY = window.scrollY ? window.scrollY : window.pageYOffset;
+	            var scrollX = window.scrollX ? window.scrollX : window.pageXOffset;
+	            // Set state
 	            this.setState({
-	               top: top - refRect.height,
-	               left: left - refRect.width / 2 + width / 2
+	               top: top - refRect.height + scrollY - 5,
+	               left: left - refRect.width / 2 + width / 2 + scrollX
 	            });
 	         }
 	      }
 	   }, {
 	      key: 'componentDidUpdate',
 	      value: function componentDidUpdate() {
-	         if (this.update) {
-	            this.update = false;
+	         // Should update by componentShouldUpdate set
+	         if (this.shouldUpdate) {
+	            this.shouldUpdate = false;
 	            this.componentDidMount();
 	         }
 	      }
 	   }, {
 	      key: 'render',
 	      value: function render() {
-	         var visible = this.state.top && this.state.left;
+	         // Is server?
+	         if (typeof window === 'undefined' || this.props.active === false) {
+	            return null;
+	         }
 	         return _react2['default'].createElement(
 	            _reactPortal2['default'],
 	            { isOpened: true },
 	            _react2['default'].createElement(
 	               'div',
-	               { ref: 'tooltip', style: { width: '100px', height: '25px', zIndex: 3, backgroundColor: 'black', position: 'absolute', left: this.state.left + 'px', top: this.state.top + 'px' } },
+	               { ref: 'tooltip', style: { zIndex: 3, position: 'absolute', left: this.state.left + 'px', top: this.state.top + 'px' } },
 	               this.props.children
 	            )
 	         );
@@ -43219,7 +43258,19 @@
 	    "1": {
 	      "type": "TOKEN",
 	      "mutability": "IMMUTABLE",
-	      "data": {}
+	      "data": {
+	        "width": 40,
+	        "height": 130,
+	        "align": "left"
+	      }
+	    },
+	    "2": {
+	      "type": "TOKEN",
+	      "mutability": "IMMUTABLE",
+	      "data": {
+	        "width": 40,
+	        "height": 100
+	      }
 	    }
 	  },
 	  "blocks": [{
@@ -43274,7 +43325,46 @@
 	    }]
 	  }, {
 	    "key": "19gd8",
-	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea ",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "24ehn",
+	    "text": "",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "5ka8o",
+	    "text": " ",
+	    "type": "div",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": [{
+	      "offset": 0,
+	      "length": 1,
+	      "key": 2
+	    }]
+	  }, {
+	    "key": "71vti",
+	    "text": "",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "e0q65",
+	    "text": "takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "cj7f3",
+	    "text": "",
 	    "type": "unstyled",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
@@ -43282,8 +43372,8 @@
 	  }]
 	};
 
-	var content = rawContent;
-	exports.content = content;
+	var Content = rawContent;
+	exports.Content = Content;
 
 /***/ },
 /* 491 */
@@ -43309,13 +43399,17 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactPortalTooltip = __webpack_require__(492);
+	var _draftComponentsResizeableWrapper = __webpack_require__(492);
 
-	var _reactPortalTooltip2 = _interopRequireDefault(_reactPortalTooltip);
+	var _draftComponentsResizeableWrapper2 = _interopRequireDefault(_draftComponentsResizeableWrapper);
 
-	var _componentsResizeableWrapper = __webpack_require__(495);
+	var _draftComponentsTooltip = __webpack_require__(487);
 
-	var _componentsResizeableWrapper2 = _interopRequireDefault(_componentsResizeableWrapper);
+	var _draftComponentsTooltip2 = _interopRequireDefault(_draftComponentsTooltip);
+
+	var _draftComponentsToolbarBase = __webpack_require__(493);
+
+	var _draftComponentsToolbarBase2 = _interopRequireDefault(_draftComponentsToolbarBase);
 
 	var Div = (function (_Component) {
 	   _inherits(Div, _Component);
@@ -43332,15 +43426,18 @@
 	         var style = {
 	            backgroundColor: 'rgba(98, 177, 254, 1.0)',
 	            width: '100%',
-	            height: '100%'
+	            height: '100%',
+	            textAlign: 'center',
+	            color: 'white'
 	         };
 	         return _react2['default'].createElement(
 	            'div',
 	            { style: style, id: this.props.uniqueId },
+	            'Horizontal+Vertical',
 	            _react2['default'].createElement(
-	               _reactPortalTooltip2['default'],
-	               { active: this.props.active, position: 'top', arrow: 'center', parent: "#" + this.props.uniqueId },
-	               'Hallo'
+	               _draftComponentsTooltip2['default'],
+	               { active: !!this.props.active, parent: "#" + this.props.uniqueId },
+	               _react2['default'].createElement(_draftComponentsToolbarBase2['default'], { actions: this.props.toolbarActions })
 	            )
 	         );
 	      }
@@ -43349,599 +43446,14 @@
 	   return Div;
 	})(_react.Component);
 
-	exports['default'] = (0, _componentsResizeableWrapper2['default'])(Div, {
-	   style: {
-	      float: 'left'
-	   },
-	   resizeSteps: 10
+	exports['default'] = (0, _draftComponentsResizeableWrapper2['default'])(Div, {
+	   resizeSteps: 10,
+	   vertical: 'absolute'
 	});
 	module.exports = exports['default'];
 
 /***/ },
 /* 492 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var _react = __webpack_require__(194);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactDom = __webpack_require__(398);
-
-	var _reactDom2 = _interopRequireDefault(_reactDom);
-
-	var _isClient = __webpack_require__(493);
-
-	var _isClient2 = _interopRequireDefault(_isClient);
-
-	var _objectAssign = __webpack_require__(494);
-
-	var _objectAssign2 = _interopRequireDefault(_objectAssign);
-
-	var Card = (function (_React$Component) {
-	  _inherits(Card, _React$Component);
-
-	  function Card() {
-	    _classCallCheck(this, Card);
-
-	    _get(Object.getPrototypeOf(Card.prototype), 'constructor', this).apply(this, arguments);
-
-	    this.state = {
-	      hover: false,
-	      transition: 'opacity',
-	      width: 0,
-	      height: 0
-	    };
-	    this.margin = 15;
-	    this.defaultArrowStyle = {
-	      color: '#fff',
-	      borderColor: 'rgba(0,0,0,.4)'
-	    };
-	  }
-
-	  _createClass(Card, [{
-	    key: 'getStyle',
-	    value: function getStyle(position, arrow) {
-	      var parent = this.props.parentEl;
-	      var tooltipPosition = parent.getBoundingClientRect();
-	      var scrollY = window.scrollY ? window.scrollY : window.pageYOffset;
-	      var scrollX = window.scrollX ? window.scrollX : window.pageXOffset;
-	      var top = scrollY + tooltipPosition.top;
-	      var left = scrollX + tooltipPosition.left;
-	      var style = {};
-
-	      switch (position) {
-	        case 'left':
-	          style.top = top + parent.offsetHeight / 2 - this.state.height / 2;
-	          style.left = left - this.state.width - this.margin;
-
-	          if (arrow) {
-	            switch (arrow) {
-	              case 'top':
-	                style.top = top + parent.offsetHeight / 2 - this.margin;
-	                style.left = left - this.state.width - this.margin;
-	                break;
-
-	              case 'bottom':
-	                style.top = top + parent.offsetHeight / 2 - this.state.height + this.margin;
-	                style.left = left - this.state.width - this.margin;
-	                break;
-	            }
-	          }
-	          break;
-
-	        case 'right':
-	          style.top = top + parent.offsetHeight / 2 - this.state.height / 2;
-	          style.left = left + parent.offsetWidth + this.margin;
-
-	          if (arrow) {
-	            switch (arrow) {
-	              case 'top':
-	                style.top = top + parent.offsetHeight / 2 - this.margin;
-	                style.left = left + parent.offsetWidth + this.margin;
-	                break;
-
-	              case 'bottom':
-	                style.top = top + parent.offsetHeight / 2 - this.state.height + this.margin;
-	                style.left = left + parent.offsetWidth + this.margin;
-	                break;
-	            }
-	          }
-	          break;
-
-	        case 'top':
-	          style.left = left - this.state.width / 2 + parent.offsetWidth / 2;
-	          style.top = top - this.state.height - this.margin;
-
-	          if (arrow) {
-	            switch (arrow) {
-	              case 'right':
-	                style.left = left - this.state.width + parent.offsetWidth / 2 + this.margin;
-	                style.top = top - this.state.height - this.margin;
-	                break;
-
-	              case 'left':
-	                style.left = left + parent.offsetWidth / 2 - this.margin;
-	                style.top = top - this.state.height - this.margin;
-	                break;
-	            }
-	          }
-	          break;
-
-	        case 'bottom':
-	          style.left = left - this.state.width / 2 + parent.offsetWidth / 2;
-	          style.top = top + parent.offsetHeight + this.margin;
-
-	          if (arrow) {
-	            switch (arrow) {
-	              case 'right':
-	                style.left = left - this.state.width + parent.offsetWidth / 2 + this.margin;
-	                style.top = top + parent.offsetHeight + this.margin;
-	                break;
-
-	              case 'left':
-	                style.left = left + parent.offsetWidth / 2 - this.margin;
-	                style.top = top + parent.offsetHeight + this.margin;
-	                break;
-	            }
-	          }
-	          break;
-	      }
-
-	      return style;
-	    }
-	  }, {
-	    key: 'checkWindowPosition',
-	    value: function checkWindowPosition(style, arrowStyle) {
-	      if (this.props.position === 'top' || this.props.position === 'bottom') {
-	        if (style.left < 0) {
-	          var offset = style.left;
-	          style.left = this.margin;
-	          arrowStyle.fgStyle.marginLeft += offset;
-	          arrowStyle.bgStyle.marginLeft += offset;
-
-	          if (this.props.arrow === 'right') {
-	            arrowStyle.fgStyle.marginRight = -(offset - this.margin + 10);
-	            arrowStyle.bgStyle.marginRight = -(offset - this.margin + 10);
-	          } else {
-	            arrowStyle.fgStyle.marginLeft += offset - this.margin;
-	            arrowStyle.bgStyle.marginLeft += offset - this.margin;
-	          }
-	        } else {
-	          var rightOffset = style.left + this.state.width - window.innerWidth;
-	          if (rightOffset > 0) {
-	            var originalLeft = style.left;
-	            style.left = window.innerWidth - this.state.width - this.margin;
-	            arrowStyle.fgStyle.marginLeft += originalLeft - style.left;
-	            arrowStyle.bgStyle.marginLeft += originalLeft - style.left;
-	          }
-	        }
-	      }
-
-	      return { style: style, arrowStyle: arrowStyle };
-	    }
-	  }, {
-	    key: 'mergeStyle',
-	    value: function mergeStyle(style, theme) {
-	      if (theme) {
-	        var position = theme.position;
-	        var _top = theme.top;
-	        var left = theme.left;
-	        var right = theme.right;
-	        var bottom = theme.bottom;
-	        var marginLeft = theme.marginLeft;
-	        var marginRight = theme.marginRight;
-
-	        var validTheme = _objectWithoutProperties(theme, ['position', 'top', 'left', 'right', 'bottom', 'marginLeft', 'marginRight']);
-
-	        return (0, _objectAssign2['default'])(style, validTheme);
-	      }
-
-	      return style;
-	    }
-	  }, {
-	    key: 'handleMouseEnter',
-	    value: function handleMouseEnter() {
-	      this.props.active && this.setState({ hover: true });
-	    }
-	  }, {
-	    key: 'handleMouseLeave',
-	    value: function handleMouseLeave() {
-	      this.setState({ hover: false });
-	    }
-	  }, {
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.updateSize();
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps() {
-	      this.updateSize();
-	      this.setState({ transition: this.state.hover || this.props.active ? 'all' : 'opacity' });
-	    }
-	  }, {
-	    key: 'updateSize',
-	    value: function updateSize() {
-	      var self = _reactDom2['default'].findDOMNode(this);
-	      this.setState({
-	        width: self.offsetWidth,
-	        height: self.offsetHeight
-	      });
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _checkWindowPosition = this.checkWindowPosition(this.style, this.arrowStyle);
-
-	      var style = _checkWindowPosition.style;
-	      var arrowStyle = _checkWindowPosition.arrowStyle;
-
-	      return _react2['default'].createElement(
-	        'div',
-	        { style: style, onMouseEnter: this.handleMouseEnter.bind(this), onMouseLeave: this.handleMouseLeave.bind(this) },
-	        this.props.arrow ? _react2['default'].createElement(
-	          'div',
-	          null,
-	          _react2['default'].createElement('span', { style: arrowStyle.fgStyle }),
-	          _react2['default'].createElement('span', { style: arrowStyle.bgStyle })
-	        ) : null,
-	        this.props.children
-	      );
-	    }
-	  }, {
-	    key: 'style',
-	    get: function get() {
-	      if (!this.props.parentEl) {
-	        return { display: 'none' };
-	      }
-
-	      var style = {
-	        position: 'absolute',
-	        padding: '5px',
-	        background: '#fff',
-	        boxShadow: '0 0 8px rgba(0,0,0,.3)',
-	        borderRadius: '3px',
-	        transition: this.state.transition + ' .3s ease-in-out, visibility .3s ease-in-out',
-	        opacity: this.state.hover || this.props.active ? 1 : 0,
-	        visibility: this.state.hover || this.props.active ? 'visible' : 'hidden',
-	        zIndex: 50
-	      };
-
-	      (0, _objectAssign2['default'])(style, this.getStyle(this.props.position, this.props.arrow));
-
-	      return this.mergeStyle(style, this.props.style.style);
-	    }
-	  }, {
-	    key: 'baseArrowStyle',
-	    get: function get() {
-	      return {
-	        position: 'absolute',
-	        content: '""',
-	        transition: 'all .3s ease-in-out'
-	      };
-	    }
-	  }, {
-	    key: 'arrowStyle',
-	    get: function get() {
-	      var fgStyle = this.baseArrowStyle;
-	      var bgStyle = this.baseArrowStyle;
-	      fgStyle.zIndex = 60;
-	      bgStyle.zIndex = 55;
-
-	      var arrowStyle = (0, _objectAssign2['default'])(this.defaultArrowStyle, this.props.style.arrowStyle);
-	      var bgBorderColor = arrowStyle.borderColor ? arrowStyle.borderColor : 'transparent';
-
-	      var fgColorBorder = '10px solid ' + arrowStyle.color;
-	      var fgTransBorder = '8px solid transparent';
-	      var bgColorBorder = '11px solid ' + bgBorderColor;
-	      var bgTransBorder = '9px solid transparent';
-
-	      var _props = this.props;
-	      var position = _props.position;
-	      var arrow = _props.arrow;
-
-	      if (position === 'left' || position === 'right') {
-	        fgStyle.top = '50%';
-	        fgStyle.borderTop = fgTransBorder;
-	        fgStyle.borderBottom = fgTransBorder;
-	        fgStyle.marginTop = -7;
-
-	        bgStyle.borderTop = bgTransBorder;
-	        bgStyle.borderBottom = bgTransBorder;
-	        bgStyle.top = '50%';
-	        bgStyle.marginTop = -8;
-
-	        if (position === 'left') {
-	          fgStyle.right = -10;
-	          fgStyle.borderLeft = fgColorBorder;
-	          bgStyle.right = -11;
-	          bgStyle.borderLeft = bgColorBorder;
-	        } else {
-	          fgStyle.left = -10;
-	          fgStyle.borderRight = fgColorBorder;
-	          bgStyle.left = -11;
-	          bgStyle.borderRight = bgColorBorder;
-	        }
-
-	        if (arrow === 'top') {
-	          fgStyle.top = this.margin;
-	          bgStyle.top = this.margin;
-	        }
-	        if (arrow === 'bottom') {
-	          fgStyle.top = null;
-	          fgStyle.bottom = this.margin - 7;
-	          bgStyle.top = null;
-	          bgStyle.bottom = this.margin - 8;
-	        }
-	      } else {
-	        fgStyle.left = '50%';
-	        fgStyle.marginLeft = -10;
-	        fgStyle.borderLeft = fgTransBorder;
-	        fgStyle.borderRight = fgTransBorder;
-	        bgStyle.left = '50%';
-	        bgStyle.marginLeft = -11;
-	        bgStyle.borderLeft = bgTransBorder;
-	        bgStyle.borderRight = bgTransBorder;
-
-	        if (position === 'top') {
-	          fgStyle.bottom = -10;
-	          fgStyle.borderTop = fgColorBorder;
-	          bgStyle.bottom = -11;
-	          bgStyle.borderTop = bgColorBorder;
-	        } else {
-	          fgStyle.top = -10;
-	          fgStyle.borderBottom = fgColorBorder;
-	          bgStyle.top = -11;
-	          bgStyle.borderBottom = bgColorBorder;
-	        }
-
-	        if (arrow === 'right') {
-	          fgStyle.left = null;
-	          fgStyle.right = this.margin + 1;
-	          fgStyle.marginLeft = 0;
-	          bgStyle.left = null;
-	          bgStyle.right = this.margin;
-	          bgStyle.marginLeft = 0;
-	        }
-	        if (arrow === 'left') {
-	          fgStyle.left = this.margin + 1;
-	          fgStyle.marginLeft = 0;
-	          bgStyle.left = this.margin;
-	          bgStyle.marginLeft = 0;
-	        }
-	      }
-
-	      var _props$style$arrowStyle = this.props.style.arrowStyle;
-	      var color = _props$style$arrowStyle.color;
-	      var borderColor = _props$style$arrowStyle.borderColor;
-
-	      var propsArrowStyle = _objectWithoutProperties(_props$style$arrowStyle, ['color', 'borderColor']);
-
-	      return {
-	        fgStyle: this.mergeStyle(fgStyle, propsArrowStyle),
-	        bgStyle: this.mergeStyle(bgStyle, propsArrowStyle)
-	      };
-	    }
-	  }], [{
-	    key: 'PropTypes',
-	    value: {
-	      active: _react.PropTypes.bool,
-	      position: _react.PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
-	      arrow: _react.PropTypes.oneOf([null, 'center', 'top', 'right', 'bottom', 'left']),
-	      style: _react.PropTypes.object
-	    },
-	    enumerable: true
-	  }, {
-	    key: 'defaultProps',
-	    value: {
-	      active: false,
-	      position: 'right',
-	      arrow: null,
-	      style: { style: {}, arrowStyle: {} }
-	    },
-	    enumerable: true
-	  }]);
-
-	  return Card;
-	})(_react2['default'].Component);
-
-	var portalNodes = {};
-
-	var ToolTip = (function (_React$Component2) {
-	  _inherits(ToolTip, _React$Component2);
-
-	  function ToolTip() {
-	    _classCallCheck(this, ToolTip);
-
-	    _get(Object.getPrototypeOf(ToolTip.prototype), 'constructor', this).apply(this, arguments);
-	  }
-
-	  _createClass(ToolTip, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      if (!this.props.active) {
-	        return;
-	      }
-
-	      if ((0, _isClient2['default'])()) {
-	        this.renderPortal(this.props);
-	      }
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      var _this = this;
-
-	      if (!portalNodes[this.props.group] && !nextProps.active || !this.props.active && !nextProps.active) {
-	        return;
-	      }
-
-	      var props = (0, _objectAssign2['default'])({}, nextProps);
-	      var newProps = (0, _objectAssign2['default'])({}, nextProps);
-
-	      if (portalNodes[this.props.group] && portalNodes[this.props.group].timeout) {
-	        clearTimeout(portalNodes[this.props.group].timeout);
-	      }
-
-	      if (this.props.active && !props.active) {
-	        newProps.active = true;
-	        portalNodes[this.props.group].timeout = setTimeout(function () {
-	          props.active = false;
-	          _this.renderPortal(props);
-	        }, 500);
-	      }
-
-	      this.renderPortal(newProps);
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      portalNodes[this.props.group] && _reactDom2['default'].unmountComponentAtNode(portalNodes[this.props.group].el);
-	    }
-	  }, {
-	    key: 'createPortal',
-	    value: function createPortal() {
-	      portalNodes[this.props.group] = {
-	        el: document.createElement('div'),
-	        timeout: false
-	      };
-	      portalNodes[this.props.group].el.className = 'ToolTipPortal';
-	      document.body.appendChild(portalNodes[this.props.group].el);
-	    }
-	  }, {
-	    key: 'renderPortal',
-	    value: function renderPortal(props) {
-	      if (!portalNodes[this.props.group]) {
-	        this.createPortal();
-	      }
-	      var parent = props.parent;
-
-	      var other = _objectWithoutProperties(props, ['parent']);
-
-	      var parentEl = document.querySelector(parent);
-	      _reactDom2['default'].render(_react2['default'].createElement(Card, _extends({ parentEl: parentEl }, other)), portalNodes[this.props.group].el);
-	    }
-	  }, {
-	    key: 'shouldComponentUpdate',
-	    value: function shouldComponentUpdate() {
-	      return false;
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return null;
-	    }
-	  }], [{
-	    key: 'defaultProps',
-	    value: {
-	      active: false,
-	      group: 'main'
-	    },
-	    enumerable: true
-	  }, {
-	    key: 'propTypes',
-	    value: {
-	      active: _react.PropTypes.bool,
-	      group: _react.PropTypes.string
-	    },
-	    enumerable: true
-	  }]);
-
-	  return ToolTip;
-	})(_react2['default'].Component);
-
-	exports['default'] = ToolTip;
-	module.exports = exports['default'];
-
-/***/ },
-/* 493 */
-/***/ function(module, exports) {
-
-	/**
-	 * Export
-	 */
-
-	exports = module.exports = detect;
-
-	/**
-	 * Check if process is running in the browser
-	 *
-	 * @return {Boolean}
-	 * @api public
-	 */
-
-	function detect() {
-	  if (typeof window != "undefined") return true;
-	  return false;
-	}
-
-/***/ },
-/* 494 */
-/***/ function(module, exports) {
-
-	/* eslint-disable no-unused-vars */
-	'use strict';
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-	function toObject(val) {
-		if (val === null || val === undefined) {
-			throw new TypeError('Object.assign cannot be called with null or undefined');
-		}
-
-		return Object(val);
-	}
-
-	module.exports = Object.assign || function (target, source) {
-		var from;
-		var to = toObject(target);
-		var symbols;
-
-		for (var s = 1; s < arguments.length; s++) {
-			from = Object(arguments[s]);
-
-			for (var key in from) {
-				if (hasOwnProperty.call(from, key)) {
-					to[key] = from[key];
-				}
-			}
-
-			if (Object.getOwnPropertySymbols) {
-				symbols = Object.getOwnPropertySymbols(from);
-				for (var i = 0; i < symbols.length; i++) {
-					if (propIsEnumerable.call(from, symbols[i])) {
-						to[symbols[i]] = from[symbols[i]];
-					}
-				}
-			}
-		}
-
-		return to;
-	};
-
-
-/***/ },
-/* 495 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43986,20 +43498,33 @@
 	   }
 
 	   _createClass(Wrapper, [{
+	      key: 'activateBlock',
+	      value: function activateBlock(active) {
+	         if (this.props.blockProps.activate) {
+	            this.props.blockProps.activate(active);
+	         } else {
+	            this.setState({ active: active });
+	         }
+	      }
+	   }, {
+	      key: 'align',
+	      value: function align(position) {
+	         var setEntityData = this.props.setEntityData || this.props.blockProps.setEntityData;
+	         setEntityData(this.props.block, { align: position });
+	      }
+	   }, {
 	      key: 'click',
 	      value: function click(e) {
 	         var _this = this;
 
 	         if (this.state.clicked || this.state.active) return;
 	         var component = _reactDom2['default'].findDOMNode(this.refs.div);
-	         this.setState({
-	            active: true
-	         });
-	         component.parentElement.addEventListener('click', function () {
-	            _this.setState({
-	               active: false
-	            });
-	         }, false);
+	         this.activateBlock(true);
+	         var listener = function listener() {
+	            component.parentElement.removeEventListener('click', listener, false);
+	            _this.activateBlock(false);
+	         };
+	         component.parentElement.addEventListener('click', listener, false);
 	      }
 	   }, {
 	      key: 'mouseDown',
@@ -44010,9 +43535,19 @@
 	            return;
 	         }
 	         var _props = this.props;
-	         var resizeMode = _props.resizeMode;
 	         var resizeOptions = _props.resizeOptions;
 	         var resizeSteps = _props.resizeSteps;
+	         var vertical = _props.vertical;
+	         var horizontal = _props.horizontal;
+	         var _state = this.state;
+	         var width = _state.width;
+	         var height = _state.height;
+	         var hoverPosition = _state.hoverPosition;
+	         var isTop = hoverPosition.isTop;
+	         var isLeft = hoverPosition.isLeft;
+	         var isRight = hoverPosition.isRight;
+	         var isBottom = hoverPosition.isBottom;
+	         var resize = hoverPosition.resize;
 
 	         var component = _reactDom2['default'].findDOMNode(this.refs.div);
 	         var startX, startY, startWidth, startHeight;
@@ -44031,17 +43566,20 @@
 	            var widthPerc = 100 / b.clientWidth * width;
 	            var heightPerc = 100 / b.clientHeight * height;
 
-	            if (resizeMode === 'options' || resizeOptions) {
-	               var closest = Object.keys(resizeOptions).reduce(function (prev, curr) {
-	                  return Math.abs(curr - widthPerc) < Math.abs(prev - widthPerc) ? curr : prev;
-	               });
-
-	               _this2.setState({ width: closest, height: heightPerc });
-	            } else if (resizeMode === 'relative') {
-	               _this2.setState({ width: resizeSteps ? round(widthPerc, resizeSteps) : widthPerc, height: heightPerc });
-	            } else {
-	               _this2.setState({ width: resizeSteps ? round(width, resizeSteps) : width, height: height });
+	            var newState = {};
+	            if ((isLeft || isRight) && horizontal === 'relative') {
+	               newState.width = resizeSteps ? round(widthPerc, resizeSteps) : widthPerc;
+	            } else if ((isLeft || isRight) && horizontal === 'absolute') {
+	               newState.width = resizeSteps ? round(width, resizeSteps) : width;
 	            }
+
+	            if ((isTop || isBottom) && vertical === 'relative') {
+	               newState.height = resizeSteps ? round(heightPerc, resizeSteps) : heightPerc;
+	            } else if ((isTop || isBottom) && vertical === 'absolute') {
+	               newState.height = resizeSteps ? round(height, resizeSteps) : height;
+	            }
+
+	            _this2.setState(newState);
 	            e.stopPropagation();
 	            return false;
 	         };
@@ -44069,6 +43607,10 @@
 	   }, {
 	      key: 'move',
 	      value: function move(e) {
+	         var _props2 = this.props;
+	         var vertical = _props2.vertical;
+	         var horizontal = _props2.horizontal;
+
 	         var hoverPosition = this.state.hoverPosition;
 	         var tolerance = 6;
 	         var pane = _reactDom2['default'].findDOMNode(this.refs.div);
@@ -44077,10 +43619,10 @@
 	         var x = e.clientX - b.left;
 	         var y = e.clientY - b.top;
 
-	         var isTop = y < tolerance;
-	         var isLeft = x < tolerance;
-	         var isRight = x >= b.width - tolerance;
-	         var isBottom = y >= b.height - tolerance;
+	         var isTop = vertical ? y < tolerance : false;
+	         var isLeft = horizontal ? x < tolerance : false;
+	         var isRight = horizontal ? x >= b.width - tolerance : false;
+	         var isBottom = vertical ? y >= b.height - tolerance : false;
 
 	         var resize = isTop || isLeft || isRight || isBottom;
 
@@ -44102,23 +43644,26 @@
 	   }, {
 	      key: 'render',
 	      value: function render() {
-	         var _state = this.state;
-	         var width = _state.width;
-	         var hoverPosition = _state.hoverPosition;
-	         var active = _state.active;
-	         var _props2 = this.props;
-	         var Children = _props2.Children;
-	         var options = _props2.options;
-	         var blockProps = _props2.blockProps;
-	         var resizeOptions = _props2.resizeOptions;
-	         var resizeMode = _props2.resizeMode;
+	         var _this3 = this;
+
+	         var active = this.props.blockProps.active || this.state.active;
+	         var _state2 = this.state;
+	         var width = _state2.width;
+	         var height = _state2.height;
+	         var hoverPosition = _state2.hoverPosition;
+	         var _props3 = this.props;
+	         var Children = _props3.Children;
+	         var options = _props3.options;
+	         var blockProps = _props3.blockProps;
+	         var resizeOptions = _props3.resizeOptions;
+	         var vertical = _props3.vertical;
+	         var horizontal = _props3.horizontal;
 	         var isTop = hoverPosition.isTop;
 	         var isLeft = hoverPosition.isLeft;
 	         var isRight = hoverPosition.isRight;
 	         var isBottom = hoverPosition.isBottom;
 	         var resize = hoverPosition.resize;
 
-	         console.log('Active', active);
 	         var style = _extends({
 	            display: 'block',
 	            height: '40px',
@@ -44127,16 +43672,35 @@
 	            marginBottom: '5px',
 	            zIndex: 2
 	         }, this.props.style || {}, {
-	            boxShadow: active ? '0 0 0 3px #FFC107' : null
+	            outline: active ? '3px solid #FFC107' : null
 	         });
-	         var className = [];
-	         if (resizeMode === 'options' || resizeOptions) {
-	            className.push(resizeOptions[width || blockProps.width || 40]);
-	         } else if (resizeMode === 'relative') {
-	            style.width = (width || blockProps.width || 40) + '%';
+
+	         if (this.props.blockProps.align === 'left' || this.props.blockProps.align === 'right') {
+	            style.float = this.props.blockProps.align;
+	            style.margin = '5px';
 	         } else {
+	            delete style.float;
+	            style.margin = '0 auto';
+	         }
+
+	         var className = [];
+
+	         if (horizontal === 'auto') {
+	            style.width = 'auto';
+	         } else if (horizontal === 'relative') {
+	            style.width = (width || blockProps.width || 40) + '%';
+	         } else if (horizontal === 'absolute') {
 	            style.width = (width || blockProps.width || 40) + 'px';
 	         }
+
+	         if (vertical === 'auto') {
+	            style.height = 'auto';
+	         } else if (vertical === 'relative') {
+	            style.height = (height || blockProps.height || 40) + '%';
+	         } else if (vertical === 'absolute') {
+	            style.height = (height || blockProps.height || 40) + 'px';
+	         }
+
 	         if (isRight && isBottom || isLeft && isTop) {
 	            style.cursor = 'nwse-resize';
 	         } else if (isRight && isTop || isBottom && isLeft) {
@@ -44148,6 +43712,30 @@
 	         } else {
 	            style.cursor = 'default';
 	         }
+
+	         var actions = [{
+	            active: false,
+	            icon: 'step backward',
+	            toggle: function toggle() {
+	               return _this3.align('left');
+	            },
+	            label: 'Align left'
+	         }, {
+	            active: true,
+	            icon: 'stop',
+	            toggle: function toggle() {
+	               return _this3.align('center');
+	            },
+	            label: 'Align center'
+	         }, {
+	            active: false,
+	            icon: 'step forward',
+	            toggle: function toggle() {
+	               return _this3.align('right');
+	            },
+	            label: 'Align right'
+	         }];
+
 	         return _react2['default'].createElement(
 	            'div',
 	            { ref: 'div',
@@ -44159,7 +43747,7 @@
 	               draggable: !resize,
 	               style: style,
 	               className: className.join(' ') },
-	            _react2['default'].createElement(Children, _extends({}, this.state, this.props, { uniqueId: 'id-' + this.props.block.key }))
+	            _react2['default'].createElement(Children, _extends({}, this.state, this.props, { align: this.align.bind(this), active: active, toolbarActions: actions, uniqueId: 'id-' + this.props.block.key }))
 	         );
 	      }
 	   }]);
@@ -44169,7 +43757,8 @@
 
 	;
 	Wrapper.defaultProps = {
-	   resizeMode: 'relative',
+	   horizontal: 'relative',
+	   vertical: false,
 	   resizeSteps: 5
 	};
 
@@ -44182,31 +43771,98 @@
 	function round(x, steps) {
 	   return Math.ceil(x / steps) * steps;
 	}
-
-	/*var resizeOptions = {
-	 bootstrap: {
-	 16.6: 'col-md-2',
-	 33.3: 'col-md-4',
-	 50: 'col-md-6',
-	 66.6: 'col-md-8',
-	 83.3: 'col-md-10',
-	 100: 'col-md-12'
-	 },
-	 semantic: {
-	 12.5: 'two wide column',
-	 25: 'four wide column',
-	 37.5: 'six wide column',
-	 50: 'eight wide column',
-	 62.5: 'ten wide column',
-	 75: 'twelve wide column',
-	 87.5: 'fourteen wide column',
-	 100: 'sixteen wide column'
-	 }
-	 }*/
 	module.exports = exports['default'];
 
 /***/ },
-/* 496 */
+/* 493 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(194);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _draftJs = __webpack_require__(351);
+
+	if (typeof window !== 'undefined') {
+	   __webpack_require__(494);
+	}
+
+	var DraftToolbar = (function (_Component) {
+	   _inherits(DraftToolbar, _Component);
+
+	   function DraftToolbar(props) {
+	      _classCallCheck(this, DraftToolbar);
+
+	      _get(Object.getPrototypeOf(DraftToolbar.prototype), "constructor", this).call(this, props);
+	   }
+
+	   _createClass(DraftToolbar, [{
+	      key: "toggleAction",
+	      value: function toggleAction(action) {
+	         if (action.toggle) {
+	            action.toggle(action, !action.active);
+	         }
+	      }
+	   }, {
+	      key: "render",
+	      value: function render() {
+	         var _this = this;
+
+	         return _react2["default"].createElement(
+	            "div",
+	            { className: "ui icon menu", onMouseDown: function (x) {
+	                  x.preventDefault();
+	               } },
+	            this.props.actions.map(function (action) {
+	               return _react2["default"].createElement(
+	                  "a",
+	                  { key: action.label, onClick: function () {
+	                        return _this.toggleAction(action);
+	                     }, className: action.active ? 'active item' : 'item', "data-tooltip": action.label },
+	                  _react2["default"].createElement("i", { className: action.icon + " icon" })
+	               );
+	            })
+	         );
+	      }
+	   }]);
+
+	   return DraftToolbar;
+	})(_react.Component);
+
+	exports["default"] = DraftToolbar;
+
+	DraftToolbar.defaultProps = {
+	   actions: []
+	};
+	module.exports = exports["default"];
+
+/***/ },
+/* 494 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 495 */,
+/* 496 */,
+/* 497 */,
+/* 498 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44229,13 +43885,17 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _componentsResizeableWrapper = __webpack_require__(495);
+	var _draftComponentsResizeableWrapper = __webpack_require__(492);
 
-	var _componentsResizeableWrapper2 = _interopRequireDefault(_componentsResizeableWrapper);
+	var _draftComponentsResizeableWrapper2 = _interopRequireDefault(_draftComponentsResizeableWrapper);
 
-	var _reactPortalTooltip = __webpack_require__(492);
+	var _draftComponentsTooltip = __webpack_require__(487);
 
-	var _reactPortalTooltip2 = _interopRequireDefault(_reactPortalTooltip);
+	var _draftComponentsTooltip2 = _interopRequireDefault(_draftComponentsTooltip);
+
+	var _draftComponentsToolbarBase = __webpack_require__(493);
+
+	var _draftComponentsToolbarBase2 = _interopRequireDefault(_draftComponentsToolbarBase);
 
 	var Div = (function (_Component) {
 	   _inherits(Div, _Component);
@@ -44252,15 +43912,18 @@
 	         var style = {
 	            backgroundColor: 'rgba(100, 100, 100, 1.0)',
 	            width: '100%',
-	            height: '100%'
+	            height: '100%',
+	            textAlign: 'center',
+	            color: 'white'
 	         };
 	         return _react2['default'].createElement(
 	            'div',
 	            { style: style, id: this.props.uniqueId },
+	            'Horizontal only',
 	            _react2['default'].createElement(
-	               _reactPortalTooltip2['default'],
-	               { active: this.props.active, position: 'top', arrow: 'center', parent: "#" + this.props.uniqueId },
-	               'Hallo'
+	               _draftComponentsTooltip2['default'],
+	               { active: !!this.props.active, position: 'top', arrow: 'center', parent: "#" + this.props.uniqueId },
+	               _react2['default'].createElement(_draftComponentsToolbarBase2['default'], { actions: this.props.toolbarActions })
 	            )
 	         );
 	      }
@@ -44269,12 +43932,103 @@
 	   return Div;
 	})(_react.Component);
 
-	exports['default'] = (0, _componentsResizeableWrapper2['default'])(Div, {
-	   style: {
-	      margin: '0 auto'
-	   }
-	});
+	exports['default'] = (0, _draftComponentsResizeableWrapper2['default'])(Div);
 	module.exports = exports['default'];
+
+/***/ },
+/* 499 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(194);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _draftJs = __webpack_require__(351);
+
+	var _componentsToolbarBase = __webpack_require__(493);
+
+	var _componentsToolbarBase2 = _interopRequireDefault(_componentsToolbarBase);
+
+	var DraftToolbar = (function (_Component) {
+	   _inherits(DraftToolbar, _Component);
+
+	   function DraftToolbar(props) {
+	      _classCallCheck(this, DraftToolbar);
+
+	      _get(Object.getPrototypeOf(DraftToolbar.prototype), "constructor", this).call(this, props);
+	   }
+
+	   _createClass(DraftToolbar, [{
+	      key: "toggleAction",
+	      value: function toggleAction(action, state) {
+	         if (action.toggle) {
+	            action.toggle(action, state, this.props.editorState);
+	         }
+	      }
+	   }, {
+	      key: "toggleBlockType",
+	      value: function toggleBlockType(blockType) {
+	         this.props.onChange(_draftJs.RichUtils.toggleBlockType(this.props.editorState, blockType));
+	      }
+	   }, {
+	      key: "toggleInlineStyle",
+	      value: function toggleInlineStyle(inlineStyle) {
+	         this.props.onChange(_draftJs.RichUtils.toggleInlineStyle(this.props.editorState, inlineStyle));
+	      }
+	   }, {
+	      key: "render",
+	      value: function render() {
+	         var _this = this;
+
+	         var currentStyle = this.props.editorState.getCurrentInlineStyle();
+	         var blockType = this.props.editorState.getCurrentContent().getBlockForKey(this.props.editorState.getSelection().getStartKey()).getType();
+
+	         var items = [].concat(_toConsumableArray(this.props.blockTypes.map(function (x) {
+	            return { icon: x.icon, label: x.label, active: blockType === x.style, toggle: function toggle() {
+	                  return _this.toggleBlockType(x.style);
+	               } };
+	         })), _toConsumableArray(this.props.inlineStyles.map(function (x) {
+	            return { icon: x.icon, label: x.label, active: currentStyle.has(x.style), toggle: function toggle() {
+	                  return _this.toggleInlineStyle(x.style);
+	               } };
+	         })), _toConsumableArray(this.props.actions.map(function (x) {
+	            return { icon: x.icon, label: x.label, active: x.active, toggle: function toggle(state) {
+	                  return _this.toggleAction(x, state);
+	               } };
+	         })));
+	         return _react2["default"].createElement(_componentsToolbarBase2["default"], { actions: items });
+	      }
+	   }]);
+
+	   return DraftToolbar;
+	})(_react.Component);
+
+	exports["default"] = DraftToolbar;
+
+	DraftToolbar.defaultProps = {
+	   actions: [],
+	   inlineStyles: [{ label: 'Bold', icon: 'bold', style: 'BOLD' }, { label: 'Italic', icon: 'italic', style: 'ITALIC' }, { label: 'Underline', icon: 'underline', style: 'UNDERLINE' }],
+	   blockTypes: [{ label: 'H1', icon: 'header', style: 'header-one' }, { label: 'H2', icon: 'header', style: 'header-two' }, { label: 'Blockquote', icon: 'quote left', style: 'blockquote' }, { label: 'UL', icon: 'list', style: 'unordered-list-item' }, { label: 'OL', icon: 'ordered list', style: 'ordered-list-item' }, { label: 'Code Block', icon: 'code', style: 'code-block' }]
+	};
+	module.exports = exports["default"];
 
 /***/ }
 /******/ ]);

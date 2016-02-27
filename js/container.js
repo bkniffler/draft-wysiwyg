@@ -1,22 +1,24 @@
 import React from 'react';
 
-import Draft from './components/draft';
-import {content} from './data/content';
+import Draft from './draft/index';
+import {Content} from './data';
 import Div from "./blocks/resizeable-div";
 import Div2 from "./blocks/resizeable-div2";
+import DraftToolbar from "./draft/toolbar";
+
+Draft.DisableWarnings();
 
 export default class Example extends React.Component {
     constructor(props) {
         super(props);
-        console.log(content);
         this.state = {
-            data: content
+            data: Content
         }
     }
-    
+
     renderBlock(contentBlock, props){
         const type = contentBlock.getType();
-        
+
         if (type === 'div') {
             return {
                 component: Div,
@@ -30,26 +32,29 @@ export default class Example extends React.Component {
             };
         }
     }
-    
+
     render() {
         const {data} = this.state;
+        var draftToolbar = (
+            <DraftToolbar />
+        );
         return (
             <div className="TexEditor-container">
                 <div className="TeXEditor-root">
                     <div className="TeXEditor-editor">
-                        <Draft renderBlock={this.renderBlock.bind(this)} updateValue={(v)=>this.setState({data:v})} value={data}/>
+                        <Draft toolbar={draftToolbar} renderBlock={this.renderBlock.bind(this)} updateValue={(v)=>this.setState({data:v})} value={data}/>
                     </div>
                 </div>
 
-                <button className="TeXEditor-insert"
-                        onClick={()=>this.setState({data: Draft.AddBlock(data, 'end', 'div', {}, true)})}>Add Floating
+                <button className="TeXEditor-insert" onClick={()=>this.setState({data: Draft.AddBlock(data, 'end', 'div', {}, true)})}>
+                    Horizontal+Vertical
                 </button>
                 <button className="TeXEditor-insert2"
                         onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'div2', {}, true)})}>Add
-                    Non-Floating
+                    Horizontal only
                 </button>
 
-                <pre>{JSON.stringify(data, null, 3)}</pre>
+                <pre style={{whiteSpace: 'pre-wrap'}}>{JSON.stringify(data, null, 3)}</pre>
             </div>
         );
     }

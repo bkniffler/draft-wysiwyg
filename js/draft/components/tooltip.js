@@ -16,10 +16,17 @@ export default class Tooltip extends Component {
       }
       // Relevant props changed
       if(this.props.parent !== newProps.parent
-          || this.props.top !== newProps.top
-          || this.props.left !== newProps.left
-          || this.props.width !== newProps.width){
+         || this.props.top !== newProps.top
+         || this.props.left !== newProps.left
+         || this.props.width !== newProps.width){
          this.shouldUpdate = true;
+         return true;
+      }
+      if(this.props.active !== newProps.active){
+         this.shouldUpdate = true;
+         return true;
+      }
+      if(this.props.children !== newProps.children){
          return true;
       }
       return false;
@@ -49,7 +56,7 @@ export default class Tooltip extends Component {
          var scrollX = window.scrollX ? window.scrollX : window.pageXOffset;
          // Set state
          this.setState({
-            top: top-(refRect.height) + scrollY,
+            top: top-(refRect.height) + scrollY-5,
             left: left-(refRect.width/2)+(width/2)+scrollX
          });
       }
@@ -65,12 +72,12 @@ export default class Tooltip extends Component {
 
    render() {
       // Is server?
-      if(typeof window === 'undefined'){
+      if(typeof window === 'undefined' || this.props.active === false){
          return null;
       }
       return (
          <Portal isOpened={true}>
-            <div ref="tooltip" style={{width: '100px', height: '25px', zIndex:3, backgroundColor: 'black', position: 'absolute', left: this.state.left+'px', top: this.state.top+'px'}}>
+            <div ref="tooltip" style={{zIndex:3, position: 'absolute', left: this.state.left+'px', top: this.state.top+'px'}}>
                {this.props.children}
             </div>
          </Portal>

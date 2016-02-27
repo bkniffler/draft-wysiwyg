@@ -1,40 +1,28 @@
 import React, {Component, PropTypes} from "react";
-import {
-   Editor,
-   EditorState,
-   CompositeDecorator,
-   ContentState,
-   convertToRaw,
-   convertFromRaw,
-   Modifier,
-   SelectionState,
-   Entity,
-   CharacterMetadata,
-   ContentBlock,
-   genKey,
-   BlockMapBuilder
-} from "draft-js";
+import {Editor, EditorState, CompositeDecorator, ContentState, convertToRaw, convertFromRaw} from "draft-js";
+import {Modifier, SelectionState, Entity, CharacterMetadata, ContentBlock, genKey, BlockMapBuilder} from "draft-js";
 import generateBlockKey from "draft-js/lib/generateBlockKey";
 import {List, Repeat} from 'immutable';
-import ToolTip from './tooltip'
+import ToolTip from './components/tooltip'
 
 const decorator = new CompositeDecorator([]);
 
-export default class DragDropDraft extends Component {
+export default class ExtendedDraft extends Component {
    constructor(props) {
       super(props);
 
       var value = EditorState.createEmpty(decorator);
+
       if (props.value) {
          value = EditorState.push(value, ContentState.createFromBlockArray(convertFromRaw(props.value)));
       }
 
-      this.state = {value};
+      this.state = {value, active: null};
 
       this.focus = () => this.refs.editor.focus();
       this.onChange = (editorState) => {
          this.lastState = convertToRaw(editorState.getCurrentContent());
-         if(props.updateValue){
+         if (props.updateValue) {
             props.updateValue(this.lastState);
          }
          this.setState({value: editorState});
@@ -63,6 +51,9 @@ export default class DragDropDraft extends Component {
    }
 
    mouseUp(e) {
+      if(!this.props.toolbar){
+         return;
+      }
       function getSelected() {
          var t = '';
          if (window.getSelection) {
@@ -81,31 +72,38 @@ export default class DragDropDraft extends Component {
          var rect = selected.getRangeAt(0).getBoundingClientRect();
 
          if (selection.isCollapsed()) {
-            return this.setState({toolbox: null});
+            return this.setState({toolbar: null});
          }
          else {
-            this.setState({toolbox: {left: rect.left, top: rect.top, width: rect.width}});
+            this.setState({toolbar: {left: rect.left, top: rect.top, width: rect.width}});
          }
       }, 1)
    }
 
-   setEntityData(block, data){
+   setEntityData(block, data) {
       var entityKey = block.getEntityAt(0);
-      if(entityKey){
+      if (entityKey) {
          Entity.mergeData(entityKey, {...data});
+         // Force refresh
          this.onChange(EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
       }
       return {...data};
    }
 
-   myBlockRenderer(contentBlock) {
+   blockRenderer(contentBlock) {
       const entityKey = contentBlock.getEntityAt(0);
       let data = entityKey ? Entity.get(entityKey).data : {};
 
-      if(this.props.renderBlock){
+      if (this.props.renderBlock) {
          return this.props.renderBlock(contentBlock, {
-             ...data,
-            setEntityData: this.setEntityData.bind(this)
+            ...data,
+            setEntityData: this.setEntityData.bind(this),
+            activate: (active)=>{
+               this.setState({active: active ? contentBlock.key : null});
+               // Force refresh
+               this.onChange(EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
+            },
+            active: this.state.active  === contentBlock.key
          });
       }
    }
@@ -117,7 +115,7 @@ export default class DragDropDraft extends Component {
          setTimeout(()=> {
             // Get content, selection, block
             var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
-            var editorStateAfterInsert = DragDropDraft.AddBlock(this.state.value, null, block.getType(), Entity.get(block.getEntityAt(0)).data);
+            var editorStateAfterInsert = ExtendedDraft.AddBlock(this.state.value, null, block.getType(), Entity.get(block.getEntityAt(0)).data);
 
             block = editorStateAfterInsert.getCurrentContent().getBlockForKey(blockKey);
             // Get block range and remove dragged block
@@ -131,7 +129,7 @@ export default class DragDropDraft extends Component {
 
             // Workaround, revious removeRange removed entity, but not the block
             var rawContent = convertToRaw(afterRemoval);
-            rawContent.blocks = rawContent.blocks.filter(x=>x.key!==block.getKey());
+            rawContent.blocks = rawContent.blocks.filter(x=>x.key !== block.getKey());
             var newState = EditorState.push(this.state.value, ContentState.createFromBlockArray(convertFromRaw(rawContent)), 'remove-range');
             this.setState({value: newState});
          }, 1);
@@ -139,37 +137,45 @@ export default class DragDropDraft extends Component {
 
       // Set drag/drop handlers to outer div as editor won't fire those
       return (
-         <div onClick={this.focus} onDrop={drop} onMouseUp={this.mouseUp.bind(this)} id="asd">
-            <Editor editorState={this.state.value} onChange={this.onChange} ref="editor"  blockRendererFn={this.myBlockRenderer.bind(this)}/>
-            {this.state.toolbox ? <ToolTip {...this.state.toolbox}>
-               Hallo
+         <div onClick={this.focus} onDrop={drop} onMouseUp={this.mouseUp.bind(this)} onBlur={()=>{this.setState({toolbar: null, active: null})}}>
+            <Editor editorState={this.state.value} onChange={this.onChange} ref="editor" blockRendererFn={this.blockRenderer.bind(this)}/>
+            {this.state.toolbar ? <ToolTip {...this.state.toolbar}>
+               {React.cloneElement(this.props.toolbar, {editorState: this.state.value, onChange: this.onChange.bind(this)})}
             </ToolTip> : null}
          </div>
       );
    }
 }
 
-DragDropDraft.GenerateBlockKey = generateBlockKey;
-DragDropDraft.AddBlock = function(editorState, selection, type, data, asJson){
+ExtendedDraft.DisableWarnings = function(){
+   var consoleError = console.error;
+   console.error = function(err){
+      if(err !== 'Warning: A component is `contentEditable` and contains `children` managed by React. It is now your responsibility to guarantee that none of those nodes are unexpectedly modified or duplicated. This is probably not intentional.'){
+         consoleError(err);
+      }
+   }
+}
+ExtendedDraft.GenerateBlockKey = generateBlockKey;
+ExtendedDraft.AddBlock = function (editorState, selection, type, data, asJson) {
    // Get editorstate
    // If none -> get empty
-   if(!editorState){
+   if (!editorState) {
       editorState = EditorState.createEmpty(decorator);
    }
    // If json -> convert to editorstate
-   else if(asJson){
+   else if (asJson) {
       editorState = EditorState.push(
-          EditorState.createEmpty(decorator),
-          ContentState.createFromBlockArray(convertFromRaw(editorState))
+         EditorState.createEmpty(decorator),
+         ContentState.createFromBlockArray(convertFromRaw(editorState))
       );
    }
 
    var contentState = editorState.getCurrentContent(), selectionState = editorState.getSelection();
 
    // Convert selection from string
-   if(typeof selection === 'string'){
+   if (typeof selection === 'string') {
       var blocks = contentState.getBlocksAsArray();
-      if(selection === 'start' && blocks.length){
+      if (selection === 'start' && blocks.length) {
          selection = new SelectionState({
             anchorKey: blocks[0].getKey(),
             anchorOffset: 0,
@@ -177,27 +183,27 @@ DragDropDraft.AddBlock = function(editorState, selection, type, data, asJson){
             focusOffset: 0
          });
       }
-      else if(selection === 'end' && blocks.length){
+      else if (selection === 'end' && blocks.length) {
          selection = new SelectionState({
-            anchorKey: blocks[blocks.length-1].getKey(),
-            anchorOffset: blocks[blocks.length-1].getLength(),
-            focusKey: blocks[blocks.length-1].getKey(),
-            focusOffset: blocks[blocks.length-1].getLength()
+            anchorKey: blocks[blocks.length - 1].getKey(),
+            anchorOffset: blocks[blocks.length - 1].getLength(),
+            focusKey: blocks[blocks.length - 1].getKey(),
+            focusOffset: blocks[blocks.length - 1].getLength()
          });
       }
    }
-   if(selection !== null){
+   if (selection !== null) {
       selectionState = selection;
    }
    var insertionTarget, asMedia, selectedBlock = contentState.getBlockForKey(selectionState.anchorKey);
 
    // If dropped next to text
-   if(selectionState.anchorKey === selectionState.focusKey && selectedBlock && !selectedBlock.text){
+   if (selectionState.anchorKey === selectionState.focusKey && selectedBlock && !selectedBlock.text) {
       insertionTarget = selectionState;
       asMedia = Modifier.setBlockType(contentState, insertionTarget, type);
    }
    // If dropped next to empty
-   else{
+   else {
       var afterRemoval = Modifier.removeRange(contentState, selectionState, 'backward');
       var targetSelection = afterRemoval.getSelectionAfter();
       var afterSplit = Modifier.splitBlock(afterRemoval, targetSelection);
@@ -229,7 +235,7 @@ DragDropDraft.AddBlock = function(editorState, selection, type, data, asJson){
    // Push editorstate with new content
    editorState = EditorState.push(editorState, newContent, 'insert-fragment');
 
-   if(asJson){
+   if (asJson) {
       // Return JSON
       return convertToRaw(editorState.getCurrentContent());
    }
