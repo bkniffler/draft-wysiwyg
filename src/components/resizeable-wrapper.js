@@ -20,6 +20,11 @@ class Wrapper extends Component {
    align(position){
       var setEntityData = (this.props.setEntityData || this.props.blockProps.setEntityData);
       setEntityData(this.props.block, {align: position});
+      // Reactivate for toolbar to follow
+      this.activateBlock(false);
+      setTimeout(()=>{
+         this.activateBlock(true);
+      }, 0);
    }
    click(e){
       if(this.state.clicked || this.state.active) return;
@@ -186,17 +191,17 @@ class Wrapper extends Component {
       }
 
       var actions = [{
-         active: false,
+         active: this.props.blockProps.align === 'left',
          icon: 'step backward',
          toggle: ()=>this.align('left'),
          label: 'Align left'
       },{
-         active: true,
+         active: !this.props.blockProps.align || this.props.blockProps.align === 'center',
          icon: 'stop',
          toggle: ()=>this.align('center'),
          label: 'Align center'
       },{
-         active: false,
+         active: this.props.blockProps.align === 'right',
          icon: 'step forward',
          toggle: ()=>this.align('right'),
          label: 'Align right'
