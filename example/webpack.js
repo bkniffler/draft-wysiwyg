@@ -1,5 +1,4 @@
 var path = require('path');
-var ExtractTextPlugin = require("extract-text-webpack-plugin-webpack-2");
 
 var debug = process.env.NODE_ENV === 'development', production = !debug;
 
@@ -14,6 +13,14 @@ module.exports = {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 loader: 'babel',
+                query: {
+                    cacheDirectory: true,
+                    presets: [
+                        'es2015',
+                        'stage-0',
+                        'react'
+                    ]
+                }
             }
         ]
     },

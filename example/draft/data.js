@@ -160,4 +160,4 @@ var rawContent = {
   ]
 };
 
-export var Content = rawContent;
+module.exports = rawContent;

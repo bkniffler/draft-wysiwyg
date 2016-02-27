@@ -1,7 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import ResizeableWrapper from '../../src/components/resizeable-wrapper';
-import ToolTip from '../../src/components/tooltip';
-import ToolbarBase from "../../src/components/toolbar-base";
+import {ResizeableWrapper, ToolTip, ToolbarBase} from '../../src';
 
 class Div extends Component {
    render(){

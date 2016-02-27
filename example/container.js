@@ -1,10 +1,7 @@
 import React from 'react';
 
-import Draft from '../src/index';
-import {Content} from './data';
-import Div from "./blocks/resizeable-div";
-import Div2 from "./blocks/resizeable-div2";
-import DraftToolbar from "../src/toolbar";
+import {Div, Div2, Data} from "./draft";
+import {Draft, Toolbar} from '../src';
 
 Draft.DisableWarnings();
 
@@ -12,7 +9,7 @@ export default class Example extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: Content
+            data: Data
         }
     }
 
@@ -36,7 +33,7 @@ export default class Example extends React.Component {
     render() {
         const {data} = this.state;
         var draftToolbar = (
-            <DraftToolbar />
+            <Toolbar />
         );
         return (
             <div className="TexEditor-container">
