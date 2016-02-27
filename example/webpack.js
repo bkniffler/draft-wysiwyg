@@ -1,11 +1,11 @@
 var path = require('path');
 
-var debug = process.env.NODE_ENV === 'development', production = !debug;
+var debug = process.env.NODE_ENV === 'development';
 
 module.exports = {
     cache: debug,
     debug: debug,
-    devtool: production ? 'eval' : null,
+    devtool: debug ? 'eval' : null,
     entry: path.resolve(__dirname, 'app.js'),
     module: {
         loaders: [

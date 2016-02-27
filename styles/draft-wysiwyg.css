@@ -1,3 +1,15 @@
+.draft-resizeable-wrapper{
+   display: block;
+   height: 40px;
+   position: relative;
+   margin-right: 5px;
+   margin-bottom: 5px;
+   z-index: 2;
+}
+.draft-resizeable-wrapper.active{
+   outline: 3px solid #000000;
+}
+
 [data-tooltip] {
    position: relative;
    text-decoration: none;

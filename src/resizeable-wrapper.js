@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom';
 
 class Wrapper extends Component {
    constructor(props){
-      super();
+      super(props);
       this.state = {
          hoverPosition: {},
          clicked: false
       };
    }
+   // Activate the current block
    activateBlock(active){
       if(this.props.blockProps.activate){
          this.props.blockProps.activate(active);
@@ -17,8 +18,10 @@ class Wrapper extends Component {
          this.setState({active});
       }
    }
+   // Set alignment of current block ('left', 'right', 'center')
    align(position){
-      var setEntityData = (this.props.setEntityData || this.props.blockProps.setEntityData);
+      const {setEntityData} = this.props.blockProps;
+
       setEntityData(this.props.block, {align: position});
       // Reactivate for toolbar to follow
       this.activateBlock(false);
@@ -26,23 +29,59 @@ class Wrapper extends Component {
          this.activateBlock(true);
       }, 0);
    }
+
+   // Handle click to activate block
    click(e){
-      if(this.state.clicked || this.state.active) return;
-      var component = ReactDOM.findDOMNode(this.refs.div);
+      const active = this.props.blockProps.active||this.state.active;
+      const {clicked} = this.state;
+
+      if(clicked || active) return;
+
       this.activateBlock(true);
+
+      var component = ReactDOM.findDOMNode(this.refs.div);
       var listener = ()=>{
          component.parentElement.removeEventListener('click', listener, false);
          this.activateBlock(false);
       };
+      // Handle click outside of block to deactivate
       component.parentElement.addEventListener('click', listener, false);
    }
+   // Handle mouse-move and setState if mouse on edges for resizing
+   move(e){
+      const {vertical, horizontal} = this.props;
+
+      var hoverPosition = this.state.hoverPosition;
+      var tolerance = 6;
+      var pane = ReactDOM.findDOMNode(this.refs.div);
+
+      var b = pane.getBoundingClientRect();
+      var x = e.clientX - b.left;
+      var y = e.clientY - b.top;
+
+      var isTop = vertical ? y < tolerance : false;
+      var isLeft = horizontal ? x < tolerance : false;
+      var isRight = horizontal ? x >= b.width - tolerance : false;
+      var isBottom = vertical ? y >= b.height - tolerance : false;
+
+      var resize = isTop||isLeft||isRight||isBottom;
+
+      var newHoverPosition = {
+         isTop, isLeft, isRight, isBottom, resize
+      };
+      if(Object.keys(newHoverPosition).filter(key=>hoverPosition[key] !== newHoverPosition[key]).length){
+         this.setState({hoverPosition: newHoverPosition});
+      }
+   }
+   // Handle mousedown for resizing
    mouseDown(e){
+      // No mouse-hover-position data? Nothing to resize!
       if(!this.state.hoverPosition.resize){
          return;
       }
-      const {resizeOptions, resizeSteps, vertical, horizontal} = this.props;
-      const {width, height, hoverPosition} = this.state;
-      const {isTop, isLeft, isRight, isBottom, resize} = hoverPosition;
+      const {resizeSteps, vertical, horizontal} = this.props;
+      const {hoverPosition} = this.state;
+      const {isTop, isLeft, isRight, isBottom} = hoverPosition;
 
       var component = ReactDOM.findDOMNode(this.refs.div);
       var startX, startY, startWidth, startHeight;
@@ -51,6 +90,7 @@ class Wrapper extends Component {
       startWidth = parseInt(document.defaultView.getComputedStyle(component).width, 10);
       startHeight = parseInt(document.defaultView.getComputedStyle(component).height, 10);
 
+      // Do the actual drag operation
       var doDrag = (e) => {
          var width = (startWidth + e.clientX - startX);
          var height = (startHeight + e.clientY - startY);
@@ -81,11 +121,12 @@ class Wrapper extends Component {
          return false;
       }
 
+      // Finished dragging
       var stopDrag = (e) => {
          document.documentElement.removeEventListener('mousemove', doDrag, false);
          document.documentElement.removeEventListener('mouseup', stopDrag, false);
 
-         var setEntityData = (this.props.setEntityData || this.props.blockProps.setEntityData);
+         const {setEntityData} = this.props.blockProps;
          setEntityData(this.props.block, {width: this.state.width, height: this.state.height});
 
          this.setState({clicked: false, width: null, height: null});
@@ -101,52 +142,23 @@ class Wrapper extends Component {
       e.stopPropagation();
       return false;
    }
-   move(e){
-      const {vertical, horizontal} = this.props;
-
-      var hoverPosition = this.state.hoverPosition;
-      var tolerance = 6;
-      var pane = ReactDOM.findDOMNode(this.refs.div);
-
-      var b = pane.getBoundingClientRect();
-      var x = e.clientX - b.left;
-      var y = e.clientY - b.top;
-
-      var isTop = vertical ? y < tolerance : false;
-      var isLeft = horizontal ? x < tolerance : false;
-      var isRight = horizontal ? x >= b.width - tolerance : false;
-      var isBottom = vertical ? y >= b.height - tolerance : false;
-
-      var resize = isTop||isLeft||isRight||isBottom;
-
-      var newHoverPosition = {
-         isTop, isLeft, isRight, isBottom, resize
-      };
-      if(Object.keys(newHoverPosition).filter(key=>hoverPosition[key] !== newHoverPosition[key]).length){
-         this.setState({hoverPosition: newHoverPosition});
-      }
-   }
+   // Handle start-drag and setData with blockKey
    startDrag(e){
       e.dataTransfer.dropEffect = 'move';
       e.dataTransfer.setData("text", this.props.block.key);
    }
    render(){
-      const active = this.props.blockProps.active||this.state.active;
+      const active = !!(this.props.blockProps.active||this.state.active);
       const {width, height, hoverPosition} = this.state;
-      const {Children, options, blockProps, resizeOptions, vertical, horizontal} = this.props;
+      const {Children, blockProps, vertical, horizontal} = this.props;
       const {isTop, isLeft, isRight, isBottom, resize} = hoverPosition;
 
+      // Compose style
       var style = {
-         display: 'block',
-         height: '40px',
-         position: 'relative',
-         marginRight: '5px',
-         marginBottom: '5px',
-         zIndex: 2,
-         ...(this.props.style||{}),
-         outline: active ? '3px solid #FFC107' : null
+         ...(this.props.style||{})
       };
 
+      // Handle alignment for float/margin
       if(this.props.blockProps.align === 'left' || this.props.blockProps.align === 'right'){
          style.float = this.props.blockProps.align;
          style.margin = '5px';
@@ -156,8 +168,7 @@ class Wrapper extends Component {
          style.margin = '0 auto';
       }
 
-      var className = [];
-
+      // Handle width/height
       if(horizontal === 'auto'){
          style.width = 'auto';
       }
@@ -167,7 +178,6 @@ class Wrapper extends Component {
       else if(horizontal === 'absolute') {
          style.width = (width||blockProps.width||40)+'px';
       }
-
       if(vertical === 'auto'){
          style.height = 'auto';
       }
@@ -178,6 +188,7 @@ class Wrapper extends Component {
          style.height = (height||blockProps.height||40)+'px';
       }
 
+      // Handle cursor
       if (isRight && isBottom || isLeft && isTop) {
          style.cursor = 'nwse-resize';
       } else if (isRight && isTop || isBottom && isLeft) {
@@ -190,6 +201,7 @@ class Wrapper extends Component {
          style.cursor = 'default';
       }
 
+      // Default toolbar actions
       var actions = [{
          active: this.props.blockProps.align === 'left',
          icon: 'step backward',
@@ -215,19 +227,26 @@ class Wrapper extends Component {
               onDragStart={this.startDrag.bind(this)}
               contentEditable="false"
               draggable={!resize}
-              style={style}
-              className={className.join(' ')}>
-            <Children {...this.state} {...this.props} align={this.align.bind(this)} active={active} toolbarActions={actions} uniqueId={'id-'+this.props.block.key}/>
+              className={"draft-resizeable-wrapper" + (active ? ' active' : '')}
+              style={style}>
+            <Children {...this.state}
+                {...this.props}
+                align={this.align.bind(this)}
+                active={active}
+                actions={actions}
+                uniqueId={'id-'+this.props.block.key}/>
          </div>
       )
    }
 };
+// DefaultProps
 Wrapper.defaultProps = {
    horizontal: 'relative',
    vertical: false,
    resizeSteps: 5
 }
 
+// Export
 export default function WrapBlock(e, options){
    return (props)=>{
       return (
@@ -236,7 +255,7 @@ export default function WrapBlock(e, options){
    }
 }
 
-function round(x, steps)
-{
+// Helper for rounding (steps)
+function round(x, steps) {
    return Math.ceil(x/steps)*steps;
 }

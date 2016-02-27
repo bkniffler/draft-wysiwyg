@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {ResizeableWrapper, Tooltip, ToolbarBase} from '../../src';
+import {ResizeableWrapper, Toolbar} from '../../src';
 
 class Div extends Component {
    render(){
@@ -13,9 +13,7 @@ class Div extends Component {
       return (
          <div style={style} id={this.props.uniqueId}>
             Horizontal only
-            <Tooltip active={!!this.props.active} position="top" arrow="center" parent={"#"+this.props.uniqueId}>
-               <ToolbarBase actions={this.props.toolbarActions}/>
-            </Tooltip>
+            <Toolbar active={this.props.active} parent={"#"+this.props.uniqueId} actions={this.props.actions}/>
          </div>
       );
    }

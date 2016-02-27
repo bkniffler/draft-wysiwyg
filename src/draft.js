@@ -3,7 +3,8 @@ import {Editor, EditorState, CompositeDecorator, ContentState, convertToRaw, con
 import {Modifier, SelectionState, Entity, CharacterMetadata, ContentBlock, genKey, BlockMapBuilder} from "draft-js";
 import generateBlockKey from "draft-js/lib/generateBlockKey";
 import {List, Repeat} from 'immutable';
-import Tooltip from './components/tooltip'
+
+import Toolbar from './draft-toolbar'
 
 const decorator = new CompositeDecorator([]);
 
@@ -108,6 +109,12 @@ export default class ExtendedDraft extends Component {
       }
    }
 
+   renderToolbar(info, editorState, onChange){
+      return (
+         <Toolbar {...info} editorState={editorState} onChange={onChange}/>
+      );
+   }
+   
    render() {
       var drop = (e)=> {
          var blockKey = e.dataTransfer.getData("text");
@@ -135,13 +142,12 @@ export default class ExtendedDraft extends Component {
          }, 1);
       }
 
+      var renderToolbar = this.props.renderToolbar || this.renderToolbar;
       // Set drag/drop handlers to outer div as editor won't fire those
       return (
          <div onClick={this.focus} onDrop={drop} onMouseUp={this.mouseUp.bind(this)} onBlur={()=>{this.setState({toolbar: null, active: null})}}>
             <Editor editorState={this.state.value} onChange={this.onChange} ref="editor" blockRendererFn={this.blockRenderer.bind(this)}/>
-            {this.state.toolbar ? <Tooltip {...this.state.toolbar}>
-               {React.cloneElement(this.props.toolbar, {editorState: this.state.value, onChange: this.onChange.bind(this)})}
-            </Tooltip> : null}
+            {this.state.toolbar ? renderToolbar(this.state.toolbar, this.state.value, this.onChange.bind(this)) : null}
          </div>
       );
    }

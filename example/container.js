@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {Div, Div2, Data} from "./draft";
-import {Draft, Toolbar} from '../src';
+import {Draft, DraftToolbar} from '../src';
 
 Draft.DisableWarnings();
 
@@ -33,7 +33,7 @@ export default class Example extends React.Component {
     render() {
         const {data} = this.state;
         var draftToolbar = (
-            <Toolbar />
+            <DraftToolbar />
         );
         return (
             <div className="TexEditor-container">
