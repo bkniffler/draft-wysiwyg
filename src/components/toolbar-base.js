@@ -1,10 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import {Editor, EditorState, RichUtils} from "draft-js";
 
-if(typeof window !== 'undefined'){
-   require('./toolbar-base.css');
-}
-
 export default class DraftToolbar extends Component {
    constructor(props) {
       super(props);

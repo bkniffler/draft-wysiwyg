@@ -1,10 +1,10 @@
 import React from 'react';
 
-import Draft from './draft/index';
+import Draft from '../src/index';
 import {Content} from './data';
 import Div from "./blocks/resizeable-div";
 import Div2 from "./blocks/resizeable-div2";
-import DraftToolbar from "./draft/toolbar";
+import DraftToolbar from "../src/toolbar";
 
 Draft.DisableWarnings();
 
