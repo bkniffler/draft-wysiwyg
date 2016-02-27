@@ -5419,8 +5419,7 @@
 	                ),
 	                _react2.default.createElement(
 	                    'button',
-	                    { className: 'TeXEditor-insert2',
-	                        onClick: function onClick() {
+	                    { className: 'TeXEditor-insert2', onClick: function onClick() {
 	                            return _this2.setState({ data: _src.Draft.AddBlock(data, 'start', 'div2', {}, true) });
 	                        } },
 	                    'Add Horizontal only'
@@ -25219,10 +25218,6 @@
 
 	var _draftJs = __webpack_require__(353);
 
-	var _generateBlockKey = __webpack_require__(362);
-
-	var _generateBlockKey2 = _interopRequireDefault(_generateBlockKey);
-
 	var _immutable = __webpack_require__(355);
 
 	var _draftToolbar = __webpack_require__(489);
@@ -25239,44 +25234,38 @@
 
 	var decorator = new _draftJs.CompositeDecorator([]);
 
-	var ExtendedDraft = function (_Component) {
-	   _inherits(ExtendedDraft, _Component);
+	var DraftWysiwyg = function (_Component) {
+	   _inherits(DraftWysiwyg, _Component);
 
-	   function ExtendedDraft(props) {
-	      _classCallCheck(this, ExtendedDraft);
+	   function DraftWysiwyg(props) {
+	      _classCallCheck(this, DraftWysiwyg);
 
-	      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ExtendedDraft).call(this, props));
+	      // Create empty state and insert value from JSON if exists
+
+	      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DraftWysiwyg).call(this, props));
 
 	      var value = _draftJs.EditorState.createEmpty(decorator);
-
 	      if (props.value) {
 	         value = _draftJs.EditorState.push(value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(props.value)));
 	      }
 
+	      // Set value to state
 	      _this.state = { value: value, active: null };
-
-	      _this.focus = function () {
-	         return _this.refs.editor.focus();
-	      };
-	      _this.onChange = function (editorState) {
-	         _this.lastState = (0, _draftJs.convertToRaw)(editorState.getCurrentContent());
-	         if (props.updateValue) {
-	            props.updateValue(_this.lastState);
-	         }
-	         _this.setState({ value: editorState });
-	      };
 	      return _this;
 	   }
 
-	   _createClass(ExtendedDraft, [{
+	   _createClass(DraftWysiwyg, [{
 	      key: "shouldComponentUpdate",
 	      value: function shouldComponentUpdate(props, state) {
+	         // Don't update if new value in props, instead setState() with new value
 	         if (props.value !== this.lastState) {
 	            if (!props.value) {
+	               // No value? Empty
 	               this.setState({
 	                  value: _draftJs.EditorState.createEmpty(decorator)
 	               });
 	            } else {
+	               // Got value? Push it.
 	               this.setState({
 	                  value: _draftJs.EditorState.push(this.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(props.value)))
 	               });
@@ -25286,38 +25275,95 @@
 	         }
 	         return true;
 	      }
+
+	      // Focus
+
+	   }, {
+	      key: "focus",
+	      value: function focus() {
+	         this.refs.editor.focus();
+	      }
+
+	      // Remove toolbars and active blocks on blur
+
+	   }, {
+	      key: "blur",
+	      value: function blur() {
+	         this.setState({ toolbar: null, active: null });
+	      }
+
+	      // Propagate editorState changes to parent and to state
+
+	   }, {
+	      key: "updateValue",
+	      value: function updateValue(editorState) {
+	         this.lastState = (0, _draftJs.convertToRaw)(editorState.getCurrentContent());
+	         if (this.props.updateValue) {
+	            this.props.updateValue(this.lastState);
+	         }
+	         this.setState({ value: editorState });
+	      }
 	   }, {
 	      key: "mouseUp",
-	      value: function mouseUp(e) {
+
+
+	      // Track text-selection for toolbar
+	      value: function mouseUp() {
 	         var _this2 = this;
 
-	         if (!this.props.toolbar) {
-	            return;
-	         }
-	         function getSelected() {
-	            var t = '';
-	            if (window.getSelection) {
-	               t = window.getSelection();
-	            } else if (document.getSelection) {
-	               t = document.getSelection();
-	            } else if (document.selection) {
-	               t = document.selection.createRange().text;
-	            }
-	            return t;
-	         }
-
+	         // Insert timeout to allow selection to be up-to-date
 	         setTimeout(function () {
+	            // Get current selection (from draft)
 	            var selection = _this2.state.value.getSelection();
-	            var selected = getSelected();
-	            var rect = selected.getRangeAt(0).getBoundingClientRect();
-
+	            // Nothing selected? No toolbar please.
 	            if (selection.isCollapsed()) {
 	               return _this2.setState({ toolbar: null });
 	            } else {
+	               // Get current selection (natively)
+	               var selected = getSelected();
+	               // Get selection rectangle (position, size) and set to state
+	               var rect = selected.getRangeAt(0).getBoundingClientRect();
 	               _this2.setState({ toolbar: { left: rect.left, top: rect.top, width: rect.width } });
 	            }
 	         }, 1);
 	      }
+
+	      // Handle block dropping
+
+	   }, {
+	      key: "drop",
+	      value: function drop(e) {
+	         var _this3 = this;
+
+	         var blockKey = e.dataTransfer.getData("text");
+	         // Set timeout to allow cursor/selection to move to drop location
+	         setTimeout(function () {
+	            // Get content, selection, block
+	            var block = _this3.state.value.getCurrentContent().getBlockForKey(blockKey);
+	            var editorStateAfterInsert = DraftWysiwyg.AddBlock(_this3.state.value, null, block.getType(), _draftJs.Entity.get(block.getEntityAt(0)).data);
+
+	            block = editorStateAfterInsert.getCurrentContent().getBlockForKey(blockKey);
+	            // Get block range and remove dragged block
+	            var targetRange = new _draftJs.SelectionState({
+	               anchorKey: block.getKey(),
+	               anchorOffset: 0,
+	               focusKey: block.getKey(),
+	               focusOffset: block.getLength()
+	            });
+	            var afterRemoval = _draftJs.Modifier.removeRange(editorStateAfterInsert.getCurrentContent(), targetRange, 'backward');
+
+	            // Workaround, revious removeRange removed entity, but not the block
+	            var rawContent = (0, _draftJs.convertToRaw)(afterRemoval);
+	            rawContent.blocks = rawContent.blocks.filter(function (x) {
+	               return x.key !== block.getKey();
+	            });
+	            var newState = _draftJs.EditorState.push(_this3.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(rawContent)), 'remove-range');
+	            _this3.setState({ value: newState });
+	         }, 1);
+	      }
+
+	      // Helper function for blocks to set their own data
+
 	   }, {
 	      key: "setEntityData",
 	      value: function setEntityData(block, data) {
@@ -25325,30 +25371,37 @@
 	         if (entityKey) {
 	            _draftJs.Entity.mergeData(entityKey, _extends({}, data));
 	            // Force refresh
-	            this.onChange(_draftJs.EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
+	            this.updateValue(_draftJs.EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
 	         }
 	         return _extends({}, data);
 	      }
+
+	      // Handle block rendering and inject entity data, active state, setEntityData(), activate() to blockProps
+
 	   }, {
 	      key: "blockRenderer",
 	      value: function blockRenderer(contentBlock) {
-	         var _this3 = this;
+	         var _this4 = this;
 
 	         var entityKey = contentBlock.getEntityAt(0);
 	         var data = entityKey ? _draftJs.Entity.get(entityKey).data : {};
 
+	         // Rely on renderBlock of parent
 	         if (this.props.renderBlock) {
 	            return this.props.renderBlock(contentBlock, _extends({}, data, {
 	               setEntityData: this.setEntityData.bind(this),
 	               activate: function activate(active) {
-	                  _this3.setState({ active: active ? contentBlock.key : null });
+	                  _this4.setState({ active: active ? contentBlock.key : null });
 	                  // Force refresh
-	                  _this3.onChange(_draftJs.EditorState.createWithContent(_this3.state.value.getCurrentContent(), decorator));
+	                  _this4.updateValue(_draftJs.EditorState.createWithContent(_this4.state.value.getCurrentContent(), decorator));
 	               },
 	               active: this.state.active === contentBlock.key
 	            }));
 	         }
 	      }
+
+	      // Render the default-toolbar
+
 	   }, {
 	      key: "renderToolbar",
 	      value: function renderToolbar(info, editorState, onChange) {
@@ -25357,56 +25410,31 @@
 	   }, {
 	      key: "render",
 	      value: function render() {
-	         var _this4 = this;
-
-	         var drop = function drop(e) {
-	            var blockKey = e.dataTransfer.getData("text");
-	            // Set timeout to allow cursor/selection to move to drop location
-	            setTimeout(function () {
-	               // Get content, selection, block
-	               var block = _this4.state.value.getCurrentContent().getBlockForKey(blockKey);
-	               var editorStateAfterInsert = ExtendedDraft.AddBlock(_this4.state.value, null, block.getType(), _draftJs.Entity.get(block.getEntityAt(0)).data);
-
-	               block = editorStateAfterInsert.getCurrentContent().getBlockForKey(blockKey);
-	               // Get block range and remove dragged block
-	               var targetRange = new _draftJs.SelectionState({
-	                  anchorKey: block.getKey(),
-	                  anchorOffset: 0,
-	                  focusKey: block.getKey(),
-	                  focusOffset: block.getLength()
-	               });
-	               var afterRemoval = _draftJs.Modifier.removeRange(editorStateAfterInsert.getCurrentContent(), targetRange, 'backward');
-
-	               // Workaround, revious removeRange removed entity, but not the block
-	               var rawContent = (0, _draftJs.convertToRaw)(afterRemoval);
-	               rawContent.blocks = rawContent.blocks.filter(function (x) {
-	                  return x.key !== block.getKey();
-	               });
-	               var newState = _draftJs.EditorState.push(_this4.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(rawContent)), 'remove-range');
-	               _this4.setState({ value: newState });
-	            }, 1);
-	         };
-
 	         var renderToolbar = this.props.renderToolbar || this.renderToolbar;
 	         // Set drag/drop handlers to outer div as editor won't fire those
 	         return _react2.default.createElement(
 	            "div",
-	            { onClick: this.focus, onDrop: drop, onMouseUp: this.mouseUp.bind(this), onBlur: function onBlur() {
-	                  _this4.setState({ toolbar: null, active: null });
-	               } },
-	            _react2.default.createElement(_draftJs.Editor, { editorState: this.state.value, onChange: this.onChange, ref: "editor", blockRendererFn: this.blockRenderer.bind(this) }),
-	            this.state.toolbar ? renderToolbar(this.state.toolbar, this.state.value, this.onChange.bind(this)) : null
+	            { onClick: this.focus.bind(this), onDrop: this.drop.bind(this), onMouseUp: this.mouseUp.bind(this), onBlur: this.blur.bind(this) },
+	            _react2.default.createElement(_draftJs.Editor, { editorState: this.state.value, onChange: this.updateValue.bind(this), ref: "editor", blockRendererFn: this.blockRenderer.bind(this) }),
+	            this.state.toolbar ? renderToolbar(this.state.toolbar, this.state.value, this.updateValue.bind(this)) : null
 	         );
 	      }
 	   }]);
 
-	   return ExtendedDraft;
+	   return DraftWysiwyg;
 	}(_react.Component);
 
-	exports.default = ExtendedDraft;
+	exports.default = DraftWysiwyg;
 
 
-	ExtendedDraft.DisableWarnings = function () {
+	DraftWysiwyg.defaultProps = {
+	   renderBlock: null,
+	   renderToolbar: null,
+	   value: null,
+	   updateValue: null
+	};
+
+	DraftWysiwyg.DisableWarnings = function () {
 	   var consoleError = console.error;
 	   console.error = function (err) {
 	      if (err !== 'Warning: A component is `contentEditable` and contains `children` managed by React. It is now your responsibility to guarantee that none of those nodes are unexpectedly modified or duplicated. This is probably not intentional.') {
@@ -25414,8 +25442,9 @@
 	      }
 	   };
 	};
-	ExtendedDraft.GenerateBlockKey = _generateBlockKey2.default;
-	ExtendedDraft.AddBlock = function (editorState, selection, type, data, asJson) {
+
+	// Expose AddBlock helper function to allow adding blocks externally, easily
+	DraftWysiwyg.AddBlock = function (editorState, selection, type, data, asJson) {
 	   // Get editorstate
 	   // If none -> get empty
 	   if (!editorState) {
@@ -25498,6 +25527,19 @@
 	   // Return default
 	   return editorState;
 	};
+
+	// Helper function
+	function getSelected() {
+	   var t = '';
+	   if (window.getSelection) {
+	      t = window.getSelection();
+	   } else if (document.getSelection) {
+	      t = document.getSelection();
+	   } else if (document.selection) {
+	      t = document.selection.createRange().text;
+	   }
+	   return t;
+	}
 
 /***/ },
 /* 353 */

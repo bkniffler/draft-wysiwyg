@@ -39,15 +39,14 @@ export default class Example extends React.Component {
             <div className="TexEditor-container">
                 <div className="TeXEditor-root">
                     <div className="TeXEditor-editor">
-                        <Draft toolbar={draftToolbar} renderBlock={this.renderBlock.bind(this)} updateValue={(v)=>this.setState({data:v})} value={data}/>
+                        <Draft toolbar={draftToolbar} renderBlock={::this.renderBlock} updateValue={(v)=>this.setState({data:v})} value={data}/>
                     </div>
                 </div>
 
                 <button className="TeXEditor-insert" onClick={()=>this.setState({data: Draft.AddBlock(data, 'end', 'div', {}, true)})}>
                     Horizontal+Vertical
                 </button>
-                <button className="TeXEditor-insert2"
-                        onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'div2', {}, true)})}>Add
+                <button className="TeXEditor-insert2" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'div2', {}, true)})}>Add
                     Horizontal only
                 </button>
 

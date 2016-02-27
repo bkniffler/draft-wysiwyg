@@ -221,17 +221,17 @@ class Wrapper extends Component {
 
       return (
          <div ref="div"
-              onClick={this.click.bind(this)}
-              onMouseMove={this.move.bind(this)}
-              onMouseDown={this.mouseDown.bind(this)}
-              onDragStart={this.startDrag.bind(this)}
+              onClick={::this.click}
+              onMouseMove={::this.move}
+              onMouseDown={::this.mouseDown}
+              onDragStart={::this.startDrag}
               contentEditable="false"
               draggable={!resize}
               className={"draft-resizeable-wrapper" + (active ? ' active' : '')}
               style={style}>
             <Children {...this.state}
                 {...this.props}
-                align={this.align.bind(this)}
+                align={::this.align}
                 active={active}
                 actions={actions}
                 uniqueId={'id-'+this.props.block.key}/>
