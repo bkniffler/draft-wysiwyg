@@ -16,6 +16,7 @@ import {
 } from "draft-js";
 import generateBlockKey from "draft-js/lib/generateBlockKey";
 import {List, Repeat} from 'immutable';
+import ToolTip from './tooltip'
 
 const decorator = new CompositeDecorator([]);
 
@@ -61,32 +62,31 @@ export default class DragDropDraft extends Component {
       return true;
    }
 
-   mouseUp(e){
-      /*if(this.state.toolbox){
-         return;
-      }*/
-      /*
-       function getSelected(){
-       var t = '';
-       if(window.getSelection){
-       t = window.getSelection();
-       }else if(document.getSelection){
-       t = document.getSelection();
-       }else if(document.selection){
-       t = document.selection.createRange().text;
-       }
-       return t;//.toString()
-       }
-       setTimeout(()=>{
+   mouseUp(e) {
+      function getSelected() {
+         var t = '';
+         if (window.getSelection) {
+            t = window.getSelection();
+         } else if (document.getSelection) {
+            t = document.getSelection();
+         } else if (document.selection) {
+            t = document.selection.createRange().text;
+         }
+         return t;
+      }
+
+      setTimeout(()=> {
          var selection = this.state.value.getSelection();
-         console.log(getSelected());
-         if(selection.isCollapsed()){
+         var selected = getSelected();
+         var rect = selected.getRangeAt(0).getBoundingClientRect();
+
+         if (selection.isCollapsed()) {
             return this.setState({toolbox: null});
          }
-         else{
-            this.setState({toolbox: selection.anchorKey});
+         else {
+            this.setState({toolbox: {left: rect.left, top: rect.top, width: rect.width}});
          }
-      }, 100)*/
+      }, 1)
    }
 
    setEntityData(block, data){
@@ -141,9 +141,9 @@ export default class DragDropDraft extends Component {
       return (
          <div onClick={this.focus} onDrop={drop} onMouseUp={this.mouseUp.bind(this)} id="asd">
             <Editor editorState={this.state.value} onChange={this.onChange} ref="editor"  blockRendererFn={this.myBlockRenderer.bind(this)}/>
-            {/*<ToolTip active={!!this.state.toolbox} position="top" arrow="center" parent={"span[data-offset-key='"+this.state.toolbox+"-0-0']"}>
+            {this.state.toolbox ? <ToolTip {...this.state.toolbox}>
                Hallo
-            </ToolTip>*/}
+            </ToolTip> : null}
          </div>
       );
    }
