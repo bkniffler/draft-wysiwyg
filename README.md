@@ -18,7 +18,6 @@ node server.js
 ```
 
 ## Usage
-You can also use it in your own project, but its too early yet for a real how-to/documentation
 Just check out:
 - Importing/using the custom draft editor: https://github.com/bkniffler/draft-js-drag-drop/blob/master/js/container.js
 - Wrapping blocks: https://github.com/bkniffler/draft-js-drag-drop/blob/master/js/blocks/resizeable-div.js
