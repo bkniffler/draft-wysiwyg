@@ -19,8 +19,8 @@ node server.js
 
 ## Usage
 Just check out:
-- Importing/using the custom draft editor: https://github.com/bkniffler/draft-js-drag-drop/blob/master/js/container.js
-- Wrapping blocks: https://github.com/bkniffler/draft-js-drag-drop/blob/master/js/blocks/resizeable-div.js
+- Importing/using the custom draft editor: https://github.com/bkniffler/draft-wysiwyg/blob/master/js/container.js
+- Wrapping blocks: https://github.com/bkniffler/draft-wysiwyg/blob/master/js/blocks/resizeable-div.js
 
 ## Todo
 There is a lot of stuff that needs to be done
