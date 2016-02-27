@@ -4,7 +4,7 @@
   "main": "./lib",
   "scripts": {
     "start": "node ./example",
-    "build": "babel --presets es2015,react src/ --out-dir lib/",
+    "build": "babel --presets es2015,stage-0,react src/ --out-dir lib/",
     "heroku": "git push heroku master",
     "start:production": "NODE_ENV=production node ./example",
     "build:example": "webpack --config example/webpack.js",
