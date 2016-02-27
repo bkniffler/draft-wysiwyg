@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node ./server.js",
     "build": "webpack --config webpack.js",
-    "start-prod": "NODE_ENV=production server.js",
+    "start-prod": "NODE_ENV=production node ./server.js",
     "xxpostinstall": "npm install ../.."
   },
   "dependencies": {

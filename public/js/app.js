@@ -5368,13 +5368,13 @@
 
 	var _componentsDraft2 = _interopRequireDefault(_componentsDraft);
 
-	var _dataContent = __webpack_require__(487);
+	var _dataContent = __webpack_require__(490);
 
-	var _blocksResizeableDiv = __webpack_require__(488);
+	var _blocksResizeableDiv = __webpack_require__(491);
 
 	var _blocksResizeableDiv2 = _interopRequireDefault(_blocksResizeableDiv);
 
-	var _blocksResizeableDiv22 = __webpack_require__(493);
+	var _blocksResizeableDiv22 = __webpack_require__(496);
 
 	var _blocksResizeableDiv23 = _interopRequireDefault(_blocksResizeableDiv22);
 
@@ -24989,6 +24989,10 @@
 
 	var _immutable = __webpack_require__(353);
 
+	var _tooltip = __webpack_require__(487);
+
+	var _tooltip2 = _interopRequireDefault(_tooltip);
+
 	var decorator = new _draftJs.CompositeDecorator([]);
 
 	var DragDropDraft = (function (_Component) {
@@ -25041,31 +25045,31 @@
 	   }, {
 	      key: "mouseUp",
 	      value: function mouseUp(e) {
-	         /*if(this.state.toolbox){
-	            return;
-	         }*/
-	         /*
-	          function getSelected(){
-	          var t = '';
-	          if(window.getSelection){
-	          t = window.getSelection();
-	          }else if(document.getSelection){
-	          t = document.getSelection();
-	          }else if(document.selection){
-	          t = document.selection.createRange().text;
-	          }
-	          return t;//.toString()
-	          }
-	          setTimeout(()=>{
-	            var selection = this.state.value.getSelection();
-	            console.log(getSelected());
-	            if(selection.isCollapsed()){
-	               return this.setState({toolbox: null});
+	         var _this2 = this;
+
+	         function getSelected() {
+	            var t = '';
+	            if (window.getSelection) {
+	               t = window.getSelection();
+	            } else if (document.getSelection) {
+	               t = document.getSelection();
+	            } else if (document.selection) {
+	               t = document.selection.createRange().text;
 	            }
-	            else{
-	               this.setState({toolbox: selection.anchorKey});
+	            return t;
+	         }
+
+	         setTimeout(function () {
+	            var selection = _this2.state.value.getSelection();
+	            var selected = getSelected();
+	            var rect = selected.getRangeAt(0).getBoundingClientRect();
+
+	            if (selection.isCollapsed()) {
+	               return _this2.setState({ toolbox: null });
+	            } else {
+	               _this2.setState({ toolbox: { left: rect.left, top: rect.top, width: rect.width } });
 	            }
-	         }, 100)*/
+	         }, 1);
 	      }
 	   }, {
 	      key: "setEntityData",
@@ -25092,15 +25096,15 @@
 	   }, {
 	      key: "render",
 	      value: function render() {
-	         var _this2 = this;
+	         var _this3 = this;
 
 	         var drop = function drop(e) {
 	            var blockKey = e.dataTransfer.getData("text");
 	            // Set timeout to allow cursor/selection to move to drop location
 	            setTimeout(function () {
 	               // Get content, selection, block
-	               var block = _this2.state.value.getCurrentContent().getBlockForKey(blockKey);
-	               var editorStateAfterInsert = DragDropDraft.AddBlock(_this2.state.value, null, block.getType(), _draftJs.Entity.get(block.getEntityAt(0)).data);
+	               var block = _this3.state.value.getCurrentContent().getBlockForKey(blockKey);
+	               var editorStateAfterInsert = DragDropDraft.AddBlock(_this3.state.value, null, block.getType(), _draftJs.Entity.get(block.getEntityAt(0)).data);
 
 	               block = editorStateAfterInsert.getCurrentContent().getBlockForKey(blockKey);
 	               // Get block range and remove dragged block
@@ -25117,8 +25121,8 @@
 	               rawContent.blocks = rawContent.blocks.filter(function (x) {
 	                  return x.key !== block.getKey();
 	               });
-	               var newState = _draftJs.EditorState.push(_this2.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(rawContent)), 'remove-range');
-	               _this2.setState({ value: newState });
+	               var newState = _draftJs.EditorState.push(_this3.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(rawContent)), 'remove-range');
+	               _this3.setState({ value: newState });
 	            }, 1);
 	         };
 
@@ -25126,7 +25130,12 @@
 	         return _react2["default"].createElement(
 	            "div",
 	            { onClick: this.focus, onDrop: drop, onMouseUp: this.mouseUp.bind(this), id: "asd" },
-	            _react2["default"].createElement(_draftJs.Editor, { editorState: this.state.value, onChange: this.onChange, ref: "editor", blockRendererFn: this.myBlockRenderer.bind(this) })
+	            _react2["default"].createElement(_draftJs.Editor, { editorState: this.state.value, onChange: this.onChange, ref: "editor", blockRendererFn: this.myBlockRenderer.bind(this) }),
+	            this.state.toolbox ? _react2["default"].createElement(
+	               _tooltip2["default"],
+	               this.state.toolbox,
+	               "Hallo"
+	            ) : null
 	         );
 	      }
 	   }]);
@@ -25221,9 +25230,6 @@
 	   return editorState;
 	};
 	module.exports = exports["default"];
-	/*<ToolTip active={!!this.state.toolbox} position="top" arrow="center" parent={"span[data-offset-key='"+this.state.toolbox+"-0-0']"}>
-	  Hallo
-	</ToolTip>*/
 
 /***/ },
 /* 351 */
@@ -42796,6 +42802,388 @@
 /* 487 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	   value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var _react = __webpack_require__(194);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactPortal = __webpack_require__(488);
+
+	var _reactPortal2 = _interopRequireDefault(_reactPortal);
+
+	var _reactDom = __webpack_require__(398);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var Tooltip = (function (_Component) {
+	   _inherits(Tooltip, _Component);
+
+	   function Tooltip(props) {
+	      _classCallCheck(this, Tooltip);
+
+	      _get(Object.getPrototypeOf(Tooltip.prototype), 'constructor', this).call(this, props);
+	      this.state = {};
+	   }
+
+	   _createClass(Tooltip, [{
+	      key: 'shouldComponentUpdate',
+	      value: function shouldComponentUpdate(newProps, newState) {
+	         if (this.update) {
+	            this.update = false;
+	            return true;
+	         }
+	         if (this.props.parent !== newProps.parent) {
+	            this.update = true;
+	            return true;
+	         }
+	         if (this.props.top !== newProps.top) {
+	            this.update = true;
+	            return true;
+	         }
+	         if (this.props.left !== newProps.left) {
+	            this.update = true;
+	            return true;
+	         }
+	         return false;
+	      }
+	   }, {
+	      key: 'componentDidMount',
+	      value: function componentDidMount() {
+	         var _props = this.props;
+	         var left = _props.left;
+	         var top = _props.top;
+	         var width = _props.width;
+
+	         if (this.props.parent) {
+	            var parentEl = document.querySelector(this.props.parent);
+	            if (!parentEl) {
+	               return;
+	            }
+	            var rect = parentEl.getBoundingClientRect();
+	            left = rect.left, top = rect.top, width = rect.width;
+	         }
+	         this.update = true;
+
+	         var ref = _reactDom2['default'].findDOMNode(this.refs.tooltip);
+	         console.log(ref);
+	         if (ref) {
+	            var refRect = ref.getBoundingClientRect();
+	            this.setState({
+	               top: top - refRect.height,
+	               left: left - refRect.width / 2 + width / 2
+	            });
+	         }
+	      }
+	   }, {
+	      key: 'componentDidUpdate',
+	      value: function componentDidUpdate() {
+	         if (this.update) {
+	            this.update = false;
+	            this.componentDidMount();
+	         }
+	      }
+	   }, {
+	      key: 'render',
+	      value: function render() {
+	         var visible = this.state.top && this.state.left;
+	         return _react2['default'].createElement(
+	            _reactPortal2['default'],
+	            { isOpened: true },
+	            _react2['default'].createElement(
+	               'div',
+	               { ref: 'tooltip', style: { width: '100px', height: '25px', zIndex: 3, backgroundColor: 'black', position: 'absolute', left: this.state.left + 'px', top: this.state.top + 'px' } },
+	               this.props.children
+	            )
+	         );
+	      }
+	   }]);
+
+	   return Tooltip;
+	})(_react.Component);
+
+	exports['default'] = Tooltip;
+	module.exports = exports['default'];
+
+/***/ },
+/* 488 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(194);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(398);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _CSSPropertyOperations = __webpack_require__(288);
+
+	var _CSSPropertyOperations2 = _interopRequireDefault(_CSSPropertyOperations);
+
+	var _shallowCompare = __webpack_require__(489);
+
+	var _shallowCompare2 = _interopRequireDefault(_shallowCompare);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var KEYCODES = {
+	  ESCAPE: 27
+	};
+
+	var Portal = function (_React$Component) {
+	  _inherits(Portal, _React$Component);
+
+	  function Portal() {
+	    _classCallCheck(this, Portal);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Portal).call(this));
+
+	    _this.state = { active: false };
+	    _this.handleWrapperClick = _this.handleWrapperClick.bind(_this);
+	    _this.closePortal = _this.closePortal.bind(_this);
+	    _this.handleOutsideMouseClick = _this.handleOutsideMouseClick.bind(_this);
+	    _this.handleKeydown = _this.handleKeydown.bind(_this);
+	    _this.portal = null;
+	    _this.node = null;
+	    return _this;
+	  }
+
+	  _createClass(Portal, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      if (this.props.closeOnEsc) {
+	        document.addEventListener('keydown', this.handleKeydown);
+	      }
+
+	      if (this.props.closeOnOutsideClick) {
+	        document.addEventListener('mousedown', this.handleOutsideMouseClick);
+	        document.addEventListener('touchstart', this.handleOutsideMouseClick);
+	      }
+
+	      if (this.props.isOpened) {
+	        this.openPortal();
+	      }
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(newProps) {
+	      // portal's 'is open' state is handled through the prop isOpened
+	      if (typeof newProps.isOpened !== 'undefined') {
+	        if (newProps.isOpened) {
+	          if (this.state.active) {
+	            this.renderPortal(newProps);
+	          } else {
+	            this.openPortal(newProps);
+	          }
+	        }
+	        if (!newProps.isOpened && this.state.active) {
+	          this.closePortal();
+	        }
+	      }
+
+	      // portal handles its own 'is open' state
+	      if (typeof newProps.isOpened === 'undefined' && this.state.active) {
+	        this.renderPortal(newProps);
+	      }
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      if (this.props.closeOnEsc) {
+	        document.removeEventListener('keydown', this.handleKeydown);
+	      }
+
+	      if (this.props.closeOnOutsideClick) {
+	        document.removeEventListener('mousedown', this.handleOutsideMouseClick);
+	        document.removeEventListener('touchstart', this.handleOutsideMouseClick);
+	      }
+
+	      this.closePortal();
+	    }
+	  }, {
+	    key: 'shouldComponentUpdate',
+	    value: function shouldComponentUpdate(nextProps, nextState) {
+	      return (0, _shallowCompare2.default)(this, nextProps, nextState);
+	    }
+	  }, {
+	    key: 'renderPortal',
+	    value: function renderPortal(props) {
+	      if (!this.node) {
+	        this.node = document.createElement('div');
+	        if (props.className) {
+	          this.node.className = props.className;
+	        }
+	        if (props.style) {
+	          _CSSPropertyOperations2.default.setValueForStyles(this.node, props.style);
+	        }
+	        document.body.appendChild(this.node);
+	      }
+	      this.portal = _reactDom2.default.unstable_renderSubtreeIntoContainer(this, _react2.default.cloneElement(props.children, { closePortal: this.closePortal }), this.node, this.props.onUpdate);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      if (this.props.openByClickOn) {
+	        return _react2.default.cloneElement(this.props.openByClickOn, { onClick: this.handleWrapperClick });
+	      } else {
+	        return null;
+	      }
+	    }
+	  }, {
+	    key: 'handleWrapperClick',
+	    value: function handleWrapperClick(e) {
+	      e.preventDefault();
+	      e.stopPropagation();
+	      this.openPortal();
+	    }
+	  }, {
+	    key: 'openPortal',
+	    value: function openPortal() {
+	      var props = arguments.length <= 0 || arguments[0] === undefined ? this.props : arguments[0];
+
+	      this.setState({ active: true });
+	      this.renderPortal(props);
+
+	      this.props.onOpen(this.node);
+	    }
+	  }, {
+	    key: 'closePortal',
+	    value: function closePortal() {
+	      var _this2 = this;
+
+	      var resetPortalState = function resetPortalState() {
+	        if (_this2.node) {
+	          _reactDom2.default.unmountComponentAtNode(_this2.node);
+	          document.body.removeChild(_this2.node);
+	        }
+	        _this2.portal = null;
+	        _this2.node = null;
+	        _this2.setState({ active: false });
+	      };
+
+	      if (this.state.active) {
+	        if (this.props.beforeClose) {
+	          this.props.beforeClose(this.node, resetPortalState);
+	        } else {
+	          resetPortalState();
+	        }
+
+	        this.props.onClose();
+	      }
+	    }
+	  }, {
+	    key: 'handleOutsideMouseClick',
+	    value: function handleOutsideMouseClick(e) {
+	      if (!this.state.active) {
+	        return;
+	      }
+
+	      var root = (0, _reactDom.findDOMNode)(this.portal);
+	      if (root.contains(e.target) || e.target.tagName === 'HTML') {
+	        return;
+	      }
+
+	      e.stopPropagation();
+	      this.closePortal();
+	    }
+	  }, {
+	    key: 'handleKeydown',
+	    value: function handleKeydown(e) {
+	      if (e.keyCode === KEYCODES.ESCAPE && this.state.active) {
+	        this.closePortal();
+	      }
+	    }
+	  }]);
+
+	  return Portal;
+	}(_react2.default.Component);
+
+	exports.default = Portal;
+
+	Portal.propTypes = {
+	  className: _react2.default.PropTypes.string,
+	  style: _react2.default.PropTypes.object,
+	  children: _react2.default.PropTypes.element.isRequired,
+	  openByClickOn: _react2.default.PropTypes.element,
+	  closeOnEsc: _react2.default.PropTypes.bool,
+	  closeOnOutsideClick: _react2.default.PropTypes.bool,
+	  isOpened: _react2.default.PropTypes.bool,
+	  onOpen: _react2.default.PropTypes.func,
+	  onClose: _react2.default.PropTypes.func,
+	  beforeClose: _react2.default.PropTypes.func,
+	  onUpdate: _react2.default.PropTypes.func
+	};
+
+	Portal.defaultProps = {
+	  onOpen: function onOpen() {},
+	  onClose: function onClose() {},
+	  onUpdate: function onUpdate() {}
+	};
+	module.exports = exports['default'];
+
+
+/***/ },
+/* 489 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	* @providesModule shallowCompare
+	*/
+
+	'use strict';
+
+	var shallowEqual = __webpack_require__(309);
+
+	/**
+	 * Does a shallow comparison for props and state.
+	 * See ReactComponentWithPureRenderMixin
+	 */
+	function shallowCompare(instance, nextProps, nextState) {
+	  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
+	}
+
+	module.exports = shallowCompare;
+
+/***/ },
+/* 490 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/**
 	 * Copyright (c) 2013-present, Facebook, Inc. All rights reserved.
 	 *
@@ -42898,7 +43286,7 @@
 	exports.content = content;
 
 /***/ },
-/* 488 */
+/* 491 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -42921,11 +43309,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactPortalTooltip = __webpack_require__(489);
+	var _reactPortalTooltip = __webpack_require__(492);
 
 	var _reactPortalTooltip2 = _interopRequireDefault(_reactPortalTooltip);
 
-	var _componentsResizeableWrapper = __webpack_require__(492);
+	var _componentsResizeableWrapper = __webpack_require__(495);
 
 	var _componentsResizeableWrapper2 = _interopRequireDefault(_componentsResizeableWrapper);
 
@@ -42970,7 +43358,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 489 */
+/* 492 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43001,11 +43389,11 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
-	var _isClient = __webpack_require__(490);
+	var _isClient = __webpack_require__(493);
 
 	var _isClient2 = _interopRequireDefault(_isClient);
 
-	var _objectAssign = __webpack_require__(491);
+	var _objectAssign = __webpack_require__(494);
 
 	var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
@@ -43486,7 +43874,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 490 */
+/* 493 */
 /***/ function(module, exports) {
 
 	/**
@@ -43508,7 +43896,7 @@
 	}
 
 /***/ },
-/* 491 */
+/* 494 */
 /***/ function(module, exports) {
 
 	/* eslint-disable no-unused-vars */
@@ -43553,7 +43941,7 @@
 
 
 /***/ },
-/* 492 */
+/* 495 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43818,7 +44206,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 493 */
+/* 496 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -43841,11 +44229,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _componentsResizeableWrapper = __webpack_require__(492);
+	var _componentsResizeableWrapper = __webpack_require__(495);
 
 	var _componentsResizeableWrapper2 = _interopRequireDefault(_componentsResizeableWrapper);
 
-	var _reactPortalTooltip = __webpack_require__(489);
+	var _reactPortalTooltip = __webpack_require__(492);
 
 	var _reactPortalTooltip2 = _interopRequireDefault(_reactPortalTooltip);
 

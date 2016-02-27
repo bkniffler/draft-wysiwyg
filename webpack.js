@@ -11,5 +11,5 @@ module.exports = {
             }
         ]
     },
-    output: {filename: 'app.js', path: './public'}
+    output: {filename: 'app.js', path: './public/js'}
 }
