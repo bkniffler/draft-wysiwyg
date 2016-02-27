@@ -1,10 +1,10 @@
 {
   "name": "draft-wysiwyg",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "./lib",
   "scripts": {
     "start": "node ./example",
-    "build": "babel --presets es2015,react --watch src/ --out-dir lib/",
+    "build": "babel --presets es2015,react src/ --out-dir lib/",
     "heroku": "git push heroku master",
     "start:production": "NODE_ENV=production node ./example",
     "build:example": "webpack --config example/webpack.js",
