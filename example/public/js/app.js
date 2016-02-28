@@ -5386,6 +5386,16 @@
 	                    component: _draft.Div2,
 	                    props: props
 	                };
+	            } else if (type === 'header-one') {
+	                return {
+	                    component: _draft.Header1,
+	                    props: props
+	                };
+	            } else if (type === 'youtube') {
+	                return {
+	                    component: _draft.Youtube,
+	                    props: props
+	                };
 	            }
 	        }
 	    }, {
@@ -5423,6 +5433,13 @@
 	                            return _this2.setState({ data: _src.Draft.AddBlock(data, 'start', 'div2', {}, true) });
 	                        } },
 	                    'Add Horizontal only'
+	                ),
+	                _react2.default.createElement(
+	                    'button',
+	                    { className: 'TeXEditor-insert3', onClick: function onClick() {
+	                            return _this2.setState({ data: _src.Draft.AddBlock(data, 'start', 'youtube', {}, true) });
+	                        } },
+	                    'Add Youtube'
 	                ),
 	                _react2.default.createElement(
 	                    'pre',
@@ -24942,7 +24959,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Div2 = exports.Div = exports.Data = undefined;
+	exports.Header1 = exports.Youtube = exports.Div2 = exports.Div = exports.Data = undefined;
 
 	var _data = __webpack_require__(349);
 
@@ -24956,11 +24973,21 @@
 
 	var _resizeableDiv4 = _interopRequireDefault(_resizeableDiv3);
 
+	var _youtube = __webpack_require__(496);
+
+	var _youtube2 = _interopRequireDefault(_youtube);
+
+	var _header = __webpack_require__(497);
+
+	var _header2 = _interopRequireDefault(_header);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.Data = _data2.default;
 	exports.Div = _resizeableDiv2.default;
 	exports.Div2 = _resizeableDiv4.default;
+	exports.Youtube = _youtube2.default;
+	exports.Header1 = _header2.default;
 
 /***/ },
 /* 349 */
@@ -24972,41 +24999,35 @@
 	  "entityMap": {
 	    "0": {
 	      "type": "TOKEN",
-	      "mutability": "IMMUTABLE",
+	      "mutability": "MUTABLE",
 	      "data": {
-	        "width": 20,
-	        "height": 36
+	        "width": 50,
+	        "height": 140
 	      }
 	    },
 	    "1": {
 	      "type": "TOKEN",
-	      "mutability": "IMMUTABLE",
+	      "mutability": "MUTABLE",
 	      "data": {
-	        "width": 40,
-	        "height": 130,
+	        "width": 20,
+	        "height": null,
 	        "align": "left"
 	      }
 	    },
 	    "2": {
 	      "type": "TOKEN",
-	      "mutability": "IMMUTABLE",
+	      "mutability": "MUTABLE",
 	      "data": {
 	        "width": 40,
-	        "height": 100
+	        "height": 130,
+	        "align": "right"
 	      }
 	    }
 	  },
 	  "blocks": [{
-	    "key": "71pp6",
-	    "text": "",
-	    "type": "unstyled",
-	    "depth": 0,
-	    "inlineStyleRanges": [],
-	    "entityRanges": []
-	  }, {
-	    "key": "fmu97",
+	    "key": "a62e1",
 	    "text": " ",
-	    "type": "div2",
+	    "type": "div",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": [{
@@ -25015,21 +25036,57 @@
 	      "key": 0
 	    }]
 	  }, {
-	    "key": "a62e1",
-	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-	    "type": "unstyled",
-	    "depth": 0,
-	    "inlineStyleRanges": [],
-	    "entityRanges": []
-	  }, {
-	    "key": "8rik3",
+	    "key": "1ahm2",
 	    "text": "",
 	    "type": "unstyled",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
 	  }, {
-	    "key": "4p2s5",
+	    "key": "50cnm",
+	    "text": " ",
+	    "type": "youtube",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": [{
+	      "offset": 0,
+	      "length": 1,
+	      "key": 1
+	    }]
+	  }, {
+	    "key": "9506i",
+	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor ",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "etnh0",
+	    "text": "invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam era",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [{
+	      "offset": 215,
+	      "length": 5,
+	      "style": "BOLD"
+	    }],
+	    "entityRanges": []
+	  }, {
+	    "key": "fqoij",
+	    "text": "t, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "6eq26",
+	    "text": "",
+	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "b15f2",
 	    "text": "",
 	    "type": "unstyled",
 	    "depth": 0,
@@ -25044,7 +25101,7 @@
 	    "entityRanges": [{
 	      "offset": 0,
 	      "length": 1,
-	      "key": 1
+	      "key": 2
 	    }]
 	  }, {
 	    "key": "19gd8",
@@ -25060,17 +25117,6 @@
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
-	  }, {
-	    "key": "5ka8o",
-	    "text": " ",
-	    "type": "div",
-	    "depth": 0,
-	    "inlineStyleRanges": [],
-	    "entityRanges": [{
-	      "offset": 0,
-	      "length": 1,
-	      "key": 2
-	    }]
 	  }, {
 	    "key": "71vti",
 	    "text": "",
@@ -25338,6 +25384,7 @@
 	         var blockKey = e.dataTransfer.getData("text");
 	         // Set timeout to allow cursor/selection to move to drop location
 	         setTimeout(function () {
+	            console.log('Go2');
 	            // Get content, selection, block
 	            var block = _this3.state.value.getCurrentContent().getBlockForKey(blockKey);
 	            var editorStateAfterInsert = DraftWysiwyg.AddBlock(_this3.state.value, null, block.getType(), _draftJs.Entity.get(block.getEntityAt(0)).data);
@@ -25350,9 +25397,10 @@
 	               focusKey: block.getKey(),
 	               focusOffset: block.getLength()
 	            });
+	            console.log(targetRange);
 	            var afterRemoval = _draftJs.Modifier.removeRange(editorStateAfterInsert.getCurrentContent(), targetRange, 'backward');
 
-	            // Workaround, revious removeRange removed entity, but not the block
+	            // Workaround, removeRange removed entity, but not the block
 	            var rawContent = (0, _draftJs.convertToRaw)(afterRemoval);
 	            rawContent.blocks = rawContent.blocks.filter(function (x) {
 	               return x.key !== block.getKey();
@@ -25491,6 +25539,7 @@
 	   }
 	   // If dropped next to empty
 	   else {
+	         console.log('Go1', selectionState);
 	         var afterRemoval = _draftJs.Modifier.removeRange(contentState, selectionState, 'backward');
 	         var targetSelection = afterRemoval.getSelectionAfter();
 	         var afterSplit = _draftJs.Modifier.splitBlock(afterRemoval, targetSelection);
@@ -32164,6 +32213,7 @@
 
 	      var startEntity = block.getEntityAt(startOffset);
 	      var endEntity = block.getEntityAt(endOffset - 1);
+	      console.log(startEntity);
 	      if (startEntity && startEntity === endEntity) {
 	        var adjustedRemovalRange = getCharacterRemovalRange(block, rangeToRemove, removalDirection);
 	        return removeRangeFromContentState(contentState, adjustedRemovalRange);
@@ -32426,6 +32476,7 @@
 	    return start < range.end && end > range.start;
 	  });
 
+	  console.log(entityRanges);
 	  !(entityRanges.length == 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'There should only be one entity range within this removal range.') : invariant(false) : undefined;
 
 	  var entityRange = entityRanges[0];
@@ -43177,15 +43228,15 @@
 	         var blockType = this.props.editorState.getCurrentContent().getBlockForKey(this.props.editorState.getSelection().getStartKey()).getType();
 
 	         var items = [].concat(_toConsumableArray(this.props.blockTypes.map(function (x) {
-	            return { icon: x.icon, label: x.label, active: blockType === x.style, toggle: function toggle() {
+	            return { icon: x.icon, button: x.button, label: x.label, active: blockType === x.style, toggle: function toggle() {
 	                  return _this2.toggleBlockType(x.style);
 	               } };
 	         })), _toConsumableArray(this.props.inlineStyles.map(function (x) {
-	            return { icon: x.icon, label: x.label, active: currentStyle.has(x.style), toggle: function toggle() {
+	            return { icon: x.icon, button: x.button, label: x.label, active: currentStyle.has(x.style), toggle: function toggle() {
 	                  return _this2.toggleInlineStyle(x.style);
 	               } };
 	         })), _toConsumableArray(this.props.actions.map(function (x) {
-	            return { icon: x.icon, label: x.label, active: x.active, toggle: function toggle(state) {
+	            return { icon: x.icon, button: x.button, label: x.label, active: x.active, toggle: function toggle(state) {
 	                  return _this2.toggleAction(x, state);
 	               } };
 	         })));
@@ -43201,8 +43252,44 @@
 
 	DraftToolbar.defaultProps = {
 	   actions: [],
-	   inlineStyles: [{ label: 'Bold', icon: 'bold', style: 'BOLD' }, { label: 'Italic', icon: 'italic', style: 'ITALIC' }, { label: 'Underline', icon: 'underline', style: 'UNDERLINE' }],
-	   blockTypes: [{ label: 'H1', icon: 'header', style: 'header-one' }, { label: 'H2', icon: 'header', style: 'header-two' }, { label: 'Blockquote', icon: 'quote left', style: 'blockquote' }, { label: 'UL', icon: 'list', style: 'unordered-list-item' }, { label: 'OL', icon: 'ordered list', style: 'ordered-list-item' }, { label: 'Code Block', icon: 'code', style: 'code-block' }]
+	   inlineStyles: [{ label: 'Bold', button: _react2.default.createElement(
+	         "b",
+	         null,
+	         "B"
+	      ), style: 'BOLD' }, { label: 'Italic', button: _react2.default.createElement(
+	         "i",
+	         null,
+	         "I"
+	      ), style: 'ITALIC' }, { label: 'Underline', button: _react2.default.createElement(
+	         "u",
+	         null,
+	         "U"
+	      ), style: 'UNDERLINE' }],
+	   blockTypes: [{ label: 'H1', button: _react2.default.createElement(
+	         "span",
+	         null,
+	         "H1"
+	      ), style: 'header-one' }, { label: 'H2', button: _react2.default.createElement(
+	         "span",
+	         null,
+	         "H2"
+	      ), style: 'header-two' }, { label: 'Blockquote', button: _react2.default.createElement(
+	         "i",
+	         null,
+	         "\""
+	      ), style: 'blockquote' }, { label: 'UL', button: _react2.default.createElement(
+	         "span",
+	         null,
+	         "UL"
+	      ), style: 'unordered-list-item' }, { label: 'OL', button: _react2.default.createElement(
+	         "span",
+	         null,
+	         "OL"
+	      ), style: 'ordered-list-item' }, { label: 'Code Block', button: _react2.default.createElement(
+	         "span",
+	         null,
+	         "#"
+	      ), style: 'code-block' }]
 	};
 
 /***/ },
@@ -43261,17 +43348,20 @@
 	                this.props,
 	                _react2.default.createElement(
 	                    "div",
-	                    { className: "ui icon menu", onMouseDown: function onMouseDown(x) {
+	                    { className: "draft-toolbar", onMouseDown: function onMouseDown(x) {
 	                            x.preventDefault();
 	                        } },
 	                    this.props.actions.map(function (action) {
 	                        return _react2.default.createElement(
-	                            "a",
-	                            { key: action.label, onClick: function onClick() {
-	                                    return _this2.toggleAction(action);
-	                                },
-	                                className: action.active ? 'active item' : 'item', "data-tooltip": action.label },
-	                            _react2.default.createElement("i", { className: action.icon + " icon" })
+	                            "div",
+	                            { key: action.label, className: action.active ? 'item active' : 'item' },
+	                            _react2.default.createElement(
+	                                "button",
+	                                { onClick: function onClick() {
+	                                        return _this2.toggleAction(action);
+	                                    }, "data-tooltip": action.label },
+	                                action.icon ? _react2.default.createElement("i", { className: action.icon + " icon" }) : action.button
+	                            )
 	                        );
 	                    })
 	                )
@@ -43914,11 +44004,14 @@
 	         var width = _state.width;
 	         var height = _state.height;
 	         var hoverPosition = _state.hoverPosition;
+	         var clicked = _state.clicked;
 	         var _props3 = this.props;
 	         var Children = _props3.Children;
 	         var blockProps = _props3.blockProps;
 	         var vertical = _props3.vertical;
 	         var horizontal = _props3.horizontal;
+	         var ratio = _props3.ratio;
+	         var handles = _props3.handles;
 	         var isTop = hoverPosition.isTop;
 	         var isLeft = hoverPosition.isLeft;
 	         var isRight = hoverPosition.isRight;
@@ -43970,26 +44063,60 @@
 	         // Default toolbar actions
 	         var actions = [{
 	            active: this.props.blockProps.align === 'left',
-	            icon: 'step backward',
+	            button: _react2.default.createElement(
+	               'span',
+	               null,
+	               'L'
+	            ),
 	            toggle: function toggle() {
 	               return _this5.align('left');
 	            },
 	            label: 'Align left'
 	         }, {
 	            active: !this.props.blockProps.align || this.props.blockProps.align === 'center',
-	            icon: 'stop',
+	            button: _react2.default.createElement(
+	               'span',
+	               null,
+	               'C'
+	            ),
 	            toggle: function toggle() {
 	               return _this5.align('center');
 	            },
 	            label: 'Align center'
 	         }, {
 	            active: this.props.blockProps.align === 'right',
-	            icon: 'step forward',
+	            button: _react2.default.createElement(
+	               'span',
+	               null,
+	               'R'
+	            ),
 	            toggle: function toggle() {
 	               return _this5.align('right');
 	            },
 	            label: 'Align right'
 	         }];
+
+	         var content = _react2.default.createElement(Children, _extends({}, this.state, this.props, {
+	            align: this.align.bind(this),
+	            active: active,
+	            actions: actions,
+	            uniqueId: 'id-' + this.props.block.key }));
+
+	         // ClassNames
+	         var classes = ["draft-resizeable-wrapper"];
+	         if (active) classes.push('active');
+
+	         // Wrap into ratiobox to maintain aspect-ratio
+	         if (vertical === 'auto' && ratio) {
+	            content = _react2.default.createElement(
+	               'div',
+	               { className: "ratiobox-content" },
+	               content
+	            );
+
+	            classes.push('ratiobox');
+	            classes.push('ratio' + round(ratio * 100, 5));
+	         }
 
 	         return _react2.default.createElement(
 	            'div',
@@ -44000,13 +44127,15 @@
 	               onDragStart: this.startDrag.bind(this),
 	               contentEditable: 'false',
 	               draggable: !resize,
-	               className: "draft-resizeable-wrapper" + (active ? ' active' : ''),
+	               className: classes.join(' '),
 	               style: style },
-	            _react2.default.createElement(Children, _extends({}, this.state, this.props, {
-	               align: this.align.bind(this),
-	               active: active,
-	               actions: actions,
-	               uniqueId: 'id-' + this.props.block.key }))
+	            resize && clicked ? _react2.default.createElement('div', { className: 'overlay' }) : null,
+	            handles ? _react2.default.createElement('div', { className: 'overlay-m' }) : null,
+	            handles ? _react2.default.createElement('div', { className: 'overlay-l' }) : null,
+	            handles ? _react2.default.createElement('div', { className: 'overlay-r' }) : null,
+	            handles ? _react2.default.createElement('div', { className: 'overlay-t' }) : null,
+	            handles ? _react2.default.createElement('div', { className: 'overlay-b' }) : null,
+	            content
 	         );
 	      }
 	   }]);
@@ -44019,7 +44148,9 @@
 	Wrapper.defaultProps = {
 	   horizontal: 'relative',
 	   vertical: false,
-	   resizeSteps: 5
+	   ratio: null,
+	   resizeSteps: 5,
+	   handles: false
 	};
 
 	// Export
@@ -44092,6 +44223,149 @@
 	}(_react.Component);
 
 	exports.default = (0, _src.ResizeableWrapper)(Div);
+
+/***/ },
+/* 496 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(192);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _src = __webpack_require__(351);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var defaultVideo = 'https://www.youtube.com/embed/zalYJacOhpo';
+
+	var Div = function (_Component) {
+	   _inherits(Div, _Component);
+
+	   function Div() {
+	      _classCallCheck(this, Div);
+
+	      return _possibleConstructorReturn(this, Object.getPrototypeOf(Div).apply(this, arguments));
+	   }
+
+	   _createClass(Div, [{
+	      key: 'setUrl',
+	      value: function setUrl() {
+	         var url = window.prompt("URL", this.props.blockProps.url || defaultVideo);
+	         if (url) {
+	            var setEntityData = this.props.blockProps.setEntityData;
+
+	            setEntityData(this.props.block, { url: url });
+	         }
+	      }
+	   }, {
+	      key: 'render',
+	      value: function render() {
+	         var _this2 = this;
+
+	         var action = {
+	            active: false,
+	            button: _react2.default.createElement(
+	               'span',
+	               null,
+	               'URL'
+	            ),
+	            toggle: function toggle() {
+	               return _this2.setUrl();
+	            },
+	            label: 'URL'
+	         };
+	         var style = {
+	            width: '100%',
+	            height: '100%',
+	            position: 'relative'
+	         };
+	         return _react2.default.createElement(
+	            'div',
+	            { id: this.props.uniqueId, style: style },
+	            _react2.default.createElement('iframe', { width: '100%', height: '100%', src: this.props.blockProps.url || defaultVideo, frameBorder: '0', allowFullScreen: true }),
+	            _react2.default.createElement(_src.Toolbar, { active: this.props.active, parent: "#" + this.props.uniqueId, actions: [action].concat(_toConsumableArray(this.props.actions)) })
+	         );
+	      }
+	   }]);
+
+	   return Div;
+	}(_react.Component);
+
+	exports.default = (0, _src.ResizeableWrapper)(Div, {
+	   resizeSteps: 10,
+	   ratio: 2 / 3,
+	   vertical: 'auto',
+	   handles: true
+	});
+
+/***/ },
+/* 497 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(192);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _DraftEditorBlock = __webpack_require__(397);
+
+	var _DraftEditorBlock2 = _interopRequireDefault(_DraftEditorBlock);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Header1 = function (_Component) {
+	   _inherits(Header1, _Component);
+
+	   function Header1() {
+	      _classCallCheck(this, Header1);
+
+	      return _possibleConstructorReturn(this, Object.getPrototypeOf(Header1).apply(this, arguments));
+	   }
+
+	   _createClass(Header1, [{
+	      key: "render",
+	      value: function render() {
+	         return _react2.default.createElement(
+	            "h1",
+	            { className: "ui dividing header" },
+	            _react2.default.createElement(_DraftEditorBlock2.default, this.props)
+	         );
+	      }
+	   }]);
+
+	   return Header1;
+	}(_react.Component);
+
+	exports.default = Header1;
 
 /***/ }
 /******/ ]);
