@@ -1,6 +1,6 @@
 {
   "name": "draft-wysiwyg",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
   "main": "./lib",
   "scripts": {
