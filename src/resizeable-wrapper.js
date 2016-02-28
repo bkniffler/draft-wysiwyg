@@ -149,8 +149,8 @@ class Wrapper extends Component {
    }
    render(){
       const active = !!(this.props.blockProps.active||this.state.active);
-      const {width, height, hoverPosition} = this.state;
-      const {Children, blockProps, vertical, horizontal} = this.props;
+      const {width, height, hoverPosition, clicked} = this.state;
+      const {Children, blockProps, vertical, horizontal, ratio, handles} = this.props;
       const {isTop, isLeft, isRight, isBottom, resize} = hoverPosition;
 
       // Compose style
@@ -204,20 +204,45 @@ class Wrapper extends Component {
       // Default toolbar actions
       var actions = [{
          active: this.props.blockProps.align === 'left',
-         icon: 'step backward',
+         button: <span>L</span>,
          toggle: ()=>this.align('left'),
          label: 'Align left'
       },{
          active: !this.props.blockProps.align || this.props.blockProps.align === 'center',
-         icon: 'stop',
+         button: <span>C</span>,
          toggle: ()=>this.align('center'),
          label: 'Align center'
       },{
          active: this.props.blockProps.align === 'right',
-         icon: 'step forward',
+         button: <span>R</span>,
          toggle: ()=>this.align('right'),
          label: 'Align right'
       }];
+
+      var content = (
+          <Children {...this.state}
+              {...this.props}
+              align={::this.align}
+              active={active}
+              actions={actions}
+              uniqueId={'id-'+this.props.block.key}/>
+      );
+
+      // ClassNames
+      var classes = ["draft-resizeable-wrapper"];
+      if(active) classes.push('active');
+
+      // Wrap into ratiobox to maintain aspect-ratio
+      if(vertical === 'auto' && ratio){
+         content = (
+             <div className={"ratiobox-content"}>
+                {content}
+             </div>
+         )
+
+         classes.push('ratiobox');
+         classes.push('ratio'+round(ratio*100, 5));
+      }
 
       return (
          <div ref="div"
@@ -227,14 +252,16 @@ class Wrapper extends Component {
               onDragStart={::this.startDrag}
               contentEditable="false"
               draggable={!resize}
-              className={"draft-resizeable-wrapper" + (active ? ' active' : '')}
+              className={classes.join(' ')}
               style={style}>
-            <Children {...this.state}
-                {...this.props}
-                align={::this.align}
-                active={active}
-                actions={actions}
-                uniqueId={'id-'+this.props.block.key}/>
+            {resize && clicked? <div className="overlay"></div> : null}
+            {/*There might be more elegan ways, handles for resizing*/}
+            {handles ? <div className="overlay-m"></div> : null}
+            {handles ? <div className="overlay-l"></div> : null}
+            {handles ? <div className="overlay-r"></div> : null}
+            {handles ? <div className="overlay-t"></div> : null}
+            {handles ? <div className="overlay-b"></div> : null}
+            {content}
          </div>
       )
    }
@@ -243,7 +270,9 @@ class Wrapper extends Component {
 Wrapper.defaultProps = {
    horizontal: 'relative',
    vertical: false,
-   resizeSteps: 5
+   ratio: null,
+   resizeSteps: 5,
+   handles: false
 }
 
 // Export

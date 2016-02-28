@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Div, Div2, Data} from "./draft";
+import {Div, Div2, Header1, Youtube, Data} from "./draft";
 import {Draft, DraftToolbar} from '../src';
 
 Draft.DisableWarnings();
@@ -28,6 +28,18 @@ export default class Example extends React.Component {
                 props
             };
         }
+        else if (type === 'header-one') {
+            return {
+                component: Header1,
+                props
+            };
+        }
+        else if (type === 'youtube') {
+            return {
+                component: Youtube,
+                props
+            };
+        }
     }
 
     render() {
@@ -48,6 +60,9 @@ export default class Example extends React.Component {
                 </button>
                 <button className="TeXEditor-insert2" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'div2', {}, true)})}>Add
                     Horizontal only
+                </button>
+                <button className="TeXEditor-insert3" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'youtube', {}, true)})}>Add
+                    Youtube
                 </button>
 
                 <pre style={{whiteSpace: 'pre-wrap'}}>{JSON.stringify(data, null, 3)}</pre>

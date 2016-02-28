@@ -16,12 +16,13 @@ export default class DraftToolbar extends Component {
     render() {
         return (
             <Tooltip {...this.props}>
-                <div className="ui icon menu" onMouseDown={(x)=>{x.preventDefault()}}>
+                <div className="draft-toolbar" onMouseDown={(x)=>{x.preventDefault()}}>
                     {this.props.actions.map(action =>
-                        <a key={action.label} onClick={()=>this.toggleAction(action)}
-                           className={action.active ? 'active item' : 'item'} data-tooltip={action.label}>
-                            <i className={action.icon + " icon"}></i>
-                        </a>
+                        <div key={action.label} className={action.active ? 'item active' : 'item'}>
+                            <button onClick={()=>this.toggleAction(action)} data-tooltip={action.label}>
+                                {action.icon ? <i className={action.icon + " icon"}></i> : action.button}
+                            </button>
+                        </div>
                     )}
                 </div>
             </Tooltip>

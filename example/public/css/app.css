@@ -110,3 +110,12 @@ body{
   position: fixed;
   right: 160px;
 }
+
+.TeXEditor-insert3 {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  bottom: 30px;
+  position: fixed;
+  right: 300px;
+}

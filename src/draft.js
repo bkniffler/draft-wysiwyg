@@ -89,6 +89,7 @@ export default class DraftWysiwyg extends Component {
       var blockKey = e.dataTransfer.getData("text");
       // Set timeout to allow cursor/selection to move to drop location
       setTimeout(()=> {
+         console.log('Go2');
          // Get content, selection, block
          var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
          var editorStateAfterInsert = DraftWysiwyg.AddBlock(this.state.value, null, block.getType(), Entity.get(block.getEntityAt(0)).data);
@@ -101,9 +102,10 @@ export default class DraftWysiwyg extends Component {
             focusKey: block.getKey(),
             focusOffset: block.getLength()
          });
+         console.log(targetRange);
          var afterRemoval = Modifier.removeRange(editorStateAfterInsert.getCurrentContent(), targetRange, 'backward');
 
-         // Workaround, revious removeRange removed entity, but not the block
+         // Workaround, removeRange removed entity, but not the block
          var rawContent = convertToRaw(afterRemoval);
          rawContent.blocks = rawContent.blocks.filter(x=>x.key !== block.getKey());
          var newState = EditorState.push(this.state.value, ContentState.createFromBlockArray(convertFromRaw(rawContent)), 'remove-range');
@@ -226,6 +228,7 @@ DraftWysiwyg.AddBlock = function (editorState, selection, type, data, asJson) {
    }
    // If dropped next to empty
    else {
+      console.log('Go1', selectionState);
       var afterRemoval = Modifier.removeRange(contentState, selectionState, 'backward');
       var targetSelection = afterRemoval.getSelectionAfter();
       var afterSplit = Modifier.splitBlock(afterRemoval, targetSelection);
