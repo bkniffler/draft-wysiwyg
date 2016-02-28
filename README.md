@@ -12,6 +12,7 @@ Currently, these are the features that work
 - Block drag/drop
 - Block resizing (horizontal/vertical)
 - Block toolbars
+- Interactive Youtube block
 - Some more things
 
 ## Installation
@@ -30,7 +31,6 @@ Sorry, didn't get to write documentation yet!
 
 ## Todo
 There is a lot of stuff that needs to be done
-- Removing semantic-ui dependency, I'd be happy accepting pull requests for custom/themable CSS solutions
 - Themes
 - Clean and optimize code, figure out proper API, make it more customizable
 - Drag/Drop handling of files on editor (maybe)
