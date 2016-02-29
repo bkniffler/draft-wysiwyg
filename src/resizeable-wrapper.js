@@ -162,6 +162,12 @@ class Wrapper extends Component {
       if(this.props.blockProps.align === 'left' || this.props.blockProps.align === 'right'){
          style.float = this.props.blockProps.align;
          style.margin = '5px';
+         if(this.props.blockProps.align === 'left'){
+            style.marginLeft = 0;
+         }
+         if(this.props.blockProps.align === 'right'){
+            style.marginRight = 0;
+         }
       }
       else{
          delete style.float;

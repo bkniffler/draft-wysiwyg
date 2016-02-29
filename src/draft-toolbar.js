@@ -32,16 +32,17 @@ export default class DraftToolbar extends Component {
    }
 
    render() {
-      var currentStyle = this.props.editorState.getCurrentInlineStyle();
-      const blockType = this.props.editorState
+      const {editorState, blockTypes, inlineStyles, actions} = this.props
+      var currentStyle = editorState.getCurrentInlineStyle();
+      const blockType = editorState
          .getCurrentContent()
-         .getBlockForKey(this.props.editorState.getSelection().getStartKey())
+         .getBlockForKey(editorState.getSelection().getStartKey())
          .getType();
 
       var items = [
-         ...this.props.blockTypes.map(x=>({icon: x.icon, button: x.button, label: x.label, active: blockType === x.style, toggle: ()=>this.toggleBlockType(x.style)})),
-         ...this.props.inlineStyles.map(x=>({icon: x.icon, button: x.button, label: x.label, active: currentStyle.has(x.style), toggle: ()=>this.toggleInlineStyle(x.style)})),
-         ...this.props.actions.map(x=>({icon: x.icon, button: x.button, label: x.label, active: x.active, toggle: (state)=>this.toggleAction(x, state)}))
+         ...blockTypes.map(x=>({icon: x.icon, button: x.button, label: x.label, active: blockType === x.style, toggle: ()=>this.toggleBlockType(x.style)})),
+         ...inlineStyles.map(x=>({icon: x.icon, button: x.button, label: x.label, active: currentStyle.has(x.style), toggle: ()=>this.toggleInlineStyle(x.style)})),
+         ...actions.map(x=>({icon: x.icon, button: x.button, label: x.label, active: x.active, toggle: (state)=>this.toggleAction(x, state)}))
       ];
       return (
          <Toolbar {...this.props} actions={items} />
@@ -50,6 +51,7 @@ export default class DraftToolbar extends Component {
 }
 
 DraftToolbar.defaultProps = {
+   editorState: null,
    actions: [],
    inlineStyles: [
       {label: 'Bold', button: <b>B</b>, style: 'BOLD'},
@@ -62,6 +64,6 @@ DraftToolbar.defaultProps = {
       {label: 'Blockquote', button: <i>"</i>, style: 'blockquote'},
       {label: 'UL', button: <span>UL</span>, style: 'unordered-list-item'},
       {label: 'OL', button: <span>OL</span>, style: 'ordered-list-item'},
-      {label: 'Code Block', button: <span>#</span>, style: 'code-block'},
+      {label: 'Code Block', button: <span>#</span>, style: 'code-block'}
    ]
 }
