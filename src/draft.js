@@ -6,6 +6,11 @@ import {List, Repeat} from 'immutable';
 import Toolbar from './draft-toolbar'
 
 const decorator = new CompositeDecorator([]);
+const styleMap = {
+   'JUSTIFY': {
+      textAlign: 'justify'
+   },
+};
 
 export default class DraftWysiwyg extends Component {
    constructor(props) {
@@ -52,7 +57,7 @@ export default class DraftWysiwyg extends Component {
 
    // Remove toolbars and active blocks on blur
    blur(){
-      this.setState({toolbar: null, active: null});
+      this.setState({active: null});
    }
 
    // Propagate editorState changes to parent and to state
@@ -64,32 +69,11 @@ export default class DraftWysiwyg extends Component {
       this.setState({value: editorState});
    };
 
-   // Track text-selection for toolbar
-   mouseUp() {
-      // Insert timeout to allow selection to be up-to-date
-      setTimeout(()=> {
-         // Get current selection (from draft)
-         var selection = this.state.value.getSelection();
-         // Nothing selected? No toolbar please.
-         if (selection.isCollapsed()) {
-            return this.setState({toolbar: null});
-         }
-         else {
-            // Get current selection (natively)
-            var selected = getSelected();
-            // Get selection rectangle (position, size) and set to state
-            var rect = selected.getRangeAt(0).getBoundingClientRect();
-            this.setState({toolbar: {left: rect.left, top: rect.top, width: rect.width}});
-         }
-      }, 1)
-   }
-
    // Handle block dropping
    drop(e) {
       var blockKey = e.dataTransfer.getData("text");
       // Set timeout to allow cursor/selection to move to drop location
       setTimeout(()=> {
-         console.log('Go2');
          // Get content, selection, block
          var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
          var editorStateAfterInsert = DraftWysiwyg.AddBlock(this.state.value, null, block.getType(), Entity.get(block.getEntityAt(0)).data);
@@ -102,7 +86,6 @@ export default class DraftWysiwyg extends Component {
             focusKey: block.getKey(),
             focusOffset: block.getLength()
          });
-         console.log(targetRange);
          var afterRemoval = Modifier.removeRange(editorStateAfterInsert.getCurrentContent(), targetRange, 'backward');
 
          // Workaround, removeRange removed entity, but not the block
@@ -145,19 +128,37 @@ export default class DraftWysiwyg extends Component {
    }
 
    // Render the default-toolbar
-   renderToolbar(info, editorState, onChange){
-      return (
-         <Toolbar {...info} editorState={editorState} onChange={onChange}/>
-      );
+   renderToolbar(){
+      const editorState = this.state.value;
+      const onChange = ::this.updateValue;
+      // Get current selection (from draft)
+      const selectionState = this.state.value.getSelection();
+      // Nothing selected? No toolbar please.
+      if (selectionState.isCollapsed()) {
+         return null;
+      }
+
+      // Get current selection (natively)
+      var selected = getSelected();
+      // Get selection rectangle (position, size) and set to state
+      var rect = selected.getRangeAt(0).getBoundingClientRect();
+
+      var info = {left: rect.left, top: rect.top, width: rect.width};
+      return this.props.renderToolbar
+          ? this.props.renderToolbar({...info, editorState, selectionState, onChange})
+          : <Toolbar {...info} editorState={editorState} selectionState={selectionState} onChange={onChange}/>;
    }
    
    render() {
-      var renderToolbar = this.props.renderToolbar || this.renderToolbar;
       // Set drag/drop handlers to outer div as editor won't fire those
       return (
-         <div onClick={::this.focus} onDrop={::this.drop} onMouseUp={::this.mouseUp} onBlur={::this.blur}>
-            <Editor editorState={this.state.value} onChange={::this.updateValue} ref="editor" blockRendererFn={::this.blockRenderer}/>
-            {this.state.toolbar ? renderToolbar(this.state.toolbar, this.state.value, ::this.updateValue) : null}
+         <div onClick={::this.focus} onDrop={::this.drop} onBlur={::this.blur}>
+            <Editor customStyleMap={styleMap} 
+                    editorState={this.state.value} 
+                    onChange={::this.updateValue}
+                    ref="editor"
+                    blockRendererFn={::this.blockRenderer}/>
+            {this.renderToolbar()}
          </div>
       );
    }
@@ -228,7 +229,6 @@ DraftWysiwyg.AddBlock = function (editorState, selection, type, data, asJson) {
    }
    // If dropped next to empty
    else {
-      console.log('Go1', selectionState);
       var afterRemoval = Modifier.removeRange(contentState, selectionState, 'backward');
       var targetSelection = afterRemoval.getSelectionAfter();
       var afterSplit = Modifier.splitBlock(afterRemoval, targetSelection);
@@ -241,7 +241,7 @@ DraftWysiwyg.AddBlock = function (editorState, selection, type, data, asJson) {
    }
 
    // Create entity etc.
-   var entityKey = Entity.create('TOKEN', 'IMMUTABLE', data);
+   var entityKey = Entity.create('TOKEN', 'MUTABLE', data);
    var charData = CharacterMetadata.create({entity: entityKey});
    var fragment = BlockMapBuilder.createFromArray([
       new ContentBlock({
