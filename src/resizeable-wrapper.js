@@ -8,6 +8,10 @@ class Wrapper extends Component {
          hoverPosition: {},
          clicked: false
       };
+      this.listener = this.listener.bind(this);
+   }
+   componentWillUnmount(){
+      this.listener();
    }
    // Activate the current block
    activateBlock(active){
@@ -40,13 +44,15 @@ class Wrapper extends Component {
       this.activateBlock(true);
 
       var component = ReactDOM.findDOMNode(this.refs.div);
-      var listener = ()=>{
-         component.parentElement.removeEventListener('click', listener, false);
-         this.activateBlock(false);
-      };
       // Handle click outside of block to deactivate
-      component.parentElement.addEventListener('click', listener, false);
+      component.parentElement.addEventListener('click', this.listener, false);
    }
+   listener(){
+      var component = ReactDOM.findDOMNode(this.refs.div);
+      component.parentElement.removeEventListener('click', this.listener, false);
+      this.activateBlock(false);
+   };
+
    // Handle mouse-move and setState if mouse on edges for resizing
    move(e){
       const {vertical, horizontal} = this.props;
@@ -145,7 +151,8 @@ class Wrapper extends Component {
    // Handle start-drag and setData with blockKey
    startDrag(e){
       e.dataTransfer.dropEffect = 'move';
-      e.dataTransfer.setData("text", this.props.block.key);
+      // Declare data and give info that its an existing key and a block needs to be moved
+      e.dataTransfer.setData("text", 'key:'+this.props.block.key);
    }
    render(){
       const active = !!(this.props.blockProps.active||this.state.active);

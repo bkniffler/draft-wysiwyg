@@ -15,10 +15,19 @@ export default class DraftToolbar extends Component {
 
    toggleBlockType(blockType) {
       this.props.onChange(
-         RichUtils.toggleBlockType(
-            this.props.editorState,
-            blockType
-         )
+          RichUtils.toggleBlockType(
+              this.props.editorState,
+              blockType
+          )
+      );
+   }
+
+   toggleAlignment(blockType) {
+      this.props.onChange(
+          RichUtils.toggleBlockType(
+              this.props.editorState,
+              blockType
+          )
       );
    }
 
@@ -32,7 +41,7 @@ export default class DraftToolbar extends Component {
    }
 
    render() {
-      const {editorState, blockTypes, inlineStyles, actions} = this.props
+      const {editorState, blockTypes, alignmentStyles, inlineStyles, actions} = this.props
       var currentStyle = editorState.getCurrentInlineStyle();
       const blockType = editorState
          .getCurrentContent()
@@ -40,6 +49,7 @@ export default class DraftToolbar extends Component {
          .getType();
 
       var items = [
+         //...alignmentStyles.map(x=>({icon: x.icon, button: x.button, label: x.label, active: blockType === x.style, toggle: ()=>this.toggleAlignment(x.style)})),
          ...blockTypes.map(x=>({icon: x.icon, button: x.button, label: x.label, active: blockType === x.style, toggle: ()=>this.toggleBlockType(x.style)})),
          ...inlineStyles.map(x=>({icon: x.icon, button: x.button, label: x.label, active: currentStyle.has(x.style), toggle: ()=>this.toggleInlineStyle(x.style)})),
          ...actions.map(x=>({icon: x.icon, button: x.button, label: x.label, active: x.active, toggle: (state)=>this.toggleAction(x, state)}))
@@ -53,6 +63,12 @@ export default class DraftToolbar extends Component {
 DraftToolbar.defaultProps = {
    editorState: null,
    actions: [],
+   alignmentStyles: [
+      {label: 'Left', button: <b>L</b>, style: 'left'},
+      {label: 'Center', button: <i>C</i>, style: 'center'},
+      {label: 'Justify', button: <i>J</i>, style: 'justify'},
+      {label: 'Right', button: <u>R</u>, style: 'right'}
+   ],
    inlineStyles: [
       {label: 'Bold', button: <b>B</b>, style: 'BOLD'},
       {label: 'Italic', button: <i>I</i>, style: 'ITALIC'},

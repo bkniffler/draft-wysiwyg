@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from "react";
 import {Editor, EditorState, CompositeDecorator, ContentState, convertToRaw, convertFromRaw} from "draft-js";
 import {Modifier, SelectionState, Entity, CharacterMetadata, ContentBlock, genKey, BlockMapBuilder} from "draft-js";
 import {List, Repeat} from 'immutable';
+import request from 'superagent';
 
 import Toolbar from './draft-toolbar'
 
@@ -11,7 +12,6 @@ const styleMap = {
       textAlign: 'justify'
    },
 };
-
 export default class DraftWysiwyg extends Component {
    constructor(props) {
       super(props);
@@ -23,7 +23,11 @@ export default class DraftWysiwyg extends Component {
       }
 
       // Set value to state
-      this.state = {value, active: null};
+      this.state = {
+         value,
+         active: null,
+         fileDrag: false
+      };
    }
 
    shouldComponentUpdate(props, state) {
@@ -71,29 +75,37 @@ export default class DraftWysiwyg extends Component {
 
    // Handle block dropping
    drop(e) {
-      var blockKey = e.dataTransfer.getData("text");
+      if(containsFiles(e)){
+         e.preventDefault();
+         this.dropFile(e);
+         return false;
+      }
+      // Get data 'text' (anything else won't move the cursor) and expecting kind of data (text/key)
+      var data = e.dataTransfer.getData("text") ? e.dataTransfer.getData("text").split(':') : [];
+      if(data.length !== 2){
+         return;
+      }
+      e.preventDefault();
+
       // Set timeout to allow cursor/selection to move to drop location
       setTimeout(()=> {
-         // Get content, selection, block
-         var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
-         var editorStateAfterInsert = DraftWysiwyg.AddBlock(this.state.value, null, block.getType(), Entity.get(block.getEntityAt(0)).data);
-
-         block = editorStateAfterInsert.getCurrentContent().getBlockForKey(blockKey);
-         // Get block range and remove dragged block
-         var targetRange = new SelectionState({
-            anchorKey: block.getKey(),
-            anchorOffset: 0,
-            focusKey: block.getKey(),
-            focusOffset: block.getLength()
-         });
-         var afterRemoval = Modifier.removeRange(editorStateAfterInsert.getCurrentContent(), targetRange, 'backward');
-
-         // Workaround, removeRange removed entity, but not the block
-         var rawContent = convertToRaw(afterRemoval);
-         rawContent.blocks = rawContent.blocks.filter(x=>x.key !== block.getKey());
-         var newState = EditorState.push(this.state.value, ContentState.createFromBlockArray(convertFromRaw(rawContent)), 'remove-range');
-         this.setState({value: newState});
+         // Existing block dropped
+         if(data[0] === 'key'){
+            var blockKey = data[1];
+            // Get content, selection, block
+            var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
+            var editorStateAfterInsert = DraftWysiwyg.AddBlock(this.state.value, null, block.getType(), Entity.get(block.getEntityAt(0)).data);
+            this.setState({value: DraftWysiwyg.RemoveBlock(editorStateAfterInsert, blockKey)});
+         }
+         // New block dropped
+         else if(data[0] === 'type'){
+            var blockType = data[1];
+            // Get content, selection, block
+            var editorStateAfterInsert = DraftWysiwyg.AddBlock(this.state.value, null, blockType, {});
+            this.setState({value: editorStateAfterInsert});
+         }
       }, 1);
+      return false;
    }
 
    // Helper function for blocks to set their own data
@@ -127,6 +139,46 @@ export default class DraftWysiwyg extends Component {
       }
    }
 
+   // Handle keydown events on blocks
+   keyDown(e){
+      if(!this.state.active){
+         return;
+      }
+      var key = e.keyCode || e.charCode;
+      // Remove if backspace
+      if(key === 8 || key === 46){
+         this.setState({
+            value: DraftWysiwyg.RemoveBlock(this.state.value, this.state.active)
+         });
+         e.preventDefault();
+         return false;
+      }
+       // Select start of next range if arrow down/right
+      else if(key === 39 || key === 40){
+         var block = DraftWysiwyg.GetNextBlock(this.state.value, this.state.active);
+         if(block){
+            this.setState({
+               active: null,
+               value: DraftWysiwyg.SetSelectionToBlock(this.state.value, block.getKey(), 'start')
+            });
+            e.preventDefault();
+            return false;
+         }
+      }
+      // Select end of previous range if arrow up/left
+      else if(key === 37 || key === 38){
+         var block = DraftWysiwyg.GetPreviousBlock(this.state.value, this.state.active);
+         if(block){
+            this.setState({
+               active: null,
+               value: DraftWysiwyg.SetSelectionToBlock(this.state.value, block.getKey(), 'end')
+            });
+            e.preventDefault();
+            return false;
+         }
+      }
+   }
+
    // Render the default-toolbar
    renderToolbar(){
       const editorState = this.state.value;
@@ -141,6 +193,9 @@ export default class DraftWysiwyg extends Component {
       // Get current selection (natively)
       var selected = getSelected();
       // Get selection rectangle (position, size) and set to state
+      if(!selected.rangeCount){
+         return null;
+      }
       var rect = selected.getRangeAt(0).getBoundingClientRect();
 
       var info = {left: rect.left, top: rect.top, width: rect.width};
@@ -148,17 +203,70 @@ export default class DraftWysiwyg extends Component {
           ? this.props.renderToolbar({...info, editorState, selectionState, onChange})
           : <Toolbar {...info} editorState={editorState} selectionState={selectionState} onChange={onChange}/>;
    }
-   
+
+   // Handle drag-over
+   dragOverFile(e) {
+      if(this.state.fileDrag === true || !containsFiles(e)){
+         return;
+      }
+      this.setState({fileDrag: true});
+   }
+
+   // Handle drag-leave
+   dragLeaveFile(e) {
+      if(!containsFiles(e)){
+         return;
+      }
+      this.setState({fileDrag: false});
+   }
+
+   // Handle drop
+   dropFile(e){
+      this.setState({fileDrag: false, uploading: true});
+
+      var data = new FormData();
+      for(var key in e.dataTransfer.files){
+         data.append('files', e.dataTransfer.files[key]);
+      }
+      request.post('/upload')
+          .accept('application/json')
+          .send(data)
+          .on('progress', ({ percent }) => {
+             this.setState({percent: percent !== 100 ? percent : null});
+          })
+          .end((err, res) => {
+             this.setState({uploading: false, uploadError: err});
+             if (err) {
+                console.log(err);
+             }
+             else if(res.body.files && res.body.files.length){
+                var value = this.state.value;
+                res.body.files.forEach(function(x){
+                   value = DraftWysiwyg.AddBlock(value, null, 'image', x);
+                });
+                this.setState({value});
+             }
+          });
+      return false;
+   }
+
    render() {
+      const {fileDrag, percent} = this.state;
+      const classNames = ['wrapper'];;
+      if(fileDrag){
+         classNames.push('uploading');
+      }
       // Set drag/drop handlers to outer div as editor won't fire those
       return (
-         <div onClick={::this.focus} onDrop={::this.drop} onBlur={::this.blur}>
-            <Editor customStyleMap={styleMap} 
-                    editorState={this.state.value} 
+         <div className={classNames.join(' ')} onKeyDown={::this.keyDown} onDragOver={::this.dragOverFile} onDragLeave={::this.dragLeaveFile} onClick={::this.focus} onDrop={::this.drop} onBlur={::this.blur}>
+            <Editor customStyleMap={styleMap}
+                    editorState={this.state.value}
                     onChange={::this.updateValue}
                     ref="editor"
-                    blockRendererFn={::this.blockRenderer}/>
+                    blockRendererFn={::this.blockRenderer}
+                {...this.props} />
             {this.renderToolbar()}
+            {percent ? <div className="uploading-progress">{percent}%</div> : null}
          </div>
       );
    }
@@ -180,6 +288,61 @@ DraftWysiwyg.DisableWarnings = function(){
    }
 }
 
+DraftWysiwyg.SetSelectionToBlock = function(editorState, key, range){
+   var contentState = editorState.getCurrentContent();
+   var block = contentState.getBlockForKey(key);
+   if(!block){
+      return;
+   }
+   var selectionSate = new SelectionState({
+      anchorKey: block.getKey(),
+      anchorOffset: !range || range === 'start' ? 0 : block.getLength(),
+      focusKey: block.getKey(),
+      focusOffset: range === 'start' ? 0 : block.getLength()
+   });
+   var newContent = contentState.merge({
+      selectionBefore: editorState.getSelection(),
+      selectionAfter: selectionSate.set('hasFocus', true)
+   });
+   return EditorState.push(editorState, newContent, 'insert-fragment');
+}
+DraftWysiwyg.GetNextBlock = function(editorState, key){
+   var contentState = editorState.getCurrentContent();
+   var blocks = contentState.getBlocksAsArray();
+   for(var i=0; i<blocks.length; i++){
+      if(key === blocks[i].getKey()){
+         return (i+1) < blocks.length ? blocks[i+1] : null;
+      }
+   }
+}
+DraftWysiwyg.GetPreviousBlock = function(editorState, key){
+   var contentState = editorState.getCurrentContent();
+   var blocks = contentState.getBlocksAsArray();
+   for(var i=0; i<blocks.length; i++){
+      if(key === blocks[i].getKey()){
+         return (i>0) ? blocks[i-1] : null;
+      }
+   }
+}
+DraftWysiwyg.RemoveBlock = function(editorState, key){
+   var contentState = editorState.getCurrentContent();
+   var block = contentState.getBlockForKey(key);
+   if(!block){
+      return editorState;
+   }
+   var selectionSate = new SelectionState({
+      anchorKey: block.getKey(),
+      anchorOffset: 0,
+      focusKey: block.getKey(),
+      focusOffset: block.getLength()
+   });
+   var afterRemoval = Modifier.removeRange(contentState, selectionSate, 'backward');
+   // Workaround, removeRange removed entity, but not the block
+   var rawContent = convertToRaw(afterRemoval);
+   rawContent.blocks = rawContent.blocks.filter(x=>x.key !== block.getKey());
+   var newState = EditorState.push(editorState, ContentState.createFromBlockArray(convertFromRaw(rawContent)), 'remove-range');
+   return newState;
+}
 // Expose AddBlock helper function to allow adding blocks externally, easily
 DraftWysiwyg.AddBlock = function (editorState, selection, type, data, asJson) {
    // Get editorstate
@@ -268,7 +431,7 @@ DraftWysiwyg.AddBlock = function (editorState, selection, type, data, asJson) {
    return editorState;
 }
 
-// Helper function
+// Helper functions
 function getSelected() {
    var t = '';
    if (window.getSelection) {
@@ -279,4 +442,14 @@ function getSelected() {
       t = document.selection.createRange().text;
    }
    return t;
+}
+function containsFiles(event) {
+   if (event.dataTransfer.types) {
+      for (var i = 0; i < event.dataTransfer.types.length; i++) {
+         if (event.dataTransfer.types[i] == "Files") {
+            return true;
+         }
+      }
+   }
+   return false;
 }

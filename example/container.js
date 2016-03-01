@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Div, Div2, Header1, Youtube, Data} from "./draft";
+import {Div, Div2, Header1, Youtube, Image, Data} from "./draft";
 import {Draft, DraftToolbar} from '../src';
 
 Draft.DisableWarnings();
@@ -37,6 +37,12 @@ export default class Example extends React.Component {
         else if (type === 'youtube') {
             return {
                 component: Youtube,
+                props
+            };
+        }
+        else if (type === 'image') {
+            return {
+                component: Image,
                 props
             };
         }

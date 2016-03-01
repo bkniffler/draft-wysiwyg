@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "draft-js": "^0.1.0",
-    "immutable": "^3.7.4"
+    "immutable": "^3.7.4",
+    "superagent": "^1.7.2"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",
@@ -28,11 +29,12 @@
     "eslint-loader": "^1.0.0",
     "eslint-plugin-react": "^3.2.0",
     "express": "^4.13.1",
+    "multer": "^1.1.0",
     "react": "^0.14.0",
     "react-dom": "^0.14.7",
     "react-portal": "^2.0.0",
     "react-portal-tooltip": "^1.0.4",
     "webpack": "^1.10.5",
-    "webpack-dev-server": "^1.10.1"
+    "webpack-dev-middleware": "^1.5.1"
   }
 }

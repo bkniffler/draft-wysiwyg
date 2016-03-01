@@ -249,3 +249,19 @@
     padding: 15px;
     text-decoration: none;
 }
+
+.wrapper{
+    position: relative;
+}
+.uploading{
+    outline: 5px dashed black;
+}
+.uploading-progress{
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: 3;
+    background-color: rgba(0, 0, 0, 0.2);
+    text-align: center;
+    color: white;
+}
