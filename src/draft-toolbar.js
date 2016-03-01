@@ -41,7 +41,7 @@ export default class DraftToolbar extends Component {
    }
 
    render() {
-      const {editorState, blockTypes, alignmentStyles, inlineStyles, actions} = this.props
+      const {editorState, blockTypes, inlineStyles, actions} = this.props
       var currentStyle = editorState.getCurrentInlineStyle();
       const blockType = editorState
          .getCurrentContent()
@@ -75,8 +75,10 @@ DraftToolbar.defaultProps = {
       {label: 'Underline', button: <u>U</u>, style: 'UNDERLINE'}
    ],
    blockTypes: [
-      {label: 'H1', button: <span>H1</span>, style: 'header-one'},
-      {label: 'H2', button: <span>H2</span>, style: 'header-two'},
+      {label: 'H1', button: <span>H1</span>, style: 'header-1'},
+      {label: 'H2', button: <span>H2</span>, style: 'header-2'},
+      {label: 'H3', button: <span>H3</span>, style: 'header-3'},
+      {label: 'H4', button: <span>H4</span>, style: 'header-4'},
       {label: 'Blockquote', button: <i>"</i>, style: 'blockquote'},
       {label: 'UL', button: <span>UL</span>, style: 'unordered-list-item'},
       {label: 'OL', button: <span>OL</span>, style: 'ordered-list-item'},

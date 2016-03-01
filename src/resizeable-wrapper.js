@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import ReactDOM from 'react-dom';
+import DraftEditorBlock2 from './draft-editor-block2';
 
 class Wrapper extends Component {
    constructor(props){
@@ -68,7 +69,7 @@ class Wrapper extends Component {
       var isTop = vertical ? y < tolerance : false;
       var isLeft = horizontal ? x < tolerance : false;
       var isRight = horizontal ? x >= b.width - tolerance : false;
-      var isBottom = vertical ? y >= b.height - tolerance : false;
+      var isBottom = vertical ? y >= b.height - tolerance && y < b.height : false;
 
       var resize = isTop||isLeft||isRight||isBottom;
 
@@ -124,6 +125,7 @@ class Wrapper extends Component {
 
          this.setState(newState);
          e.stopPropagation();
+         e.preventDefault();
          return false;
       }
 
@@ -146,6 +148,7 @@ class Wrapper extends Component {
 
       this.setState({clicked: true});
       e.stopPropagation();
+      e.preventDefault();
       return false;
    }
    // Handle start-drag and setData with blockKey
@@ -157,7 +160,7 @@ class Wrapper extends Component {
    render(){
       const active = !!(this.props.blockProps.active||this.state.active);
       const {width, height, hoverPosition, clicked} = this.state;
-      const {Children, blockProps, vertical, horizontal, ratio, handles} = this.props;
+      const {Children, blockProps, vertical, horizontal, ratio, handles, caption} = this.props;
       const {isTop, isLeft, isRight, isBottom, resize} = hoverPosition;
 
       // Compose style
@@ -244,6 +247,7 @@ class Wrapper extends Component {
       // ClassNames
       var classes = ["draft-resizeable-wrapper"];
       if(active) classes.push('active');
+      if((caption && this.props.blockProps.caption) || (caption && active)) classes.push('with-caption');
 
       // Wrap into ratiobox to maintain aspect-ratio
       if(vertical === 'auto' && ratio){
@@ -269,14 +273,20 @@ class Wrapper extends Component {
               style={style}>
             {resize && clicked? <div className="overlay"></div> : null}
             {/*There might be more elegan ways, handles for resizing*/}
-            {handles ? <div className="overlay-m"></div> : null}
+            {handles ? <div className="overlay-m">&#9673;</div> : null}
             {handles ? <div className="overlay-l"></div> : null}
             {handles ? <div className="overlay-r"></div> : null}
             {handles ? <div className="overlay-t"></div> : null}
             {handles ? <div className="overlay-b"></div> : null}
             {content}
+            {caption ? <div className="caption-text" onClick={e=>e.stopPropagation()}>
+               <DraftEditorBlock2 {...this.props}
+                   placeholder={'Titel ...'}
+                   value={this.props.blockProps.caption}
+                   onChange={(v)=>this.props.blockProps.setEntityData(this.props.block, {caption: v})}/>
+            </div> : null}
          </div>
-      )
+      );
    }
 };
 // DefaultProps
@@ -285,9 +295,22 @@ Wrapper.defaultProps = {
    vertical: false,
    ratio: null,
    resizeSteps: 5,
-   handles: false
+   handles: false,
+   caption: false
 }
-
+var defaultCaption = {
+   "entityMap": {},
+   "blocks": [
+      {
+         "key": "2fo22",
+         "text": "Caption ...",
+         "type": "unstyled",
+         "depth": 0,
+         "inlineStyleRanges": [],
+         "entityRanges": []
+      }
+   ]
+}
 // Export
 export default function WrapBlock(e, options){
    return (props)=>{

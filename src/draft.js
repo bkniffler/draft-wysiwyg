@@ -31,27 +31,33 @@ export default class DraftWysiwyg extends Component {
    }
 
    shouldComponentUpdate(props, state) {
-      // Don't update if new value in props, instead setState() with new value
-      if (props.value !== this.lastState) {
-         if (!props.value) {
-            // No value? Empty
-            this.setState({
-               value: EditorState.createEmpty(decorator)
-            });
-         }
-         else {
-            // Got value? Push it.
-            this.setState({
-               value: EditorState.push(
-                  this.state.value,
-                  ContentState.createFromBlockArray(convertFromRaw(props.value))
-               )
-            });
-         }
-         this.lastState = props.value;
-         return false;
+      if(this.suppress) return false;
+      if(this.state.active !== state.active){
+         return true;
       }
-      return true;
+      if(this.state.value !== state.value){
+         return true;
+      }
+      if(this.props.readOnly !== props.readOnly) {
+         return true;
+      }
+      if(this.state.readOnly !== state.readOnly) {
+         return true;
+      }
+      if(this.props.fileDrag !== props.fileDrag) {
+         return true;
+      }
+      if(this.props.uploading !== props.uploading) {
+         return true;
+      }
+      if(this.props.percent !== props.percent) {
+         return true;
+      }
+      if(this.force) {
+         this.force = false;
+         return true;
+      }
+      return false;
    }
 
    // Focus
@@ -65,12 +71,12 @@ export default class DraftWysiwyg extends Component {
    }
 
    // Propagate editorState changes to parent and to state
-   updateValue(editorState){
-      this.lastState = convertToRaw(editorState.getCurrentContent());
-      if (this.props.updateValue) {
-         this.props.updateValue(this.lastState);
-      }
+   updateValue(editorState, force){
+      if(this.suppress && !force) return;
       this.setState({value: editorState});
+      if (this.props.updateValue) {
+         this.props.updateValue(convertToRaw(editorState.getCurrentContent()), editorState);
+      }
    };
 
    // Handle block dropping
@@ -111,7 +117,7 @@ export default class DraftWysiwyg extends Component {
       var entityKey = block.getEntityAt(0);
       if (entityKey) {
          Entity.mergeData(entityKey, {...data});
-         // Force refresh
+         // workaround to refresh data (try updateValue with this.state.value -> blocks will not be resized)
          this.updateValue(EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
       }
       return {...data};
@@ -132,6 +138,10 @@ export default class DraftWysiwyg extends Component {
                // Force refresh
                this.updateValue(EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
             },
+            setReadOnly: (state)=>{
+               this.setState({readOnly: state ? true : undefined});
+            },
+            editorProps: this.props,
             active: this.state.active  === contentBlock.key
          });
       }
@@ -179,6 +189,9 @@ export default class DraftWysiwyg extends Component {
 
    // Render the default-toolbar
    renderToolbar(){
+      if(this.props.readOnly === true || this.state.readOnly === true){
+         return null;
+      }
       const editorState = this.state.value;
       const onChange = ::this.updateValue;
       // Get current selection (from draft)
@@ -249,6 +262,7 @@ export default class DraftWysiwyg extends Component {
    }
 
    render() {
+      console.log('RERENDER');
       const {fileDrag, percent} = this.state;
       const classNames = ['wrapper'];;
       if(fileDrag){
@@ -263,7 +277,8 @@ export default class DraftWysiwyg extends Component {
                     ref="editor"
                     handleDroppedFiles={::this.dropFile}
                     blockRendererFn={::this.blockRenderer}
-                {...this.props} />
+                  {...this.props}
+                  readOnly={this.state.readOnly === undefined ? this.props.readOnly : this.state.readOnly}/>
             {this.renderToolbar()}
             {percent ? <div className="uploading-progress">{percent}%</div> : null}
          </div>
