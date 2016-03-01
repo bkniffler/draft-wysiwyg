@@ -76,9 +76,7 @@ export default class DraftWysiwyg extends Component {
    // Handle block dropping
    drop(e) {
       if(containsFiles(e)){
-         e.preventDefault();
-         this.dropFile(e);
-         return false;
+         return;
       }
       // Get data 'text' (anything else won't move the cursor) and expecting kind of data (text/key)
       var data = e.dataTransfer.getData("text") ? e.dataTransfer.getData("text").split(':') : [];
@@ -221,12 +219,12 @@ export default class DraftWysiwyg extends Component {
    }
 
    // Handle drop
-   dropFile(e){
+   dropFile(e, files){
       this.setState({fileDrag: false, uploading: true});
 
       var data = new FormData();
-      for(var key in e.dataTransfer.files){
-         data.append('files', e.dataTransfer.files[key]);
+      for(var key in files){
+         data.append('files', files[key]);
       }
       request.post('/upload')
           .accept('application/json')
@@ -242,7 +240,7 @@ export default class DraftWysiwyg extends Component {
              else if(res.body.files && res.body.files.length){
                 var value = this.state.value;
                 res.body.files.forEach(function(x){
-                   value = DraftWysiwyg.AddBlock(value, null, 'image', x);
+                   value = DraftWysiwyg.AddBlock(value, e, 'image', x);
                 });
                 this.setState({value});
              }
@@ -263,6 +261,7 @@ export default class DraftWysiwyg extends Component {
                     editorState={this.state.value}
                     onChange={::this.updateValue}
                     ref="editor"
+                    handleDroppedFiles={::this.dropFile}
                     blockRendererFn={::this.blockRenderer}
                 {...this.props} />
             {this.renderToolbar()}

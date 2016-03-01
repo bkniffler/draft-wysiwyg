@@ -25363,9 +25363,7 @@
 	         var _this2 = this;
 
 	         if (containsFiles(e)) {
-	            e.preventDefault();
-	            this.dropFile(e);
-	            return false;
+	            return;
 	         }
 	         // Get data 'text' (anything else won't move the cursor) and expecting kind of data (text/key)
 	         var data = e.dataTransfer.getData("text") ? e.dataTransfer.getData("text").split(':') : [];
@@ -25528,14 +25526,14 @@
 
 	   }, {
 	      key: "dropFile",
-	      value: function dropFile(e) {
+	      value: function dropFile(e, files) {
 	         var _this4 = this;
 
 	         this.setState({ fileDrag: false, uploading: true });
 
 	         var data = new FormData();
-	         for (var key in e.dataTransfer.files) {
-	            data.append('files', e.dataTransfer.files[key]);
+	         for (var key in files) {
+	            data.append('files', files[key]);
 	         }
 	         _superagent2.default.post('/upload').accept('application/json').send(data).on('progress', function (_ref) {
 	            var percent = _ref.percent;
@@ -25548,7 +25546,7 @@
 	            } else if (res.body.files && res.body.files.length) {
 	               var value = _this4.state.value;
 	               res.body.files.forEach(function (x) {
-	                  value = DraftWysiwyg.AddBlock(value, null, 'image', x);
+	                  value = DraftWysiwyg.AddBlock(value, e, 'image', x);
 	               });
 	               _this4.setState({ value: value });
 	            }
@@ -25574,6 +25572,7 @@
 	               editorState: this.state.value,
 	               onChange: this.updateValue.bind(this),
 	               ref: "editor",
+	               handleDroppedFiles: this.dropFile.bind(this),
 	               blockRendererFn: this.blockRenderer.bind(this)
 	            }, this.props)),
 	            this.renderToolbar(),
