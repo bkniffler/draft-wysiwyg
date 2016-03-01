@@ -25072,16 +25072,12 @@
 	          "entityMap": {},
 	          "blocks": [{
 	            "key": "djcej",
-	            "text": "Resizeable Youtube block and stylable caption.",
+	            "text": "Resizeable block, click circle in top right corner for toolbar",
 	            "type": "unstyled",
 	            "depth": 0,
 	            "inlineStyleRanges": [{
-	              "offset": 11,
-	              "length": 7,
-	              "style": "BOLD"
-	            }, {
 	              "offset": 0,
-	              "length": 25,
+	              "length": 62,
 	              "style": "ITALIC"
 	            }],
 	            "entityRanges": []
@@ -25119,8 +25115,8 @@
 	      "type": "TOKEN",
 	      "mutability": "MUTABLE",
 	      "data": {
-	        "width": 80,
-	        "height": 160,
+	        "width": 70,
+	        "height": 170,
 	        "caption": {
 	          "entityMap": {},
 	          "blocks": [{
@@ -25128,7 +25124,11 @@
 	            "text": "This blue div is freely resizeable (relative horizontal, absolute vertical)",
 	            "type": "unstyled",
 	            "depth": 0,
-	            "inlineStyleRanges": [],
+	            "inlineStyleRanges": [{
+	              "offset": 17,
+	              "length": 6,
+	              "style": "BOLD"
+	            }],
 	            "entityRanges": []
 	          }]
 	        }
@@ -25144,7 +25144,7 @@
 	    "entityRanges": []
 	  }, {
 	    "key": "1ahm3",
-	    "text": "Try drag&drop, resizing, toolbars, whatever. WIP with bugs!",
+	    "text": "Try drag&drop, resizing, toolbars, whatever. WIP with bugs, tested with chrome!",
 	    "type": "header-4",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
@@ -25165,12 +25165,23 @@
 	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
 	    "type": "unstyled",
 	    "depth": 0,
-	    "inlineStyleRanges": [],
+	    "inlineStyleRanges": [{
+	      "offset": 539,
+	      "length": 3,
+	      "style": "BOLD"
+	    }],
 	    "entityRanges": []
 	  }, {
 	    "key": "19gd8",
-	    "text": "",
-	    "type": "unstyled",
+	    "text": "Drop a file here, or a block, anything!",
+	    "type": "header-3",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "dhdth",
+	    "text": "And change the image captions text and styles.",
+	    "type": "header-4",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
@@ -25189,6 +25200,20 @@
 	    "key": "30nh",
 	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea",
 	    "type": "unstyled",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "9u0bg",
+	    "text": "Toolbars. Toolbars everywhere!",
+	    "type": "header-3",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": []
+	  }, {
+	    "key": "8vni4",
+	    "text": "Easy to implement for your custom blocks.",
+	    "type": "header-4",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
@@ -45992,7 +46017,7 @@
 	            }
 	            this.props.blockProps.setReadOnly(true);
 	            this.setState({ readOnly: false });
-	            document.addEventListener('click', this.listener, false);
+	            document.addEventListener('mousedown', this.listener, false);
 	        }
 	    }, {
 	        key: 'listener',
@@ -46001,7 +46026,7 @@
 	            if (e.target === component || component.contains(e.target)) {
 	                return;
 	            }
-	            document.removeEventListener('click', this.listener, false);
+	            document.removeEventListener('mousedown', this.listener, false);
 	            this.props.blockProps.setReadOnly(false);
 	            this.setState({ readOnly: true });
 	        }
@@ -46012,7 +46037,7 @@
 
 	            return _react2.default.createElement(
 	                'div',
-	                { ref: 'div', onClick: this.focus.bind(this) },
+	                { ref: 'div', onMouseDown: this.focus.bind(this) },
 	                _react2.default.createElement(_src.Draft, _extends({}, this.props.blockProps.editorProps, { value: this.props.value, updateValue: (_context = this.props).onChange.bind(_context), readOnly: this.state.readOnly }))
 	            );
 	        }

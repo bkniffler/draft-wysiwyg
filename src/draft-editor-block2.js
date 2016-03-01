@@ -25,7 +25,7 @@ export default class DraftEditorBlock extends Component {
         }
         this.props.blockProps.setReadOnly(true);
         this.setState({readOnly: false});
-        document.addEventListener('click', this.listener, false);
+        document.addEventListener('mousedown', this.listener, false);
     }
 
     listener(e) {
@@ -33,14 +33,14 @@ export default class DraftEditorBlock extends Component {
         if (e.target === component || component.contains(e.target)) {
             return;
         }
-        document.removeEventListener('click', this.listener, false);
+        document.removeEventListener('mousedown', this.listener, false);
         this.props.blockProps.setReadOnly(false);
         this.setState({readOnly: true});
     }
 
     render() {
         return (
-            <div ref="div" onClick={::this.focus}>
+            <div ref="div" onMouseDown={::this.focus}>
                 <Draft {...this.props.blockProps.editorProps} value={this.props.value} updateValue={::this.props.onChange} readOnly={this.state.readOnly}/>
             </div>
         );
