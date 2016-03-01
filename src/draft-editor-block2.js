@@ -16,6 +16,12 @@ export default class DraftEditorBlock extends Component {
         if(this.state.readOnly !== state.readOnly){
             return true;
         }
+        /*if(this.props.blockProps.editorProps.readOnly !== props.blockProps.editorProps.readOnly){
+            if(props.blockProps.editorProps.readOnly && state.readOnly === false){
+                this.setState({readOnly: true});
+            }
+            return false;
+        }*/
         return false;
     }
 
@@ -30,7 +36,8 @@ export default class DraftEditorBlock extends Component {
 
     listener(e) {
         var component = ReactDOM.findDOMNode(this.refs.div);
-        if (e.target === component || component.contains(e.target)) {
+        var editor = findAncestor(component, 'DraftEditor-root');
+        if (e.target === component || component.contains(e.target) || !editor.contains(e.target)) {
             return;
         }
         document.removeEventListener('mousedown', this.listener, false);
@@ -45,4 +52,9 @@ export default class DraftEditorBlock extends Component {
             </div>
         );
     }
+}
+
+function findAncestor (el, cls) {
+    while ((el = el.parentElement) && !el.classList.contains(cls));
+    return el;
 }

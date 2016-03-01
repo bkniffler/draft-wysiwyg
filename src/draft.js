@@ -262,7 +262,6 @@ export default class DraftWysiwyg extends Component {
    }
 
    render() {
-      console.log('RERENDER');
       const {fileDrag, percent} = this.state;
       const classNames = ['wrapper'];;
       if(fileDrag){
