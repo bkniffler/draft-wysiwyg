@@ -60,14 +60,15 @@
 .draft-resizeable-wrapper .overlay-m {
     cursor: move;
     border-radius: 20px;
-    border: 1px solid #3d3d3d;
-    background-color: white;
+    background-color: transparent;
+    color: white;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 1px;
+    right: 20px;
     z-index: 1;
     width: 10px;
     height: 10px;
+    font-size: 30px;
 }
 
 [data-tooltip] {
@@ -264,4 +265,28 @@
     background-color: rgba(0, 0, 0, 0.2);
     text-align: center;
     color: white;
+}
+
+.caption-wrapper{
+    display: inline;
+}
+.draft-resizeable-wrapper.with-caption{
+    margin-bottom: 40px!important;
+}
+.caption-text {
+    position: absolute;
+    bottom: -30px;
+    width: 100%;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 1.4;
+    color: rgba(0,0,0,.6);
+    letter-spacing: 0;
+}
+.caption-text .paragraph {
+    margin-top: 10px!important
+}
+.caption-text * {
+    text-align: center!important;
 }

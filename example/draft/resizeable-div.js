@@ -20,5 +20,6 @@ class Div extends Component {
 }
 export default ResizeableWrapper(Div, {
    resizeSteps: 10,
+   caption: true,
    vertical: 'absolute'
 });

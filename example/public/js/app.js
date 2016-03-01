@@ -5365,8 +5365,19 @@
 
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Example).call(this, props));
 
+	        var data = localStorage.getItem("data");
+	        if (data) {
+	            try {
+	                data = JSON.parse(data);
+	            } catch (err) {
+	                data = null;
+	                console.error(err);
+	            }
+	        }
 	        _this.state = {
-	            data: _draft.Data
+	            data: data || _draft.Data,
+	            view: 'edit',
+	            saved: false
 	        };
 	        return _this;
 	    }
@@ -5386,9 +5397,14 @@
 	                    component: _draft.Div2,
 	                    props: props
 	                };
-	            } else if (type === 'header-one') {
+	            } else if (type === 'unstyled') {
 	                return {
-	                    component: _draft.Header1,
+	                    component: _draft.Paragraph,
+	                    props: props
+	                };
+	            } else if (type.indexOf('header-') === 0) {
+	                return {
+	                    component: (0, _draft.Header)(type.split('-')[1]),
 	                    props: props
 	                };
 	            } else if (type === 'youtube') {
@@ -5404,52 +5420,85 @@
 	            }
 	        }
 	    }, {
-	        key: 'render',
-	        value: function render() {
+	        key: 'save',
+	        value: function save() {
 	            var _this2 = this;
 
-	            var data = this.state.data;
+	            localStorage.setItem("data", JSON.stringify(this.state.data));
+	            this.setState({
+	                saved: true
+	            });
+	            setTimeout(function () {
+	                _this2.setState({
+	                    saved: false
+	                });
+	            }, 1500);
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _this3 = this;
 
-	            var draftToolbar = _react2.default.createElement(_src.DraftToolbar, null);
+	            var _state = this.state;
+	            var data = _state.data;
+	            var view = _state.view;
+	            var saved = _state.saved;
+
+
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'TexEditor-container' },
+	                { className: 'flex-container' },
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'TeXEditor-root' },
+	                    { className: 'head' },
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'TeXEditor-editor' },
-	                        _react2.default.createElement(_src.Draft, { toolbar: draftToolbar, renderBlock: this.renderBlock.bind(this), updateValue: function updateValue(v) {
-	                                return _this2.setState({ data: v });
-	                            }, value: data })
+	                        { className: 'logo' },
+	                        'Draft-Wysiwyg'
+	                    ),
+	                    _react2.default.createElement(
+	                        'button',
+	                        { className: "button" + (view === 'json' ? ' active' : ''), onClick: function onClick() {
+	                                return _this3.setState({ view: 'json' });
+	                            } },
+	                        'See JSON'
+	                    ),
+	                    _react2.default.createElement(
+	                        'button',
+	                        { className: "button" + (view === 'edit' ? ' active' : ''), onClick: function onClick() {
+	                                return _this3.setState({ view: 'edit' });
+	                            } },
+	                        'See Editor'
+	                    ),
+	                    _react2.default.createElement(
+	                        'button',
+	                        { className: 'button', onClick: this.save.bind(this) },
+	                        saved ? 'Saved!' : 'Save to localstorage'
 	                    )
 	                ),
 	                _react2.default.createElement(
-	                    'button',
-	                    { className: 'TeXEditor-insert', onClick: function onClick() {
-	                            return _this2.setState({ data: _src.Draft.AddBlock(data, 'end', 'div', {}, true) });
-	                        } },
-	                    'Horizontal+Vertical'
+	                    'div',
+	                    { className: 'container-content', style: { display: view === 'json' ? 'block' : 'none' } },
+	                    _react2.default.createElement(
+	                        'pre',
+	                        { style: { whiteSpace: 'pre-wrap', width: '900px', margin: 'auto' } },
+	                        JSON.stringify(data, null, 3)
+	                    )
 	                ),
 	                _react2.default.createElement(
-	                    'button',
-	                    { className: 'TeXEditor-insert2', onClick: function onClick() {
-	                            return _this2.setState({ data: _src.Draft.AddBlock(data, 'start', 'div2', {}, true) });
-	                        } },
-	                    'Add Horizontal only'
-	                ),
-	                _react2.default.createElement(
-	                    'button',
-	                    { className: 'TeXEditor-insert3', onClick: function onClick() {
-	                            return _this2.setState({ data: _src.Draft.AddBlock(data, 'start', 'youtube', {}, true) });
-	                        } },
-	                    'Add Youtube'
-	                ),
-	                _react2.default.createElement(
-	                    'pre',
-	                    { style: { whiteSpace: 'pre-wrap' } },
-	                    JSON.stringify(data, null, 3)
+	                    'div',
+	                    { className: 'container-content', style: { display: view !== 'json' ? 'block' : 'none' } },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'TeXEditor-root' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'TeXEditor-editor' },
+	                            _react2.default.createElement(_src.Draft, { renderBlock: this.renderBlock.bind(this), updateValue: function updateValue(v) {
+	                                    return _this3.setState({ data: v });
+	                                }, value: data })
+	                        )
+	                    )
 	                )
 	            );
 	        }
@@ -24964,7 +25013,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Image = exports.Header1 = exports.Youtube = exports.Div2 = exports.Div = exports.Data = undefined;
+	exports.Image = exports.Paragraph = exports.Header = exports.Youtube = exports.Div2 = exports.Div = exports.Data = undefined;
 
 	var _data = __webpack_require__(349);
 
@@ -24974,19 +25023,23 @@
 
 	var _resizeableDiv2 = _interopRequireDefault(_resizeableDiv);
 
-	var _resizeableDiv3 = __webpack_require__(498);
+	var _resizeableDiv3 = __webpack_require__(499);
 
 	var _resizeableDiv4 = _interopRequireDefault(_resizeableDiv3);
 
-	var _youtube = __webpack_require__(499);
+	var _youtube = __webpack_require__(500);
 
 	var _youtube2 = _interopRequireDefault(_youtube);
 
-	var _header = __webpack_require__(500);
+	var _header = __webpack_require__(501);
 
 	var _header2 = _interopRequireDefault(_header);
 
-	var _image = __webpack_require__(501);
+	var _paragraph = __webpack_require__(502);
+
+	var _paragraph2 = _interopRequireDefault(_paragraph);
+
+	var _image = __webpack_require__(503);
 
 	var _image2 = _interopRequireDefault(_image);
 
@@ -24996,7 +25049,8 @@
 	exports.Div = _resizeableDiv2.default;
 	exports.Div2 = _resizeableDiv4.default;
 	exports.Youtube = _youtube2.default;
-	exports.Header1 = _header2.default;
+	exports.Header = _header2.default;
+	exports.Paragraph = _paragraph2.default;
 	exports.Image = _image2.default;
 
 /***/ },
@@ -25011,44 +25065,87 @@
 	      "type": "TOKEN",
 	      "mutability": "MUTABLE",
 	      "data": {
-	        "width": 50,
-	        "height": 140
+	        "width": 60,
+	        "height": null,
+	        "align": "center",
+	        "caption": {
+	          "entityMap": {},
+	          "blocks": [{
+	            "key": "djcej",
+	            "text": "Resizeable Youtube block and stylable caption.",
+	            "type": "unstyled",
+	            "depth": 0,
+	            "inlineStyleRanges": [{
+	              "offset": 11,
+	              "length": 7,
+	              "style": "BOLD"
+	            }, {
+	              "offset": 0,
+	              "length": 25,
+	              "style": "ITALIC"
+	            }],
+	            "entityRanges": []
+	          }]
+	        }
 	      }
 	    },
 	    "1": {
 	      "type": "TOKEN",
 	      "mutability": "MUTABLE",
 	      "data": {
-	        "width": 20,
+	        "encoding": "7bit",
+	        "filename": "whoa.jpg",
+	        "mimetype": "image/jpeg",
+	        "originalname": "whoa.jpg",
+	        "size": "whoa.jpg",
+	        "url": "/whoa.jpg",
+	        "width": 40,
 	        "height": null,
-	        "align": "left"
+	        "align": "right",
+	        "caption": {
+	          "entityMap": {},
+	          "blocks": [{
+	            "key": "6jtmg",
+	            "text": "Whoa.. you can even drop files!",
+	            "type": "unstyled",
+	            "depth": 0,
+	            "inlineStyleRanges": [],
+	            "entityRanges": []
+	          }]
+	        }
 	      }
 	    },
 	    "2": {
 	      "type": "TOKEN",
 	      "mutability": "MUTABLE",
 	      "data": {
-	        "width": 40,
-	        "height": 130,
-	        "align": "right"
+	        "width": 80,
+	        "height": 160,
+	        "caption": {
+	          "entityMap": {},
+	          "blocks": [{
+	            "key": "1nmt7",
+	            "text": "This blue div is freely resizeable (relative horizontal, absolute vertical)",
+	            "type": "unstyled",
+	            "depth": 0,
+	            "inlineStyleRanges": [],
+	            "entityRanges": []
+	          }]
+	        }
 	      }
 	    }
 	  },
 	  "blocks": [{
-	    "key": "a62e1",
-	    "text": " ",
-	    "type": "div",
+	    "key": "1ahm2",
+	    "text": "You can edit this document",
+	    "type": "header-1",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
-	    "entityRanges": [{
-	      "offset": 0,
-	      "length": 1,
-	      "key": 0
-	    }]
+	    "entityRanges": []
 	  }, {
-	    "key": "1ahm2",
-	    "text": "",
-	    "type": "unstyled",
+	    "key": "1ahm3",
+	    "text": "Try drag&drop, resizing, toolbars, whatever. WIP with bugs!",
+	    "type": "header-4",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
@@ -25061,31 +25158,42 @@
 	    "entityRanges": [{
 	      "offset": 0,
 	      "length": 1,
-	      "key": 1
+	      "key": 0
 	    }]
 	  }, {
-	    "key": "9506i",
+	    "key": "c65i7",
 	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
 	    "type": "unstyled",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
 	  }, {
-	    "key": "6eq26",
+	    "key": "19gd8",
 	    "text": "",
 	    "type": "unstyled",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
 	  }, {
-	    "key": "b15f2",
-	    "text": "",
+	    "key": "dls1m",
+	    "text": " ",
+	    "type": "image",
+	    "depth": 0,
+	    "inlineStyleRanges": [],
+	    "entityRanges": [{
+	      "offset": 0,
+	      "length": 1,
+	      "key": 1
+	    }]
+	  }, {
+	    "key": "30nh",
+	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea",
 	    "type": "unstyled",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
 	    "entityRanges": []
 	  }, {
-	    "key": "9etpi",
+	    "key": "7v1e5",
 	    "text": " ",
 	    "type": "div",
 	    "depth": 0,
@@ -25096,36 +25204,8 @@
 	      "key": 2
 	    }]
 	  }, {
-	    "key": "19gd8",
-	    "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea ",
-	    "type": "unstyled",
-	    "depth": 0,
-	    "inlineStyleRanges": [],
-	    "entityRanges": []
-	  }, {
-	    "key": "24ehn",
-	    "text": "",
-	    "type": "unstyled",
-	    "depth": 0,
-	    "inlineStyleRanges": [],
-	    "entityRanges": []
-	  }, {
-	    "key": "71vti",
-	    "text": "",
-	    "type": "unstyled",
-	    "depth": 0,
-	    "inlineStyleRanges": [],
-	    "entityRanges": []
-	  }, {
-	    "key": "e0q65",
+	    "key": "crak8",
 	    "text": "takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-	    "type": "unstyled",
-	    "depth": 0,
-	    "inlineStyleRanges": [],
-	    "entityRanges": []
-	  }, {
-	    "key": "cj7f3",
-	    "text": "",
 	    "type": "unstyled",
 	    "depth": 0,
 	    "inlineStyleRanges": [],
@@ -25194,6 +25274,7 @@
 
 	exports.default = (0, _src.ResizeableWrapper)(Div, {
 	   resizeSteps: 10,
+	   caption: true,
 	   vertical: 'absolute'
 	});
 
@@ -25308,23 +25389,33 @@
 	   _createClass(DraftWysiwyg, [{
 	      key: "shouldComponentUpdate",
 	      value: function shouldComponentUpdate(props, state) {
-	         // Don't update if new value in props, instead setState() with new value
-	         if (props.value !== this.lastState) {
-	            if (!props.value) {
-	               // No value? Empty
-	               this.setState({
-	                  value: _draftJs.EditorState.createEmpty(decorator)
-	               });
-	            } else {
-	               // Got value? Push it.
-	               this.setState({
-	                  value: _draftJs.EditorState.push(this.state.value, _draftJs.ContentState.createFromBlockArray((0, _draftJs.convertFromRaw)(props.value)))
-	               });
-	            }
-	            this.lastState = props.value;
-	            return false;
+	         if (this.suppress) return false;
+	         if (this.state.active !== state.active) {
+	            return true;
 	         }
-	         return true;
+	         if (this.state.value !== state.value) {
+	            return true;
+	         }
+	         if (this.props.readOnly !== props.readOnly) {
+	            return true;
+	         }
+	         if (this.state.readOnly !== state.readOnly) {
+	            return true;
+	         }
+	         if (this.props.fileDrag !== props.fileDrag) {
+	            return true;
+	         }
+	         if (this.props.uploading !== props.uploading) {
+	            return true;
+	         }
+	         if (this.props.percent !== props.percent) {
+	            return true;
+	         }
+	         if (this.force) {
+	            this.force = false;
+	            return true;
+	         }
+	         return false;
 	      }
 
 	      // Focus
@@ -25347,12 +25438,12 @@
 
 	   }, {
 	      key: "updateValue",
-	      value: function updateValue(editorState) {
-	         this.lastState = (0, _draftJs.convertToRaw)(editorState.getCurrentContent());
-	         if (this.props.updateValue) {
-	            this.props.updateValue(this.lastState);
-	         }
+	      value: function updateValue(editorState, force) {
+	         if (this.suppress && !force) return;
 	         this.setState({ value: editorState });
+	         if (this.props.updateValue) {
+	            this.props.updateValue((0, _draftJs.convertToRaw)(editorState.getCurrentContent()), editorState);
+	         }
 	      }
 	   }, {
 	      key: "drop",
@@ -25401,7 +25492,7 @@
 	         var entityKey = block.getEntityAt(0);
 	         if (entityKey) {
 	            _draftJs.Entity.mergeData(entityKey, _extends({}, data));
-	            // Force refresh
+	            // workaround to refresh data (try updateValue with this.state.value -> blocks will not be resized)
 	            this.updateValue(_draftJs.EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
 	         }
 	         return _extends({}, data);
@@ -25426,6 +25517,10 @@
 	                  // Force refresh
 	                  _this3.updateValue(_draftJs.EditorState.createWithContent(_this3.state.value.getCurrentContent(), decorator));
 	               },
+	               setReadOnly: function setReadOnly(state) {
+	                  _this3.setState({ readOnly: state ? true : undefined });
+	               },
+	               editorProps: this.props,
 	               active: this.state.active === contentBlock.key
 	            }));
 	         }
@@ -25479,6 +25574,9 @@
 	   }, {
 	      key: "renderToolbar",
 	      value: function renderToolbar() {
+	         if (this.props.readOnly === true || this.state.readOnly === true) {
+	            return null;
+	         }
 	         var editorState = this.state.value;
 	         var onChange = this.updateValue.bind(this);
 	         // Get current selection (from draft)
@@ -25556,6 +25654,7 @@
 	   }, {
 	      key: "render",
 	      value: function render() {
+	         console.log('RERENDER');
 	         var _state = this.state;
 	         var fileDrag = _state.fileDrag;
 	         var percent = _state.percent;
@@ -25574,7 +25673,8 @@
 	               ref: "editor",
 	               handleDroppedFiles: this.dropFile.bind(this),
 	               blockRendererFn: this.blockRenderer.bind(this)
-	            }, this.props)),
+	            }, this.props, {
+	               readOnly: this.state.readOnly === undefined ? this.props.readOnly : this.state.readOnly })),
 	            this.renderToolbar(),
 	            percent ? _react2.default.createElement(
 	               "div",
@@ -44808,7 +44908,6 @@
 	         var _props = this.props;
 	         var editorState = _props.editorState;
 	         var blockTypes = _props.blockTypes;
-	         var alignmentStyles = _props.alignmentStyles;
 	         var inlineStyles = _props.inlineStyles;
 	         var actions = _props.actions;
 
@@ -44875,11 +44974,19 @@
 	         "span",
 	         null,
 	         "H1"
-	      ), style: 'header-one' }, { label: 'H2', button: _react2.default.createElement(
+	      ), style: 'header-1' }, { label: 'H2', button: _react2.default.createElement(
 	         "span",
 	         null,
 	         "H2"
-	      ), style: 'header-two' }, { label: 'Blockquote', button: _react2.default.createElement(
+	      ), style: 'header-2' }, { label: 'H3', button: _react2.default.createElement(
+	         "span",
+	         null,
+	         "H3"
+	      ), style: 'header-3' }, { label: 'H4', button: _react2.default.createElement(
+	         "span",
+	         null,
+	         "H4"
+	      ), style: 'header-4' }, { label: 'Blockquote', button: _react2.default.createElement(
 	         "i",
 	         null,
 	         "\""
@@ -45403,6 +45510,10 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
+	var _draftEditorBlock = __webpack_require__(498);
+
+	var _draftEditorBlock2 = _interopRequireDefault(_draftEditorBlock);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -45507,7 +45618,7 @@
 	         var isTop = vertical ? y < tolerance : false;
 	         var isLeft = horizontal ? x < tolerance : false;
 	         var isRight = horizontal ? x >= b.width - tolerance : false;
-	         var isBottom = vertical ? y >= b.height - tolerance : false;
+	         var isBottom = vertical ? y >= b.height - tolerance && y < b.height : false;
 
 	         var resize = isTop || isLeft || isRight || isBottom;
 
@@ -45575,6 +45686,7 @@
 
 	            _this3.setState(newState);
 	            e.stopPropagation();
+	            e.preventDefault();
 	            return false;
 	         };
 
@@ -45598,6 +45710,7 @@
 
 	         this.setState({ clicked: true });
 	         e.stopPropagation();
+	         e.preventDefault();
 	         return false;
 	      }
 	      // Handle start-drag and setData with blockKey
@@ -45627,6 +45740,7 @@
 	         var horizontal = _props3.horizontal;
 	         var ratio = _props3.ratio;
 	         var handles = _props3.handles;
+	         var caption = _props3.caption;
 	         var isTop = hoverPosition.isTop;
 	         var isLeft = hoverPosition.isLeft;
 	         var isRight = hoverPosition.isRight;
@@ -45726,6 +45840,7 @@
 	         // ClassNames
 	         var classes = ["draft-resizeable-wrapper"];
 	         if (active) classes.push('active');
+	         if (caption && this.props.blockProps.caption || caption && active) classes.push('with-caption');
 
 	         // Wrap into ratiobox to maintain aspect-ratio
 	         if (vertical === 'auto' && ratio) {
@@ -45751,12 +45866,28 @@
 	               className: classes.join(' '),
 	               style: style },
 	            resize && clicked ? _react2.default.createElement('div', { className: 'overlay' }) : null,
-	            handles ? _react2.default.createElement('div', { className: 'overlay-m' }) : null,
+	            handles ? _react2.default.createElement(
+	               'div',
+	               { className: 'overlay-m' },
+	               '◉'
+	            ) : null,
 	            handles ? _react2.default.createElement('div', { className: 'overlay-l' }) : null,
 	            handles ? _react2.default.createElement('div', { className: 'overlay-r' }) : null,
 	            handles ? _react2.default.createElement('div', { className: 'overlay-t' }) : null,
 	            handles ? _react2.default.createElement('div', { className: 'overlay-b' }) : null,
-	            content
+	            content,
+	            caption ? _react2.default.createElement(
+	               'div',
+	               { className: 'caption-text', onClick: function onClick(e) {
+	                     return e.stopPropagation();
+	                  } },
+	               _react2.default.createElement(_draftEditorBlock2.default, _extends({}, this.props, {
+	                  placeholder: 'Titel ...',
+	                  value: this.props.blockProps.caption,
+	                  onChange: function onChange(v) {
+	                     return _this4.props.blockProps.setEntityData(_this4.props.block, { caption: v });
+	                  } }))
+	            ) : null
 	         );
 	      }
 	   }]);
@@ -45771,9 +45902,20 @@
 	   vertical: false,
 	   ratio: null,
 	   resizeSteps: 5,
-	   handles: false
+	   handles: false,
+	   caption: false
 	};
-
+	var defaultCaption = {
+	   "entityMap": {},
+	   "blocks": [{
+	      "key": "2fo22",
+	      "text": "Caption ...",
+	      "type": "unstyled",
+	      "depth": 0,
+	      "inlineStyleRanges": [],
+	      "entityRanges": []
+	   }]
+	};
 	// Export
 	function WrapBlock(e, options) {
 	   return function (props) {
@@ -45788,6 +45930,101 @@
 
 /***/ },
 /* 498 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(192);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactDom = __webpack_require__(400);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
+	var _src = __webpack_require__(351);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var DraftEditorBlock = function (_Component) {
+	    _inherits(DraftEditorBlock, _Component);
+
+	    function DraftEditorBlock(props) {
+	        _classCallCheck(this, DraftEditorBlock);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(DraftEditorBlock).call(this, props));
+
+	        _this.state = {
+	            readOnly: true,
+	            v: null
+	        };
+	        _this.listener = _this.listener.bind(_this);
+	        return _this;
+	    }
+
+	    _createClass(DraftEditorBlock, [{
+	        key: 'shouldComponentUpdate',
+	        value: function shouldComponentUpdate(props, state) {
+	            if (this.state.readOnly !== state.readOnly) {
+	                return true;
+	            }
+	            return false;
+	        }
+	    }, {
+	        key: 'focus',
+	        value: function focus() {
+	            if (!this.state.readOnly) {
+	                return;
+	            }
+	            this.props.blockProps.setReadOnly(true);
+	            this.setState({ readOnly: false });
+	            document.addEventListener('click', this.listener, false);
+	        }
+	    }, {
+	        key: 'listener',
+	        value: function listener(e) {
+	            var component = _reactDom2.default.findDOMNode(this.refs.div);
+	            if (e.target === component || component.contains(e.target)) {
+	                return;
+	            }
+	            document.removeEventListener('click', this.listener, false);
+	            this.props.blockProps.setReadOnly(false);
+	            this.setState({ readOnly: true });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            var _context;
+
+	            return _react2.default.createElement(
+	                'div',
+	                { ref: 'div', onClick: this.focus.bind(this) },
+	                _react2.default.createElement(_src.Draft, _extends({}, this.props.blockProps.editorProps, { value: this.props.value, updateValue: (_context = this.props).onChange.bind(_context), readOnly: this.state.readOnly }))
+	            );
+	        }
+	    }]);
+
+	    return DraftEditorBlock;
+	}(_react.Component);
+
+	exports.default = DraftEditorBlock;
+
+/***/ },
+/* 499 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45846,7 +46083,7 @@
 	exports.default = (0, _src.ResizeableWrapper)(Div);
 
 /***/ },
-/* 499 */
+/* 500 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45932,11 +46169,61 @@
 	   resizeSteps: 10,
 	   ratio: 2 / 3,
 	   vertical: 'auto',
-	   handles: true
+	   handles: true,
+	   caption: true
 	});
 
 /***/ },
-/* 500 */
+/* 501 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	exports.default = function (size) {
+	   return function (_Component) {
+	      _inherits(Header, _Component);
+
+	      function Header() {
+	         _classCallCheck(this, Header);
+
+	         return _possibleConstructorReturn(this, Object.getPrototypeOf(Header).apply(this, arguments));
+	      }
+
+	      _createClass(Header, [{
+	         key: 'render',
+	         value: function render() {
+	            return _react2.default.createElement('h' + size, { className: 'header' }, _react2.default.createElement(_DraftEditorBlock2.default, this.props));
+	         }
+	      }]);
+
+	      return Header;
+	   }(_react.Component);
+	};
+
+	var _react = __webpack_require__(192);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _DraftEditorBlock = __webpack_require__(397);
+
+	var _DraftEditorBlock2 = _interopRequireDefault(_DraftEditorBlock);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/***/ },
+/* 502 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45963,39 +46250,39 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var Header1 = function (_Component) {
-	   _inherits(Header1, _Component);
+	var Paragraph = function (_Component) {
+	   _inherits(Paragraph, _Component);
 
-	   function Header1() {
-	      _classCallCheck(this, Header1);
+	   function Paragraph() {
+	      _classCallCheck(this, Paragraph);
 
-	      return _possibleConstructorReturn(this, Object.getPrototypeOf(Header1).apply(this, arguments));
+	      return _possibleConstructorReturn(this, Object.getPrototypeOf(Paragraph).apply(this, arguments));
 	   }
 
-	   _createClass(Header1, [{
+	   _createClass(Paragraph, [{
 	      key: "render",
 	      value: function render() {
 	         return _react2.default.createElement(
-	            "h1",
-	            { className: "ui dividing header" },
+	            "div",
+	            { className: "paragraph" },
 	            _react2.default.createElement(_DraftEditorBlock2.default, this.props)
 	         );
 	      }
 	   }]);
 
-	   return Header1;
+	   return Paragraph;
 	}(_react.Component);
 
-	exports.default = Header1;
+	exports.default = Paragraph;
 
 /***/ },
-/* 501 */
+/* 503 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	   value: true
+	    value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -46015,37 +46302,38 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Img = function (_Component) {
-	   _inherits(Img, _Component);
+	    _inherits(Img, _Component);
 
-	   function Img() {
-	      _classCallCheck(this, Img);
+	    function Img() {
+	        _classCallCheck(this, Img);
 
-	      return _possibleConstructorReturn(this, Object.getPrototypeOf(Img).apply(this, arguments));
-	   }
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Img).apply(this, arguments));
+	    }
 
-	   _createClass(Img, [{
-	      key: 'render',
-	      value: function render() {
-	         var style = {
-	            width: '100%',
-	            height: '100%'
-	         };
+	    _createClass(Img, [{
+	        key: 'render',
+	        value: function render() {
+	            var style = {
+	                width: '100%',
+	                height: '100%'
+	            };
 
-	         return _react2.default.createElement(
-	            'div',
-	            { style: style, id: this.props.uniqueId },
-	            _react2.default.createElement('img', { src: this.props.blockProps.url, width: '100%', height: 'auto' }),
-	            _react2.default.createElement(_src.Toolbar, { active: this.props.active, parent: "#" + this.props.uniqueId, actions: this.props.actions })
-	         );
-	      }
-	   }]);
+	            return _react2.default.createElement(
+	                'div',
+	                { style: style, id: this.props.uniqueId },
+	                _react2.default.createElement('img', { src: this.props.blockProps.url, width: '100%', height: 'auto' }),
+	                _react2.default.createElement(_src.Toolbar, { active: this.props.active, parent: "#" + this.props.uniqueId, actions: this.props.actions })
+	            );
+	        }
+	    }]);
 
-	   return Img;
+	    return Img;
 	}(_react.Component);
 
 	exports.default = (0, _src.ResizeableWrapper)(Img, {
-	   resizeSteps: 10,
-	   vertical: 'auto'
+	    resizeSteps: 10,
+	    vertical: 'auto',
+	    caption: true
 	});
 
 /***/ }

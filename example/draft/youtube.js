@@ -34,5 +34,6 @@ export default ResizeableWrapper(Div, {
    resizeSteps: 10,
    ratio: 2/3,
    vertical: 'auto',
-   handles: true
+   handles: true,
+   caption: true
 });
