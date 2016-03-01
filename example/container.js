@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Div, Div2, Header1, Youtube, Image, Data} from "./draft";
+import {Div, Div2, Header, Youtube, Image, Data, Paragraph} from "./draft";
 import {Draft, DraftToolbar} from '../src';
 
 Draft.DisableWarnings();
@@ -8,8 +8,21 @@ Draft.DisableWarnings();
 export default class Example extends React.Component {
     constructor(props) {
         super(props);
+
+        var data = localStorage.getItem("data");
+        if(data){
+            try{
+                data = JSON.parse(data);
+            }
+            catch(err){
+                data = null;
+                console.error(err);
+            }
+        }
         this.state = {
-            data: Data
+            data: data || Data,
+            view: 'edit',
+            saved: false
         }
     }
 
@@ -28,9 +41,15 @@ export default class Example extends React.Component {
                 props
             };
         }
-        else if (type === 'header-one') {
+        else if (type === 'unstyled') {
             return {
-                component: Header1,
+                component: Paragraph,
+                props
+            };
+        }
+        else if (type.indexOf('header-')===0) {
+            return {
+                component: Header(type.split('-')[1]),
                 props
             };
         }
@@ -48,30 +67,54 @@ export default class Example extends React.Component {
         }
     }
 
+    save(){
+        localStorage.setItem("data", JSON.stringify(this.state.data));
+        this.setState({
+            saved: true
+        });
+        setTimeout(()=>{
+            this.setState({
+                saved: false
+            });
+        }, 1500)
+    }
+
     render() {
-        const {data} = this.state;
-        var draftToolbar = (
-            <DraftToolbar />
-        );
+        const {data, view, saved} = this.state;
+        
         return (
-            <div className="TexEditor-container">
-                <div className="TeXEditor-root">
-                    <div className="TeXEditor-editor">
-                        <Draft toolbar={draftToolbar} renderBlock={::this.renderBlock} updateValue={(v)=>this.setState({data:v})} value={data}/>
+            <div className="flex-container">
+                <div className="head">
+                    <div className="logo">Draft-Wysiwyg</div>
+                    <button className={"button"+(view==='json'?' active':'')} onClick={()=>this.setState({view: 'json'})}>
+                        See JSON
+                    </button>
+                    <button className={"button"+(view==='edit'?' active':'')} onClick={()=>this.setState({view: 'edit'})}>
+                        See Editor
+                    </button>
+                    <button className="button" onClick={::this.save}>
+                        {saved ? 'Saved!' : 'Save to localstorage'}
+                    </button>
+                    {/*<button className="button" onClick={()=>this.setState({data: Draft.AddBlock(data, 'end', 'div', {}, true)})}>
+                        Horizontal+Vertical
+                    </button>
+                    <button className="button" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'div2', {}, true)})}>Add
+                        Horizontal only
+                    </button>
+                    <button className="button" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'youtube', {}, true)})}>Add
+                        Youtube
+                    </button>*/}
+                </div>
+                <div className="container-content" style={{display: view==='json' ? 'block' : 'none'}}>
+                    <pre style={{whiteSpace: 'pre-wrap', width: '900px', margin: 'auto'}}>{JSON.stringify(data, null, 3)}</pre>
+                </div>
+                <div className="container-content" style={{display: view!=='json' ? 'block' : 'none'}}>
+                    <div className="TeXEditor-root">
+                        <div className="TeXEditor-editor">
+                            <Draft renderBlock={::this.renderBlock} updateValue={(v)=>this.setState({data:v})} value={data}/>
+                        </div>
                     </div>
                 </div>
-
-                <button className="TeXEditor-insert" onClick={()=>this.setState({data: Draft.AddBlock(data, 'end', 'div', {}, true)})}>
-                    Horizontal+Vertical
-                </button>
-                <button className="TeXEditor-insert2" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'div2', {}, true)})}>Add
-                    Horizontal only
-                </button>
-                <button className="TeXEditor-insert3" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'youtube', {}, true)})}>Add
-                    Youtube
-                </button>
-
-                <pre style={{whiteSpace: 'pre-wrap'}}>{JSON.stringify(data, null, 3)}</pre>
             </div>
         );
     }

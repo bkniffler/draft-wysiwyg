@@ -4,48 +4,99 @@ var rawContent = {
       "type": "TOKEN",
       "mutability": "MUTABLE",
       "data": {
-        "width": 50,
-        "height": 140
+        "width": 60,
+        "height": null,
+        "align": "center",
+        "caption": {
+          "entityMap": {},
+          "blocks": [
+            {
+              "key": "djcej",
+              "text": "Resizeable block, click circle in top right corner for toolbar",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 0,
+                  "length": 62,
+                  "style": "ITALIC"
+                }
+              ],
+              "entityRanges": []
+            }
+          ]
+        }
       }
     },
     "1": {
       "type": "TOKEN",
       "mutability": "MUTABLE",
       "data": {
-        "width": 20,
+        "encoding": "7bit",
+        "filename": "whoa.jpg",
+        "mimetype": "image/jpeg",
+        "originalname": "whoa.jpg",
+        "size": "whoa.jpg",
+        "url": "/whoa.jpg",
+        "width": 40,
         "height": null,
-        "align": "left"
+        "align": "right",
+        "caption": {
+          "entityMap": {},
+          "blocks": [
+            {
+              "key": "6jtmg",
+              "text": "Whoa.. you can even drop files!",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": []
+            }
+          ]
+        }
       }
     },
     "2": {
       "type": "TOKEN",
       "mutability": "MUTABLE",
       "data": {
-        "width": 40,
-        "height": 130,
-        "align": "right"
+        "width": 70,
+        "height": 170,
+        "caption": {
+          "entityMap": {},
+          "blocks": [
+            {
+              "key": "1nmt7",
+              "text": "This blue div is freely resizeable (relative horizontal, absolute vertical)",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 17,
+                  "length": 6,
+                  "style": "BOLD"
+                }
+              ],
+              "entityRanges": []
+            }
+          ]
+        }
       }
     }
   },
   "blocks": [
     {
-      "key": "a62e1",
-      "text": " ",
-      "type": "div",
+      "key": "1ahm2",
+      "text": "You can edit this document",
+      "type": "header-1",
       "depth": 0,
       "inlineStyleRanges": [],
-      "entityRanges": [
-        {
-          "offset": 0,
-          "length": 1,
-          "key": 0
-        }
-      ]
+      "entityRanges": []
     },
     {
-      "key": "1ahm2",
-      "text": "",
-      "type": "unstyled",
+      "key": "1ahm3",
+      "text": "Try drag&drop, resizing, toolbars, whatever. WIP with bugs, tested with chrome!",
+      "type": "header-4",
       "depth": 0,
       "inlineStyleRanges": [],
       "entityRanges": []
@@ -60,36 +111,80 @@ var rawContent = {
         {
           "offset": 0,
           "length": 1,
+          "key": 0
+        }
+      ]
+    },
+    {
+      "key": "c65i7",
+      "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [
+        {
+          "offset": 539,
+          "length": 3,
+          "style": "BOLD"
+        }
+      ],
+      "entityRanges": []
+    },
+    {
+      "key": "19gd8",
+      "text": "Drop a file here, or a block, anything!",
+      "type": "header-3",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": []
+    },
+    {
+      "key": "dhdth",
+      "text": "And change the image captions text and styles.",
+      "type": "header-4",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": []
+    },
+    {
+      "key": "dls1m",
+      "text": " ",
+      "type": "image",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [
+        {
+          "offset": 0,
+          "length": 1,
           "key": 1
         }
       ]
     },
     {
-      "key": "9506i",
-      "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+      "key": "30nh",
+      "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea",
       "type": "unstyled",
       "depth": 0,
       "inlineStyleRanges": [],
       "entityRanges": []
     },
     {
-      "key": "6eq26",
-      "text": "",
-      "type": "unstyled",
+      "key": "9u0bg",
+      "text": "Toolbars. Toolbars everywhere!",
+      "type": "header-3",
       "depth": 0,
       "inlineStyleRanges": [],
       "entityRanges": []
     },
     {
-      "key": "b15f2",
-      "text": "",
-      "type": "unstyled",
+      "key": "8vni4",
+      "text": "Easy to implement for your custom blocks.",
+      "type": "header-4",
       "depth": 0,
       "inlineStyleRanges": [],
       "entityRanges": []
     },
     {
-      "key": "9etpi",
+      "key": "7v1e5",
       "text": " ",
       "type": "div",
       "depth": 0,
@@ -103,40 +198,8 @@ var rawContent = {
       ]
     },
     {
-      "key": "19gd8",
-      "text": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea ",
-      "type": "unstyled",
-      "depth": 0,
-      "inlineStyleRanges": [],
-      "entityRanges": []
-    },
-    {
-      "key": "24ehn",
-      "text": "",
-      "type": "unstyled",
-      "depth": 0,
-      "inlineStyleRanges": [],
-      "entityRanges": []
-    },
-    {
-      "key": "71vti",
-      "text": "",
-      "type": "unstyled",
-      "depth": 0,
-      "inlineStyleRanges": [],
-      "entityRanges": []
-    },
-    {
-      "key": "e0q65",
+      "key": "crak8",
       "text": "takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-      "type": "unstyled",
-      "depth": 0,
-      "inlineStyleRanges": [],
-      "entityRanges": []
-    },
-    {
-      "key": "cj7f3",
-      "text": "",
       "type": "unstyled",
       "depth": 0,
       "inlineStyleRanges": [],
