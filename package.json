@@ -3,6 +3,16 @@
   "version": "0.0.15",
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
   "main": "./lib",
+  "keywords": [
+    "draftjs",
+    "draft-js",
+    "editor",
+    "wysiwyg",
+    "drag",
+    "drop",
+    "react",
+    "richtext"
+  ],
   "scripts": {
     "start": "node ./example",
     "build": "babel --presets es2015,stage-0,react src/ --out-dir lib/",
