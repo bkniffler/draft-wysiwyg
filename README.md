@@ -15,6 +15,8 @@ Currently, these are the features that work
 - Block toolbars
 - Interactive Youtube block
 - Block keydown handling to remove blocks (backspace) or move cursor to next/previous block
+- Nesting draft-js
+- Links
 - Some more things
 
 ## Installation
@@ -35,7 +37,6 @@ Sorry, didn't get to write documentation yet!
 There is a lot of stuff that needs to be done
 - Themes
 - Clean and optimize code, figure out proper API, make it more customizable
-- Drag/Drop handling of files on editor (maybe)
 - Write documentation ...
 
 ## Contributing
