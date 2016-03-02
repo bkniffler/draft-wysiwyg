@@ -1,15 +1,9 @@
 import React, {Component, PropTypes} from "react";
-import {Editor, Entity, EditorState, CompositeDecorator, ContentState, convertToRaw, convertFromRaw} from "draft-js";
+import {Editor, Entity, EditorState, CompositeDecorator, ContentState, convertToRaw, convertFromRaw, Modifier, SelectionState} from "draft-js";
 import {ContainsFiles, GetSelected} from './utils';
 import {AddBlock, RemoveBlock, GetNextBlock, GetPreviousBlock, SelectBlock} from './draft-utils';
 import Toolbar from './draft-toolbar'
 
-const decorator = new CompositeDecorator([]);
-const styleMap = {
-   'JUSTIFY': {
-      textAlign: 'justify'
-   },
-};
 export default class DraftWysiwyg extends Component {
    constructor(props) {
       super(props);
@@ -45,8 +39,11 @@ export default class DraftWysiwyg extends Component {
    }
 
    // Focus
-   focus(){
+   focus(e){
       this.refs.editor.focus();
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
    }
 
    // Remove toolbars and active blocks on blur
@@ -69,30 +66,45 @@ export default class DraftWysiwyg extends Component {
          return;
       }
       // Get data 'text' (anything else won't move the cursor) and expecting kind of data (text/key)
-      var data = e.dataTransfer.getData("text") ? e.dataTransfer.getData("text").split(':') : [];
+      var raw = e.dataTransfer.getData("text");
+      var data = raw ? raw.split(':') : [];
       if(data.length !== 2){
          return;
       }
-      e.preventDefault();
-
+      this.suppress = true;
+      var value = this.state.value;
       // Set timeout to allow cursor/selection to move to drop location
       setTimeout(()=> {
+         var selection = this.state.value.getSelection();
+         // Ugly workaround as dropped text (as in raw, e.g. 'type:xy') is inserted to editor, due to setTimeout
+         var newContent = value.getCurrentContent().merge({
+            selectionBefore: value.getSelection(),
+            selectionAfter: new SelectionState({
+               anchorKey: selection.anchorKey,
+               anchorOffset: selection.anchorOffset-raw.length,
+               focusKey: selection.focusKey,
+               focusOffset: selection.focusOffset-raw.length
+            }).set('hasFocus', true)
+         });
          // Existing block dropped
+         this.suppress = false;
          if(data[0] === 'key'){
             var blockKey = data[1];
             // Get content, selection, block
-            var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
-            var editorStateAfterInsert = AddBlock(this.state.value, null, block.getType(), Entity.get(block.getEntityAt(0)).data);
+            var block = value.getCurrentContent().getBlockForKey(blockKey);
+            var editorStateAfterInsert = AddBlock(EditorState.push(value, newContent, 'insert-fragment'), null, block.getType(), Entity.get(block.getEntityAt(0)).data);
             this.setState({value: RemoveBlock(editorStateAfterInsert, blockKey)});
          }
          // New block dropped
          else if(data[0] === 'type'){
             var blockType = data[1];
             // Get content, selection, block
-            var editorStateAfterInsert = AddBlock(this.state.value, null, blockType, {});
+            var editorStateAfterInsert = AddBlock(EditorState.push(value, newContent, 'insert-fragment'), null, blockType, {});
             this.setState({value: editorStateAfterInsert});
          }
       }, 1);
+      e.preventDefault();
+      e.stopPropagation();
       return false;
    }
 
@@ -205,6 +217,9 @@ export default class DraftWysiwyg extends Component {
          return;
       }
       this.setState({fileDrag: true});
+      /*e.preventDefault();
+      e.stopPropagation();
+      return false;*/
    }
 
    // Handle drag-leave
@@ -239,6 +254,8 @@ export default class DraftWysiwyg extends Component {
             // Progress
             this.setState({percent: percent !== 100 ? percent : null});
          });
+         e.preventDefault();
+         e.stopPropagation();
          return false;
       }
    }
@@ -252,8 +269,7 @@ export default class DraftWysiwyg extends Component {
       // Set drag/drop handlers to outer div as editor won't fire those
       return (
          <div className={classNames.join(' ')} onKeyDown={::this.keyDown} onDragOver={::this.dragOverFile} onDragLeave={::this.dragLeaveFile} onClick={::this.focus} onDrop={::this.drop} onBlur={::this.blur}>
-            <Editor customStyleMap={styleMap}
-                    editorState={this.state.value}
+            <Editor editorState={this.state.value}
                     onChange={::this.updateValue}
                     ref="editor"
                     handleDroppedFiles={::this.dropFile}
@@ -274,3 +290,57 @@ DraftWysiwyg.defaultProps = {
    value: null,
    updateValue: null
 };
+
+/*
+ function getComponent(){
+ return class Xy extends Component{
+ componentDidMount(){
+ console.log('Mount', this.props)
+ }
+ render(){
+ return <a {...this.props} href="www.google.de">{this.props.children}</a>;
+ }
+ }
+ }
+const styleMap = {
+   'JUSTIFY': {
+      textAlign: 'justify'
+   },
+};
+
+function findWithRegex(regex, contentBlock, callback) {
+   const text = contentBlock.getText();
+   let matchArr, start;
+   while ((matchArr = regex.exec(text)) !== null) {
+      start = matchArr.index;
+      callback(start, start + matchArr[0].length);
+   }
+}
+
+function linkStrategy(contentBlock, callback) {
+   findWithRegex(LINK_REGEX, contentBlock, callback);
+}
+
+const LINK_REGEX = /((?:(http|https|Http|Https|rtsp|Rtsp):\/\/(?:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,64}(?:\:(?:[a-zA-Z0-9\$\-\_\.\+\!\*\'\(\)\,\;\?\&\=]|(?:\%[a-fA-F0-9]{2})){1,25})?\@)?)?((?:(?:[a-zA-Z0-9][a-zA-Z0-9\-]{0,64}\.)+(?:(?:aero|arpa|asia|a[cdefgilmnoqrstuwxz])|(?:biz|b[abdefghijmnorstvwyz])|(?:cat|com|coop|c[acdfghiklmnoruvxyz])|d[ejkmoz]|(?:edu|e[cegrstu])|f[ijkmor]|(?:gov|g[abdefghilmnpqrstuwy])|h[kmnrtu]|(?:info|int|i[delmnoqrst])|(?:jobs|j[emop])|k[eghimnrwyz]|l[abcikrstuvy]|(?:mil|mobi|museum|m[acdghklmnopqrstuvwxyz])|(?:name|net|n[acefgilopruz])|(?:org|om)|(?:pro|p[aefghklmnrstwy])|qa|r[eouw]|s[abcdeghijklmnortuvyz]|(?:tel|travel|t[cdfghjklmnoprtvwz])|u[agkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw]))|(?:(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9])\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[1-9]|0)\.(?:25[0-5]|2[0-4][0-9]|[0-1][0-9]{2}|[1-9][0-9]|[0-9])))(?:\:\d{1,5})?)(\/(?:(?:[a-zA-Z0-9\;\/\?\:\@\&\=\#\~\-\.\+\!\*\'\(\)\,\_])|(?:\%[a-fA-F0-9]{2}))*)?(?:\b|$)/gi;;
+*/
+function findLinkEntities(contentBlock, callback) {
+   contentBlock.findEntityRanges(
+       (character) => {
+          const entityKey = character.getEntity();
+          return entityKey !== null && Entity.get(entityKey).getType() === 'link';
+       },
+       callback
+   );
+}
+const Link = (props) => {
+   const {href} = Entity.get(props.entityKey).getData();
+   return (
+       <a href={href} target="_blank">
+          {props.children}
+       </a>
+   );
+};
+const decorator = new CompositeDecorator([{
+   strategy: findLinkEntities,
+   component: Link,
+}]);

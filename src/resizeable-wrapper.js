@@ -55,7 +55,15 @@ class Wrapper extends Component {
    };
 
    // Handle mouse-move and setState if mouse on edges for resizing
+   leave(e){
+      if(!this.state.clicked){
+         this.setState({hoverPosition: {}});
+      }
+   }
    move(e){
+      if(this.state.clicked){
+         return;
+      }
       const {vertical, horizontal} = this.props;
 
       var hoverPosition = this.state.hoverPosition;
@@ -66,16 +74,17 @@ class Wrapper extends Component {
       var x = e.clientX - b.left;
       var y = e.clientY - b.top;
 
-      var isTop = vertical ? y < tolerance : false;
+      var isTop = vertical && vertical !== 'auto' ? y < tolerance : false;
       var isLeft = horizontal ? x < tolerance : false;
       var isRight = horizontal ? x >= b.width - tolerance : false;
-      var isBottom = vertical ? y >= b.height - tolerance && y < b.height : false;
+      var isBottom = vertical && vertical !== 'auto' ? y >= b.height - tolerance && y < b.height : false;
 
-      var resize = isTop||isLeft||isRight||isBottom;
+      var canResize = isTop||isLeft||isRight||isBottom;
 
       var newHoverPosition = {
-         isTop, isLeft, isRight, isBottom, resize
+         isTop, isLeft, isRight, isBottom, canResize
       };
+
       if(Object.keys(newHoverPosition).filter(key=>hoverPosition[key] !== newHoverPosition[key]).length){
          this.setState({hoverPosition: newHoverPosition});
       }
@@ -83,7 +92,7 @@ class Wrapper extends Component {
    // Handle mousedown for resizing
    mouseDown(e){
       // No mouse-hover-position data? Nothing to resize!
-      if(!this.state.hoverPosition.resize){
+      if(!this.state.hoverPosition.canResize){
          return;
       }
       const {resizeSteps, vertical, horizontal} = this.props;
@@ -107,8 +116,6 @@ class Wrapper extends Component {
 
          var widthPerc = 100/b.clientWidth*width;
          var heightPerc = 100/b.clientHeight*height;
-
-         console.log(height, b.clientHeight, e.clientY, (startHeight + e.clientY - startY), startHeight, startY);
 
          var newState = {};
          if((isLeft||isRight) && horizontal === 'relative'){
@@ -163,11 +170,12 @@ class Wrapper extends Component {
       const active = !!(this.props.blockProps.active||this.state.active);
       const {width, height, hoverPosition, clicked} = this.state;
       const {Children, blockProps, vertical, horizontal, ratio, handles, caption} = this.props;
-      const {isTop, isLeft, isRight, isBottom, resize} = hoverPosition;
+      const {isTop, isLeft, isRight, isBottom, canResize} = hoverPosition;
 
       // Compose style
       var style = {
-         ...(this.props.style||{})
+         ...(this.props.style||{}),
+         height: 'auto'
       };
       var innerstyle = {
          height: '100%',
@@ -201,13 +209,13 @@ class Wrapper extends Component {
          innerstyle.width = style.width = (width||blockProps.width||40)+'px';
       }
       if(vertical === 'auto'){
-         style.height = 'auto';
+         innerstyle.height = 'auto';
       }
       else if(vertical === 'relative') {
-         style.height = (height||blockProps.height||40)+'%';
+         innerstyle.height = (height||blockProps.height||40)+'%';
       }
       else if(vertical === 'absolute') {
-         innerstyle.height = style.height = (height||blockProps.height||40)+'px';
+         innerstyle.height = (height||blockProps.height||40)+'px';
       }
 
       // Handle cursor
@@ -252,8 +260,6 @@ class Wrapper extends Component {
 
       // ClassNames
       var classes = ["draft-resizeable-wrapper"];
-      if((caption && this.props.blockProps.caption) || (caption && active)) classes.push('with-caption');
-
       var classesRatio = ['ratiobox'];
       if(active) classesRatio.push('active');
       // Wrap into ratiobox to maintain aspect-ratio
@@ -272,13 +278,14 @@ class Wrapper extends Component {
               style={style}>
             <div className={classesRatio.join(' ')}
                  onDragStart={::this.startDrag}
-                 draggable={!resize}
+                 draggable={!canResize}
                  ref="div"
-                 stye={innerstyle}
+                 style={innerstyle}
                  onClick={::this.click}
                  onMouseMove={::this.move}
+                 onMouseLeave={::this.leave}
                  onMouseDown={::this.mouseDown}>
-               {resize && clicked? <div className="overlay"></div> : null}
+               {canResize && clicked? <div className="overlay"></div> : null}
                {/*There might be more elegan ways, handles for resizing*/}
                {handles ? <div className="overlay-m">&#9673;</div> : null}
                {handles ? <div className="overlay-l"></div> : null}
@@ -287,10 +294,10 @@ class Wrapper extends Component {
                {handles ? <div className="overlay-b"></div> : null}
                {content}
             </div>
-            {caption ? <div className="caption-text" onClick={e=>e.stopPropagation()}>
+            {caption ? <div className="caption-text" onClick={e=>e.stopPropagation()} style={{minHeight: '40px'}}>
                <DraftNestedEditor {...this.props}
                    placeholder={'Titel ...'}
-                   value={this.props.blockProps.caption}
+                   value={this.props.blockProps.caption||defaultCaption}
                    onChange={(v)=>this.props.blockProps.setEntityData(this.props.block, {caption: v})}/>
             </div> : null}
          </div>

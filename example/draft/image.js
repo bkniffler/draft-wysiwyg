@@ -10,7 +10,7 @@ class Img extends Component {
 
         return (
             <div style={style} id={this.props.uniqueId}>
-                <img src={this.props.blockProps.url} width="100%" height="auto"/>
+                <img src={this.props.blockProps.url||'/whoa.jpg'} width="100%" height="auto"/>
                 <Toolbar active={this.props.active} parent={"#"+this.props.uniqueId} actions={this.props.actions}/>
             </div>
         );

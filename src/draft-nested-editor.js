@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import ReactDOM from 'react-dom';
-import {Draft} from '../src';
+import Draft from './draft';
 
 export default class DraftEditorBlock extends Component {
     constructor(props) {
@@ -25,12 +25,14 @@ export default class DraftEditorBlock extends Component {
         return false;
     }
 
-    focus(){
+    focus(e){
         if(!this.state.readOnly){
             return;
         }
-        this.props.blockProps.setReadOnly(true);
-        this.setState({readOnly: false});
+        setTimeout(()=>{
+            this.props.blockProps.setReadOnly(true);
+            this.setState({readOnly: false});
+        }, 1);
         document.addEventListener('mousedown', this.listener, false);
     }
 

@@ -1,9 +1,10 @@
 import React from 'react';
 
-import {Div, Div2, Header, Youtube, Image, Data, Paragraph} from "./draft";
+import {Data, Blocks} from "./draft";
 import {Draft, DraftToolbar} from '../src';
 import {DisableWarning} from '../src/draft-utils';
 import request from 'superagent';
+
 
 DisableWarning();
 
@@ -30,40 +31,10 @@ export default class Example extends React.Component {
 
     renderBlock(contentBlock, props){
         const type = contentBlock.getType();
-
-        if (type === 'div') {
+        var block = Blocks[type];
+        if (block) {
             return {
-                component: Div,
-                props
-            };
-        }
-        else if (type === 'div2') {
-            return {
-                component: Div2,
-                props
-            };
-        }
-        else if (type === 'unstyled') {
-            return {
-                component: Paragraph,
-                props
-            };
-        }
-        else if (type.indexOf('header-')===0) {
-            return {
-                component: Header(type.split('-')[1]),
-                props
-            };
-        }
-        else if (type === 'youtube') {
-            return {
-                component: Youtube,
-                props
-            };
-        }
-        else if (type === 'image') {
-            return {
-                component: Image,
+                component: block,
                 props
             };
         }
@@ -95,6 +66,24 @@ export default class Example extends React.Component {
                 success(res.body.files, 'image');
             });
     }
+    renderSide(){
+       return (
+           <div className="sidepanel">
+               <span className="info">Drag & Drop one of these</span>
+               {Object.keys(Blocks).map(key=> {
+                   var startDrag = (e)=>{
+                       e.dataTransfer.dropEffect = 'move';
+                       e.dataTransfer.setData("text", 'type:'+key);
+                   }
+                   return (
+                       <div key={key} className="item" draggable="true" onDragStart={startDrag} style={{cursor: "move"}}>
+                           {key}
+                       </div>
+                   )
+               })}
+           </div>
+       )
+    }
     render() {
         const {data, view, saved} = this.state;
         
@@ -121,6 +110,7 @@ export default class Example extends React.Component {
                         Youtube
                     </button>*/}
                 </div>
+                {this.renderSide()}
                 <div className="container-content" style={{display: view==='json' ? 'block' : 'none'}}>
                     <pre style={{whiteSpace: 'pre-wrap', width: '900px', margin: 'auto'}}>{JSON.stringify(data, null, 3)}</pre>
                 </div>

@@ -1,10 +1,17 @@
 var rawContent = {
   "entityMap": {
     "0": {
-      "type": "TOKEN",
-      "mutability": "IMMUTABLE",
+      "type": "link",
+      "mutability": "MUTABLE",
       "data": {
-        "width": 60,
+        "href": "http://google.de"
+      }
+    },
+    "1": {
+      "type": "TOKEN",
+      "mutability": "MUTABLE",
+      "data": {
+        "width": 50,
         "height": null,
         "align": "center",
         "caption": {
@@ -28,7 +35,73 @@ var rawContent = {
         }
       }
     },
-    "1": {
+    "2": {
+      "type": "link",
+      "mutability": "MUTABLE",
+      "data": {
+        "href": "http://google.de"
+      }
+    },
+    "3": {
+      "type": "TOKEN",
+      "mutability": "MUTABLE",
+      "data": {
+        "col1": {
+          "entityMap": {},
+          "blocks": [
+            {
+              "key": "378l1",
+              "text": "This is column 1",
+              "type": "header-3",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": []
+            },
+            {
+              "key": "6lqag",
+              "text": "I could be a real table easily!",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 18,
+                  "length": 5,
+                  "style": "ITALIC"
+                },
+                {
+                  "offset": 18,
+                  "length": 5,
+                  "style": "UNDERLINE"
+                }
+              ],
+              "entityRanges": []
+            }
+          ]
+        },
+        "col2": {
+          "entityMap": {},
+          "blocks": [
+            {
+              "key": "2gu16",
+              "text": "This is column 2",
+              "type": "header-3",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": []
+            },
+            {
+              "key": "ei87g",
+              "text": "For now, I'm just 2 editable divs.",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [],
+              "entityRanges": []
+            }
+          ]
+        }
+      }
+    },
+    "4": {
       "type": "TOKEN",
       "mutability": "MUTABLE",
       "data": {
@@ -38,8 +111,7 @@ var rawContent = {
         "originalname": "whoa.jpg",
         "size": "whoa.jpg",
         "url": "/whoa.jpg",
-        "width": 40,
-        "height": null,
+        "width": 30,
         "align": "right",
         "caption": {
           "entityMap": {},
@@ -56,7 +128,34 @@ var rawContent = {
         }
       }
     },
-    "2": {
+    "5": {
+      "type": "TOKEN",
+      "mutability": "MUTABLE",
+      "data": {
+        "width": 60,
+        "height": 190,
+        "caption": {
+          "entityMap": {},
+          "blocks": [
+            {
+              "key": "1uac4",
+              "text": "qwdqwdqw",
+              "type": "unstyled",
+              "depth": 0,
+              "inlineStyleRanges": [
+                {
+                  "offset": 3,
+                  "length": 2,
+                  "style": "BOLD"
+                }
+              ],
+              "entityRanges": []
+            }
+          ]
+        }
+      }
+    },
+    "6": {
       "type": "TOKEN",
       "mutability": "MUTABLE",
       "data": {
@@ -70,13 +169,7 @@ var rawContent = {
               "text": "This blue div is freely resizeable (relative horizontal, absolute vertical)",
               "type": "unstyled",
               "depth": 0,
-              "inlineStyleRanges": [
-                {
-                  "offset": 17,
-                  "length": 6,
-                  "style": "BOLD"
-                }
-              ],
+              "inlineStyleRanges": [],
               "entityRanges": []
             }
           ]
@@ -91,11 +184,25 @@ var rawContent = {
       "type": "header-1",
       "depth": 0,
       "inlineStyleRanges": [],
-      "entityRanges": []
+      "entityRanges": [
+        {
+          "offset": 4,
+          "length": 3,
+          "key": 0
+        }
+      ]
     },
     {
       "key": "1ahm3",
-      "text": "Try drag&drop, resizing, toolbars, whatever. WIP with bugs, tested with chrome!",
+      "text": "Try drag & drop (from desktop, sidebar or editor), resizing, toolbars, captions, whatever. WIP, buggy, tested with chrome.",
+      "type": "header-4",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": []
+    },
+    {
+      "key": "bm3ko",
+      "text": "",
       "type": "header-4",
       "depth": 0,
       "inlineStyleRanges": [],
@@ -111,7 +218,7 @@ var rawContent = {
         {
           "offset": 0,
           "length": 1,
-          "key": 0
+          "key": 1
         }
       ]
     },
@@ -127,10 +234,38 @@ var rawContent = {
           "style": "BOLD"
         }
       ],
+      "entityRanges": [
+        {
+          "offset": 586,
+          "length": 4,
+          "key": 2
+        }
+      ]
+    },
+    {
+      "key": "c3l3o",
+      "text": "",
+      "type": "unstyled",
+      "depth": 0,
+      "inlineStyleRanges": [],
       "entityRanges": []
     },
     {
-      "key": "19gd8",
+      "key": "c94gi",
+      "text": " ",
+      "type": "columns2",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": [
+        {
+          "offset": 0,
+          "length": 1,
+          "key": 3
+        }
+      ]
+    },
+    {
+      "key": "1fe43",
       "text": "Drop a file here, or a block, anything!",
       "type": "header-3",
       "depth": 0,
@@ -155,7 +290,7 @@ var rawContent = {
         {
           "offset": 0,
           "length": 1,
-          "key": 1
+          "key": 4
         }
       ]
     },
@@ -184,16 +319,29 @@ var rawContent = {
       "entityRanges": []
     },
     {
-      "key": "7v1e5",
-      "text": " ",
-      "type": "div",
+      "key": "f39g7",
+      "text": "",
+      "type": "header-4",
+      "depth": 0,
+      "inlineStyleRanges": [],
+      "entityRanges": []
+    },
+    {
+      "key": "8m92g",
+      "text": "  ",
+      "type": "resizeable-div",
       "depth": 0,
       "inlineStyleRanges": [],
       "entityRanges": [
         {
           "offset": 0,
           "length": 1,
-          "key": 2
+          "key": 5
+        },
+        {
+          "offset": 1,
+          "length": 1,
+          "key": 6
         }
       ]
     },

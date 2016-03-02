@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {Editor, EditorState, RichUtils} from "draft-js";
+import {Editor, EditorState, RichUtils, Entity} from "draft-js";
 import Toolbar from "./toolbar";
 
 export default class DraftToolbar extends Component {
@@ -9,20 +9,11 @@ export default class DraftToolbar extends Component {
 
    toggleAction(action, state){
       if(action.toggle){
-         action.toggle(action, state, this.props.editorState);
+         action.toggle(action, state, this.props.editorState, this.props.onChange);
       }
    }
 
    toggleBlockType(blockType) {
-      this.props.onChange(
-          RichUtils.toggleBlockType(
-              this.props.editorState,
-              blockType
-          )
-      );
-   }
-
-   toggleAlignment(blockType) {
       this.props.onChange(
           RichUtils.toggleBlockType(
               this.props.editorState,
@@ -43,16 +34,19 @@ export default class DraftToolbar extends Component {
    render() {
       const {editorState, blockTypes, inlineStyles, actions} = this.props
       var currentStyle = editorState.getCurrentInlineStyle();
-      const blockType = editorState
+      const block = editorState
          .getCurrentContent()
          .getBlockForKey(editorState.getSelection().getStartKey())
-         .getType();
+      const blockType = block.getType();
 
       var items = [
-         //...alignmentStyles.map(x=>({icon: x.icon, button: x.button, label: x.label, active: blockType === x.style, toggle: ()=>this.toggleAlignment(x.style)})),
          ...blockTypes.map(x=>({icon: x.icon, button: x.button, label: x.label, active: blockType === x.style, toggle: ()=>this.toggleBlockType(x.style)})),
          ...inlineStyles.map(x=>({icon: x.icon, button: x.button, label: x.label, active: currentStyle.has(x.style), toggle: ()=>this.toggleInlineStyle(x.style)})),
-         ...actions.map(x=>({icon: x.icon, button: x.button, label: x.label, active: x.active, toggle: (state)=>this.toggleAction(x, state)}))
+         ...actions.map(x=>({
+            icon: x.icon, button: x.button, label: x.label,
+            active: typeof x.active === 'function' ? x.active(block, this.state, this.props.editorState) : x.active,
+            toggle: (state)=>this.toggleAction(x, state)
+         }))
       ];
       return (
          <Toolbar {...this.props} actions={items} />
@@ -62,7 +56,38 @@ export default class DraftToolbar extends Component {
 
 DraftToolbar.defaultProps = {
    editorState: null,
-   actions: [],
+   actions: [
+      {label: 'Link', button: <span>Link</span>, style: 'link', active: function(block, state, editorState){
+         var active, selection = editorState.getSelection();
+         block.findEntityRanges(
+             (character) => {
+                const entityKey = character.getEntity();
+                return entityKey !== null && Entity.get(entityKey).getType() === 'link';
+             },
+             (start, end)=>{
+                if(block.getKey()===selection.anchorKey && selection.anchorKey === selection.focusKey){
+                   if(selection.anchorOffset >= start && end <= selection.focusOffset){
+                      active=true;
+                   }
+                }
+             }
+         );
+         return active;
+      }, toggle: function(action, state, editorState, onChange){
+         const selection = editorState.getSelection();
+         if (selection.isCollapsed()) {
+            return;
+         }
+         if(state.active){
+            onChange(RichUtils.toggleLink(editorState, selection, null));
+         }
+         else{
+            const href = window.prompt('Enter a URL');
+            const entityKey = Entity.create('link', 'MUTABLE', {href});
+            onChange(RichUtils.toggleLink(editorState, selection, entityKey));
+         }
+      }}
+   ],
    alignmentStyles: [
       {label: 'Left', button: <b>L</b>, style: 'left'},
       {label: 'Center', button: <i>C</i>, style: 'center'},
