@@ -5487,9 +5487,9 @@
 	                        'Draft-Wysiwyg'
 	                    ),
 	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'github-button' },
-	                        _react2.default.createElement('iframe', { src: 'https://ghbtns.com/github-btn.html?user=bkniffler&repo=draft-wysiwyg&type=star&count=true&size=large', frameBorder: '0', scrolling: '0', width: '160px', height: '30px' })
+	                        'a',
+	                        { className: 'github-button', href: 'https://github.com/bkniffler/draft-wysiwyg/', target: '_blank' },
+	                        'View on Github'
 	                    ),
 	                    _react2.default.createElement(
 	                        'button',
