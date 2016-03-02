@@ -171,6 +171,11 @@ body{
   margin: 15px;
 }
 
+.github-button{
+  float: left;
+  margin: 15px;
+}
+
 .flex-container {
   margin-top: 100px;
 }

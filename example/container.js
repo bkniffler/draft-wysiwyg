@@ -101,6 +101,9 @@ export default class Example extends React.Component {
             <div className="flex-container">
                 <div className="head">
                     <div className="logo">Draft-Wysiwyg</div>
+                    <div className="github-button">
+                        <iframe src="https://ghbtns.com/github-btn.html?user=bkniffler&repo=draft-wysiwyg&type=star&count=true&size=large" frameBorder="0" scrolling="0" width="160px" height="30px"></iframe>
+                    </div>
                     <button className={"button"+(view==='json'?' active':'')} onClick={()=>this.setState({view: 'json'})}>
                         See JSON
                     </button>
