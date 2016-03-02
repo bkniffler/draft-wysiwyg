@@ -13,7 +13,12 @@ export default class Example extends React.Component {
         super(props);
 
         var data = localStorage.getItem("data");
-        if(data){
+        var oldHash = localStorage.getItem("hash");
+        var hash = this.hash = function(s){
+            return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+        }(JSON.stringify(Data))+'';
+
+        if(data && oldHash === hash){
             try{
                 data = JSON.parse(data);
             }
@@ -21,6 +26,9 @@ export default class Example extends React.Component {
                 data = null;
                 console.error(err);
             }
+        }
+        else{
+            data = null;
         }
         this.state = {
             data: data || Data,
@@ -42,6 +50,8 @@ export default class Example extends React.Component {
 
     save(){
         localStorage.setItem("data", JSON.stringify(this.state.data));
+        localStorage.setItem("hash", this.hash);
+
         this.setState({
             saved: true
         });

@@ -5372,13 +5372,22 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Example).call(this, props));
 
 	        var data = localStorage.getItem("data");
-	        if (data) {
+	        var oldHash = localStorage.getItem("hash");
+	        var hash = _this.hash = function (s) {
+	            return s.split("").reduce(function (a, b) {
+	                a = (a << 5) - a + b.charCodeAt(0);return a & a;
+	            }, 0);
+	        }(JSON.stringify(_draft.Data)) + '';
+
+	        if (data && oldHash === hash) {
 	            try {
 	                data = JSON.parse(data);
 	            } catch (err) {
 	                data = null;
 	                console.error(err);
 	            }
+	        } else {
+	            data = null;
 	        }
 	        _this.state = {
 	            data: data || _draft.Data,
@@ -5406,6 +5415,8 @@
 	            var _this2 = this;
 
 	            localStorage.setItem("data", JSON.stringify(this.state.data));
+	            localStorage.setItem("hash", this.hash);
+
 	            this.setState({
 	                saved: true
 	            });
