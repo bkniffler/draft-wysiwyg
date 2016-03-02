@@ -5,14 +5,13 @@ body{
   background: #F7F7F7;
 }
 
-.public-DraftEditor-content > div > :first-child{
-  margin-top: 0px;
+.public-DraftEditor-content > div > *:first-child{
+  margin-top: 1px;
 }
-.public-DraftEditor-content > div > .draft-resizeable-wrapper,
-.public-DraftEditor-content > div > .caption-wrapper,
-.public-DraftEditor-content > div > .paragraph{
-  margin-top: 39px!important;
+.public-DraftEditor-content > div > *:not(:first-child){
+  margin-top: 39px;
 }
+
 .header {
   font-family: "Lucida Grande";
   font-weight: 700;
@@ -32,10 +31,13 @@ body{
 .h4{
   font-size: 28px;
 }
-.header + .header {
-  margin-top: 1px;
+.header + .header, .header + * + .header {
+  margin-top: 1px!important;
   font-weight: initial;
   color: rgba(0,0,0,.44);
+}
+.header + .paragraph, .header + * + .paragraph {
+  margin-top: 10px!important;
 }
 
 .TeXEditor-container {
@@ -214,4 +216,22 @@ body{
 }
 .button.active{
   border: 1px solid rgba(255, 255, 255, 0.51);
+}
+
+.sidepanel{
+  position: fixed;
+  left: 30px;
+  top: 200px;
+  background: white;
+  padding: 10px 30px 10px 30px;
+}
+.sidepanel .info{
+  font-size: 10px;
+  color: #666;
+  margin: 10px 0 10px 0;
+  text-transform: uppercase;
+}
+
+.sidepanel .item{
+  margin-bottom: 5px;
 }

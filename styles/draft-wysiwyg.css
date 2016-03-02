@@ -7,7 +7,7 @@
     z-index: 2;
 }
 
-.draft-resizeable-wrapper.active {
+.ratiobox.active {
     outline: 3px solid #000000;
 }
 
@@ -103,6 +103,9 @@
     opacity: 1;
 }
 
+.ratiobox{
+    position: relative;
+}
 .ratiobox:before {
     display: block;
     content: "";
@@ -274,8 +277,8 @@
     margin-bottom: 40px!important;
 }
 .caption-text {
-    position: absolute;
-    bottom: -30px;
+    position: relative;
+    margin-top: 20px;
     width: 100%;
     font-weight: 300;
     font-style: normal;
@@ -284,8 +287,8 @@
     color: rgba(0,0,0,.6);
     letter-spacing: 0;
 }
-.caption-text .paragraph {
-    margin-top: 10px!important
+.caption-text .public-DraftEditor-content > div > .paragraph {
+    margin-top: 0px!important
 }
 .caption-text * {
     text-align: center!important;
