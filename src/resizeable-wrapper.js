@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from "react";
 import ReactDOM from 'react-dom';
-import DraftEditorBlock2 from './draft-editor-block2';
+import DraftNestedEditor from './draft-nested-editor';
 
 class Wrapper extends Component {
    constructor(props){
@@ -46,11 +46,11 @@ class Wrapper extends Component {
 
       var component = ReactDOM.findDOMNode(this.refs.div);
       // Handle click outside of block to deactivate
-      component.parentElement.addEventListener('click', this.listener, false);
+      component.parentElement.parentElement.addEventListener('mousedown', this.listener, false);
    }
    listener(){
       var component = ReactDOM.findDOMNode(this.refs.div);
-      component.parentElement.removeEventListener('click', this.listener, false);
+      component.parentElement.parentElement.removeEventListener('mousedown', this.listener, false);
       this.activateBlock(false);
    };
 
@@ -101,12 +101,14 @@ class Wrapper extends Component {
       var doDrag = (e) => {
          var width = (startWidth + e.clientX - startX);
          var height = (startHeight + e.clientY - startY);
-         var b = component.parentElement;
+         var b = component.parentElement.parentElement;
          width = b.clientWidth < width ? b.clientWidth : width;
          height = b.clientHeight < height ? b.clientHeight : height;
 
          var widthPerc = 100/b.clientWidth*width;
          var heightPerc = 100/b.clientHeight*height;
+
+         console.log(height, b.clientHeight, e.clientY, (startHeight + e.clientY - startY), startHeight, startY);
 
          var newState = {};
          if((isLeft||isRight) && horizontal === 'relative'){
@@ -131,8 +133,8 @@ class Wrapper extends Component {
 
       // Finished dragging
       var stopDrag = (e) => {
-         document.documentElement.removeEventListener('mousemove', doDrag, false);
-         document.documentElement.removeEventListener('mouseup', stopDrag, false);
+         document.removeEventListener('mousemove', doDrag, false);
+         document.removeEventListener('mouseup', stopDrag, false);
 
          const {setEntityData} = this.props.blockProps;
          setEntityData(this.props.block, {width: this.state.width, height: this.state.height});
@@ -143,8 +145,8 @@ class Wrapper extends Component {
          return false;
       }
 
-      document.documentElement.addEventListener('mousemove', doDrag, false);
-      document.documentElement.addEventListener('mouseup', stopDrag, false);
+      document.addEventListener('mousemove', doDrag, false);
+      document.addEventListener('mouseup', stopDrag, false);
 
       this.setState({clicked: true});
       e.stopPropagation();
@@ -166,6 +168,10 @@ class Wrapper extends Component {
       // Compose style
       var style = {
          ...(this.props.style||{})
+      };
+      var innerstyle = {
+         height: '100%',
+         width: '100%'
       };
 
       // Handle alignment for float/margin
@@ -192,7 +198,7 @@ class Wrapper extends Component {
          style.width = (width||blockProps.width||40)+'%';
       }
       else if(horizontal === 'absolute') {
-         style.width = (width||blockProps.width||40)+'px';
+         innerstyle.width = style.width = (width||blockProps.width||40)+'px';
       }
       if(vertical === 'auto'){
          style.height = 'auto';
@@ -201,7 +207,7 @@ class Wrapper extends Component {
          style.height = (height||blockProps.height||40)+'%';
       }
       else if(vertical === 'absolute') {
-         style.height = (height||blockProps.height||40)+'px';
+         innerstyle.height = style.height = (height||blockProps.height||40)+'px';
       }
 
       // Handle cursor
@@ -246,41 +252,43 @@ class Wrapper extends Component {
 
       // ClassNames
       var classes = ["draft-resizeable-wrapper"];
-      if(active) classes.push('active');
       if((caption && this.props.blockProps.caption) || (caption && active)) classes.push('with-caption');
 
+      var classesRatio = ['ratiobox'];
+      if(active) classesRatio.push('active');
       // Wrap into ratiobox to maintain aspect-ratio
       if(vertical === 'auto' && ratio){
+         classesRatio.push('ratio'+round(ratio*100, 5));
          content = (
-             <div className={"ratiobox-content"}>
+             <div className={"ratiobox-content"} stye={innerstyle}>
                 {content}
              </div>
          )
-
-         classes.push('ratiobox');
-         classes.push('ratio'+round(ratio*100, 5));
       }
 
       return (
-         <div ref="div"
-              onClick={::this.click}
-              onMouseMove={::this.move}
-              onMouseDown={::this.mouseDown}
-              onDragStart={::this.startDrag}
-              contentEditable="false"
-              draggable={!resize}
+         <div contentEditable="false"
               className={classes.join(' ')}
               style={style}>
-            {resize && clicked? <div className="overlay"></div> : null}
-            {/*There might be more elegan ways, handles for resizing*/}
-            {handles ? <div className="overlay-m">&#9673;</div> : null}
-            {handles ? <div className="overlay-l"></div> : null}
-            {handles ? <div className="overlay-r"></div> : null}
-            {handles ? <div className="overlay-t"></div> : null}
-            {handles ? <div className="overlay-b"></div> : null}
-            {content}
+            <div className={classesRatio.join(' ')}
+                 onDragStart={::this.startDrag}
+                 draggable={!resize}
+                 ref="div"
+                 stye={innerstyle}
+                 onClick={::this.click}
+                 onMouseMove={::this.move}
+                 onMouseDown={::this.mouseDown}>
+               {resize && clicked? <div className="overlay"></div> : null}
+               {/*There might be more elegan ways, handles for resizing*/}
+               {handles ? <div className="overlay-m">&#9673;</div> : null}
+               {handles ? <div className="overlay-l"></div> : null}
+               {handles ? <div className="overlay-r"></div> : null}
+               {handles ? <div className="overlay-t"></div> : null}
+               {handles ? <div className="overlay-b"></div> : null}
+               {content}
+            </div>
             {caption ? <div className="caption-text" onClick={e=>e.stopPropagation()}>
-               <DraftEditorBlock2 {...this.props}
+               <DraftNestedEditor {...this.props}
                    placeholder={'Titel ...'}
                    value={this.props.blockProps.caption}
                    onChange={(v)=>this.props.blockProps.setEntityData(this.props.block, {caption: v})}/>

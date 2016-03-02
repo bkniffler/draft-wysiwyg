@@ -2,7 +2,7 @@ var rawContent = {
   "entityMap": {
     "0": {
       "type": "TOKEN",
-      "mutability": "MUTABLE",
+      "mutability": "IMMUTABLE",
       "data": {
         "width": 60,
         "height": null,

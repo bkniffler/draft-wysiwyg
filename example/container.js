@@ -2,8 +2,10 @@ import React from 'react';
 
 import {Div, Div2, Header, Youtube, Image, Data, Paragraph} from "./draft";
 import {Draft, DraftToolbar} from '../src';
+import {DisableWarning} from '../src/draft-utils';
+import request from 'superagent';
 
-Draft.DisableWarnings();
+DisableWarning();
 
 export default class Example extends React.Component {
     constructor(props) {
@@ -79,6 +81,20 @@ export default class Example extends React.Component {
         }, 1500)
     }
 
+    upload(data, success, failed, progress){
+        request.post('/upload')
+            .accept('application/json')
+            .send(data)
+            .on('progress', ({ percent }) => {
+                progress(percent);
+            })
+            .end((err, res) => {
+                if (err) {
+                    return failed(err);
+                }
+                success(res.body.files, 'image');
+            });
+    }
     render() {
         const {data, view, saved} = this.state;
         
