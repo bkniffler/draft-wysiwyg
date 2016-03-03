@@ -1,6 +1,6 @@
 {
   "name": "draft-wysiwyg",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
   "main": "./lib",
   "keywords": [
