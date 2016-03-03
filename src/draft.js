@@ -137,23 +137,33 @@ export default class DraftWysiwyg extends Component {
       const entityKey = contentBlock.getEntityAt(0);
       let data = entityKey ? Entity.get(entityKey).data : {};
 
+      var renderBlock = this.props.renderBlock
+          ? this.props.renderBlock
+          : (contentBlock, props)=>{
+             const type = contentBlock.getType();
+             var block = this.props.blockTypes[type];
+             if (block) {
+                return {
+                   component: block,
+                   props
+                };
+             }
+         };
       // Rely on renderBlock of parent
-      if (this.props.renderBlock) {
-         return this.props.renderBlock(contentBlock, {
-            ...data,
-            setEntityData: ::this.setEntityData,
-            activate: (active)=>{
-               this.setState({active: active ? contentBlock.key : null});
-               // Force refresh
-               this.updateValue(EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
-            },
-            setReadOnly: (state)=>{
-               this.setState({readOnly: state ? true : undefined});
-            },
-            editorProps: this.props,
-            active: this.state.active  === contentBlock.key
-         });
-      }
+      return renderBlock(contentBlock, {
+         ...data,
+         setEntityData: ::this.setEntityData,
+         activate: (active)=>{
+            this.setState({active: active ? contentBlock.key : null});
+            // Force refresh
+            this.updateValue(EditorState.createWithContent(this.state.value.getCurrentContent(), decorator));
+         },
+         setReadOnly: (state)=>{
+            this.setState({readOnly: state ? true : undefined});
+         },
+         editorProps: this.props,
+         active: this.state.active  === contentBlock.key
+      });
    }
 
    // Handle keydown events on blocks
@@ -215,7 +225,9 @@ export default class DraftWysiwyg extends Component {
 
       var rect = getSelectionRect(selected);
       var info = {left: rect.left, top: rect.top, width: rect.width};
-      var sidebar = !this.state.active /*&& rect.isEmptyline*/ ? <Sidebar {...info} blockTypes={this.props.blockTypes} editorState={editorState} selectionState={selectionState} onChange={onChange}/> : null;
+      var sidebar = !this.state.active && this.props.sidebar/*&& rect.isEmptyline*/
+          ? <Sidebar {...info} blockTypes={this.props.blockTypes} forceLeft={this.props.sidebar} editorState={editorState} selectionState={selectionState} onChange={onChange}/>
+          : null;
 
       if(selectionState.isCollapsed()){
          return sidebar;
@@ -302,7 +314,8 @@ DraftWysiwyg.defaultProps = {
    renderBlock: null,
    renderToolbar: null,
    value: null,
-   updateValue: null
+   updateValue: null,
+   blockTypes: {}
 };
 
 /*

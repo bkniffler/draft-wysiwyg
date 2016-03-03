@@ -37,17 +37,6 @@ export default class Example extends React.Component {
         }
     }
 
-    renderBlock(contentBlock, props){
-        const type = contentBlock.getType();
-        var block = Blocks[type];
-        if (block) {
-            return {
-                component: block,
-                props
-            };
-        }
-    }
-
     save(){
         localStorage.setItem("data", JSON.stringify(this.state.data));
         localStorage.setItem("hash", this.hash);
@@ -130,7 +119,7 @@ export default class Example extends React.Component {
                 <div className="container-content" style={{display: view!=='json' ? 'block' : 'none'}}>
                     <div className="TeXEditor-root">
                         <div className="TeXEditor-editor">
-                            <Draft renderBlock={::this.renderBlock} updateValue={(v)=>this.setState({data:v})} value={data} blockTypes={Blocks}/>
+                            <Draft updateValue={(v)=>this.setState({data:v})} value={data} blockTypes={Blocks} sidebar={0}/>
                         </div>
                     </div>
                 </div>

@@ -28,7 +28,7 @@ export default class DraftToolbar extends Component {
       const blockType = block.getType();
 
       return (
-          <Tooltip {...this.props} forceLeft={300} position="left">
+          <Tooltip {...this.props} position="left">
              <div onMouseDown={::this.mouseDown} className="draft-sidebar">
                 <div className="item">
                    <button>

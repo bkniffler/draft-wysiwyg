@@ -5398,18 +5398,6 @@
 	    }
 
 	    _createClass(Example, [{
-	        key: 'renderBlock',
-	        value: function renderBlock(contentBlock, props) {
-	            var type = contentBlock.getType();
-	            var block = _draft.Blocks[type];
-	            if (block) {
-	                return {
-	                    component: block,
-	                    props: props
-	                };
-	            }
-	        }
-	    }, {
 	        key: 'save',
 	        value: function save() {
 	            var _this2 = this;
@@ -5532,9 +5520,9 @@
 	                        _react2.default.createElement(
 	                            'div',
 	                            { className: 'TeXEditor-editor' },
-	                            _react2.default.createElement(_src.Draft, { renderBlock: this.renderBlock.bind(this), updateValue: function updateValue(v) {
+	                            _react2.default.createElement(_src.Draft, { updateValue: function updateValue(v) {
 	                                    return _this3.setState({ data: v });
-	                                }, value: data, blockTypes: _draft.Blocks })
+	                                }, value: data, blockTypes: _draft.Blocks, sidebar: 0 })
 	                        )
 	                    )
 	                )
@@ -25817,22 +25805,30 @@
 	         var entityKey = contentBlock.getEntityAt(0);
 	         var data = entityKey ? _draftJs.Entity.get(entityKey).data : {};
 
+	         var renderBlock = this.props.renderBlock ? this.props.renderBlock : function (contentBlock, props) {
+	            var type = contentBlock.getType();
+	            var block = _this3.props.blockTypes[type];
+	            if (block) {
+	               return {
+	                  component: block,
+	                  props: props
+	               };
+	            }
+	         };
 	         // Rely on renderBlock of parent
-	         if (this.props.renderBlock) {
-	            return this.props.renderBlock(contentBlock, _extends({}, data, {
-	               setEntityData: this.setEntityData.bind(this),
-	               activate: function activate(active) {
-	                  _this3.setState({ active: active ? contentBlock.key : null });
-	                  // Force refresh
-	                  _this3.updateValue(_draftJs.EditorState.createWithContent(_this3.state.value.getCurrentContent(), decorator));
-	               },
-	               setReadOnly: function setReadOnly(state) {
-	                  _this3.setState({ readOnly: state ? true : undefined });
-	               },
-	               editorProps: this.props,
-	               active: this.state.active === contentBlock.key
-	            }));
-	         }
+	         return renderBlock(contentBlock, _extends({}, data, {
+	            setEntityData: this.setEntityData.bind(this),
+	            activate: function activate(active) {
+	               _this3.setState({ active: active ? contentBlock.key : null });
+	               // Force refresh
+	               _this3.updateValue(_draftJs.EditorState.createWithContent(_this3.state.value.getCurrentContent(), decorator));
+	            },
+	            setReadOnly: function setReadOnly(state) {
+	               _this3.setState({ readOnly: state ? true : undefined });
+	            },
+	            editorProps: this.props,
+	            active: this.state.active === contentBlock.key
+	         }));
 	      }
 
 	      // Handle keydown events on blocks
@@ -25900,7 +25896,8 @@
 
 	         var rect = getSelectionRect(selected);
 	         var info = { left: rect.left, top: rect.top, width: rect.width };
-	         var sidebar = !this.state.active /*&& rect.isEmptyline*/ ? _react2.default.createElement(_draftSidebar2.default, _extends({}, info, { blockTypes: this.props.blockTypes, editorState: editorState, selectionState: selectionState, onChange: onChange })) : null;
+	         var sidebar = !this.state.active && this.props.sidebar /*&& rect.isEmptyline*/
+	         ? _react2.default.createElement(_draftSidebar2.default, _extends({}, info, { blockTypes: this.props.blockTypes, forceLeft: this.props.sidebar, editorState: editorState, selectionState: selectionState, onChange: onChange })) : null;
 
 	         if (selectionState.isCollapsed()) {
 	            return sidebar;
@@ -26016,7 +26013,8 @@
 	   renderBlock: null,
 	   renderToolbar: null,
 	   value: null,
-	   updateValue: null
+	   updateValue: null,
+	   blockTypes: {}
 	};
 
 	/*
@@ -44735,7 +44733,7 @@
 
 	         return _react2.default.createElement(
 	            _tooltip2.default,
-	            _extends({}, this.props, { forceLeft: 300, position: "left" }),
+	            _extends({}, this.props, { position: "left" }),
 	            _react2.default.createElement(
 	               "div",
 	               { onMouseDown: this.mouseDown.bind(this), className: "draft-sidebar" },
