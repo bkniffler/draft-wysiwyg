@@ -125,7 +125,7 @@ export default class Example extends React.Component {
                 </div>
                 {this.renderSide()}
                 <div className="container-content" style={{display: view==='json' ? 'block' : 'none'}}>
-                    <pre style={{whiteSpace: 'pre-wrap', width: '900px', margin: 'auto'}}>{JSON.stringify(data, null, 3)}</pre>
+                    <pre style={{whiteSpace: 'pre-wrap', width: '750px', margin: 'auto'}}>{JSON.stringify(data, null, 3)}</pre>
                 </div>
                 <div className="container-content" style={{display: view!=='json' ? 'block' : 'none'}}>
                     <div className="TeXEditor-root">
