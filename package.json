@@ -1,6 +1,8 @@
 {
   "name": "draft-wysiwyg",
   "version": "0.0.18",
+  "author": "Benjamin Kniffler",
+  "license": "MIT",
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
   "main": "./lib",
   "keywords": [
