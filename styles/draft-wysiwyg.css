@@ -205,6 +205,36 @@
     padding-top: 100%;
 }
 
+.draft-sidebar {
+    background-color: transparent;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    width: 32px;
+}
+
+.draft-sidebar .item button {
+    background-color: transparent;
+    cursor: pointer;
+    border: 1px solid rgba(0,0,0,.6);
+    border-radius: 50px;
+    font-size: 16px;
+    color: rgba(0,0,0,.6);
+    height: 32px;
+    line-height: 31px;
+    padding: 0 14px;
+    font-size: 12px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+.draft-sidebar .item .menu {
+    display: none
+}
+.draft-sidebar .item:hover .menu {
+    display: block
+}
+
 .draft-toolbar {
     background-color: #000;
     border: none;
@@ -236,7 +266,7 @@
     background-color: #2f2f2f;
 }
 
-.draft-toolbar .item:hover {
+.draft-toolbar .item:hover{
     background-color: #2f2f2f;
 }
 

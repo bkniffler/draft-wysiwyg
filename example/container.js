@@ -80,7 +80,7 @@ export default class Example extends React.Component {
        return (
            <div className="sidepanel">
                <span className="info">Drag & Drop one of these</span>
-               {Object.keys(Blocks).map(key=> {
+               {Object.keys(Blocks).filter(key=>key.indexOf('header-')!==0&&key!=='unstyled').map(key=> {
                    var startDrag = (e)=>{
                        e.dataTransfer.dropEffect = 'move';
                        e.dataTransfer.setData("text", 'type:'+key);
@@ -130,7 +130,7 @@ export default class Example extends React.Component {
                 <div className="container-content" style={{display: view!=='json' ? 'block' : 'none'}}>
                     <div className="TeXEditor-root">
                         <div className="TeXEditor-editor">
-                            <Draft renderBlock={::this.renderBlock} updateValue={(v)=>this.setState({data:v})} value={data}/>
+                            <Draft renderBlock={::this.renderBlock} updateValue={(v)=>this.setState({data:v})} value={data} blockTypes={Blocks}/>
                         </div>
                     </div>
                 </div>

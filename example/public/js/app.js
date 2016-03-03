@@ -5345,11 +5345,11 @@
 
 	var _draft = __webpack_require__(348);
 
-	var _src = __webpack_require__(506);
+	var _src = __webpack_require__(507);
 
 	var _draftUtils = __webpack_require__(492);
 
-	var _superagent = __webpack_require__(512);
+	var _superagent = __webpack_require__(513);
 
 	var _superagent2 = _interopRequireDefault(_superagent);
 
@@ -5451,7 +5451,9 @@
 	                    { className: 'info' },
 	                    'Drag & Drop one of these'
 	                ),
-	                Object.keys(_draft.Blocks).map(function (key) {
+	                Object.keys(_draft.Blocks).filter(function (key) {
+	                    return key.indexOf('header-') !== 0 && key !== 'unstyled';
+	                }).map(function (key) {
 	                    var startDrag = function startDrag(e) {
 	                        e.dataTransfer.dropEffect = 'move';
 	                        e.dataTransfer.setData("text", 'type:' + key);
@@ -5517,7 +5519,7 @@
 	                    { className: 'container-content', style: { display: view === 'json' ? 'block' : 'none' } },
 	                    _react2.default.createElement(
 	                        'pre',
-	                        { style: { whiteSpace: 'pre-wrap', width: '900px', margin: 'auto' } },
+	                        { style: { whiteSpace: 'pre-wrap', width: '750px', margin: 'auto' } },
 	                        JSON.stringify(data, null, 3)
 	                    )
 	                ),
@@ -5532,7 +5534,7 @@
 	                            { className: 'TeXEditor-editor' },
 	                            _react2.default.createElement(_src.Draft, { renderBlock: this.renderBlock.bind(this), updateValue: function updateValue(v) {
 	                                    return _this3.setState({ data: v });
-	                                }, value: data })
+	                                }, value: data, blockTypes: _draft.Blocks })
 	                        )
 	                    )
 	                )
@@ -25059,27 +25061,27 @@
 
 	var _columns2 = _interopRequireDefault(_columns);
 
-	var _header = __webpack_require__(504);
+	var _header = __webpack_require__(505);
 
 	var _header2 = _interopRequireDefault(_header);
 
-	var _image = __webpack_require__(505);
+	var _image = __webpack_require__(506);
 
 	var _image2 = _interopRequireDefault(_image);
 
-	var _resizeableDiv = __webpack_require__(508);
+	var _resizeableDiv = __webpack_require__(509);
 
 	var _resizeableDiv2 = _interopRequireDefault(_resizeableDiv);
 
-	var _resizeableDiv3 = __webpack_require__(509);
+	var _resizeableDiv3 = __webpack_require__(510);
 
 	var _resizeableDiv4 = _interopRequireDefault(_resizeableDiv3);
 
-	var _unstyled = __webpack_require__(510);
+	var _unstyled = __webpack_require__(511);
 
 	var _unstyled2 = _interopRequireDefault(_unstyled);
 
-	var _youtube = __webpack_require__(511);
+	var _youtube = __webpack_require__(512);
 
 	var _youtube2 = _interopRequireDefault(_youtube);
 
@@ -25635,6 +25637,10 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactDom = __webpack_require__(352);
+
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+
 	var _draftJs = __webpack_require__(354);
 
 	var _utils = __webpack_require__(489);
@@ -25644,6 +25650,10 @@
 	var _draftToolbar = __webpack_require__(499);
 
 	var _draftToolbar2 = _interopRequireDefault(_draftToolbar);
+
+	var _draftSidebar = __webpack_require__(504);
+
+	var _draftSidebar2 = _interopRequireDefault(_draftSidebar);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25696,6 +25706,17 @@
 	         this.refs.editor.focus();
 	         e.preventDefault();
 	         e.stopPropagation();
+
+	         /*var comp = ReactDOM.findDOMNode(this.refs.editor);
+	         var {y} = getCaretClientPosition();
+	         var scrollY = window.scrollY ? window.scrollY : window.pageYOffset;
+	         var startY = e.clientY;
+	         var startHeight = parseInt(document.defaultView.getComputedStyle(comp).height, 10);
+	         var height = (startHeight + e.clientY - startY);
+	         var height2 = (startHeight + y - startY);
+	         //var selectedComponent = selectionState.anchorKey ? editorState.getCurrentContent().getBlockForKey(selectionState.anchorKey) : null;
+	         console.log(height, height2, y, startY, startHeight, scrollY, y-scrollY);*/
+
 	         return false;
 	      }
 
@@ -25869,21 +25890,27 @@
 	         var onChange = this.updateValue.bind(this);
 	         // Get current selection (from draft)
 	         var selectionState = this.state.value.getSelection();
-	         // Nothing selected? No toolbar please.
-	         if (selectionState.isCollapsed()) {
-	            return null;
-	         }
-
 	         // Get current selection (natively)
 	         var selected = (0, _utils.GetSelected)();
-	         // Get selection rectangle (position, size) and set to state
+
+	         // Nothing selected? No toolbar please.
 	         if (!selected.rangeCount) {
 	            return null;
 	         }
-	         var rect = selected.getRangeAt(0).getBoundingClientRect();
 
+	         var rect = getSelectionRect(selected);
 	         var info = { left: rect.left, top: rect.top, width: rect.width };
-	         return this.props.renderToolbar ? this.props.renderToolbar(_extends({}, info, { editorState: editorState, selectionState: selectionState, onChange: onChange })) : _react2.default.createElement(_draftToolbar2.default, _extends({}, info, { editorState: editorState, selectionState: selectionState, onChange: onChange }));
+	         var sidebar = !this.state.active /*&& rect.isEmptyline*/ ? _react2.default.createElement(_draftSidebar2.default, _extends({}, info, { blockTypes: this.props.blockTypes, editorState: editorState, selectionState: selectionState, onChange: onChange })) : null;
+
+	         if (selectionState.isCollapsed()) {
+	            return sidebar;
+	         }
+	         return this.props.renderToolbar ? this.props.renderToolbar(_extends({}, info, { editorState: editorState, selectionState: selectionState, onChange: onChange })) : _react2.default.createElement(
+	            "div",
+	            null,
+	            _react2.default.createElement(_draftToolbar2.default, _extends({}, info, { editorState: editorState, selectionState: selectionState, onChange: onChange })),
+	            sidebar
+	         );
 	      }
 
 	      // Handle drag-over
@@ -26045,6 +26072,19 @@
 	   strategy: findLinkEntities,
 	   component: Link
 	}]);
+	function getSelectionRect(selected) {
+	   var _rect = selected.getRangeAt(0).getBoundingClientRect();
+	   var rect = _rect && _rect.top ? _rect : selected.getRangeAt(0).getClientRects()[0]; //selected.getRangeAt(0).getBoundingClientRect()
+	   if (!rect) {
+	      if (selected.anchorNode && selected.anchorNode.getBoundingClientRect) {
+	         rect = selected.anchorNode.getBoundingClientRect();
+	         rect.isEmptyline = true;
+	      } else {
+	         return null;
+	      }
+	   }
+	   return rect;
+	}
 
 /***/ },
 /* 354 */
@@ -38944,6 +38984,10 @@
 	      return;
 	    }
 
+	    if (this.props.handleDrop &&
+	        this.props.handleDrop(dropSelection, data, this._internalDrag)) {
+	      return;
+	    }
 	    if (this._internalDrag) {
 	      this.update(moveText(editorState, dropSelection));
 	      return;
@@ -44296,6 +44340,8 @@
 	         var left = _props.left;
 	         var top = _props.top;
 	         var width = _props.width;
+	         var forceLeft = _props.forceLeft;
+	         var position = _props.position;
 
 	         // Was props.parent set? Query parent element and get its rect
 
@@ -44319,8 +44365,8 @@
 	            var scrollX = window.scrollX ? window.scrollX : window.pageXOffset;
 	            // Set state
 	            this.setState({
-	               top: top - refRect.height + scrollY - 5,
-	               left: left - refRect.width / 2 + width / 2 + scrollX
+	               top: top - (position === 'left' ? 0 : refRect.height) + scrollY - (position === 'left' ? 0 : 5),
+	               left: forceLeft || left - refRect.width / 2 + width / 2 + scrollX
 	            });
 	         }
 	      }
@@ -44622,6 +44668,115 @@
 /* 504 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(192);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _draftJs = __webpack_require__(354);
+
+	var _tooltip = __webpack_require__(501);
+
+	var _tooltip2 = _interopRequireDefault(_tooltip);
+
+	var _draftUtils = __webpack_require__(492);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var DraftToolbar = function (_Component) {
+	   _inherits(DraftToolbar, _Component);
+
+	   function DraftToolbar(props) {
+	      _classCallCheck(this, DraftToolbar);
+
+	      return _possibleConstructorReturn(this, Object.getPrototypeOf(DraftToolbar).call(this, props));
+	   }
+
+	   _createClass(DraftToolbar, [{
+	      key: "mouseDown",
+	      value: function mouseDown(e) {
+	         e.preventDefault();
+	         return false;
+	      }
+	   }, {
+	      key: "add",
+	      value: function add(key) {
+	         this.props.onChange((0, _draftUtils.AddBlock)(this.props.editorState, null, key));
+	      }
+	   }, {
+	      key: "render",
+	      value: function render() {
+	         var _this2 = this;
+
+	         var _props = this.props;
+	         var editorState = _props.editorState;
+	         var blockTypes = _props.blockTypes;
+	         var inlineStyles = _props.inlineStyles;
+	         var actions = _props.actions;
+
+	         var currentStyle = editorState.getCurrentInlineStyle();
+	         var block = editorState.getCurrentContent().getBlockForKey(editorState.getSelection().getStartKey());
+	         var blockType = block.getType();
+
+	         return _react2.default.createElement(
+	            _tooltip2.default,
+	            _extends({}, this.props, { forceLeft: 300, position: "left" }),
+	            _react2.default.createElement(
+	               "div",
+	               { onMouseDown: this.mouseDown.bind(this), className: "draft-sidebar" },
+	               _react2.default.createElement(
+	                  "div",
+	                  { className: "item" },
+	                  _react2.default.createElement(
+	                     "button",
+	                     null,
+	                     "+"
+	                  ),
+	                  _react2.default.createElement(
+	                     "div",
+	                     { className: "menu" },
+	                     Object.keys(this.props.blockTypes).filter(function (key) {
+	                        return key.indexOf('header-') !== 0 && key !== 'unstyled';
+	                     }).map(function (key) {
+	                        return _react2.default.createElement(
+	                           "button",
+	                           { onClick: function onClick() {
+	                                 return _this2.add(key);
+	                              }, key: key, "data-tooltip": key },
+	                           key.substr(0, 2)
+	                        );
+	                     })
+	                  )
+	               )
+	            )
+	         );
+	      }
+	   }]);
+
+	   return DraftToolbar;
+	}(_react.Component);
+
+	exports.default = DraftToolbar;
+
+/***/ },
+/* 505 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -44668,7 +44823,7 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /***/ },
-/* 505 */
+/* 506 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44683,7 +44838,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _src = __webpack_require__(506);
+	var _src = __webpack_require__(507);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -44729,7 +44884,7 @@
 	});
 
 /***/ },
-/* 506 */
+/* 507 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -44759,7 +44914,7 @@
 
 	var _tooltip2 = _interopRequireDefault(_tooltip);
 
-	var _resizeableWrapper = __webpack_require__(507);
+	var _resizeableWrapper = __webpack_require__(508);
 
 	var _resizeableWrapper2 = _interopRequireDefault(_resizeableWrapper);
 
@@ -44773,7 +44928,7 @@
 	exports.ResizeableWrapper = _resizeableWrapper2.default;
 
 /***/ },
-/* 507 */
+/* 508 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45235,7 +45390,7 @@
 	}
 
 /***/ },
-/* 508 */
+/* 509 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45250,7 +45405,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _src = __webpack_require__(506);
+	var _src = __webpack_require__(507);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45298,7 +45453,7 @@
 	});
 
 /***/ },
-/* 509 */
+/* 510 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45313,7 +45468,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _src = __webpack_require__(506);
+	var _src = __webpack_require__(507);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45357,7 +45512,7 @@
 	exports.default = (0, _src.ResizeableWrapper)(Div);
 
 /***/ },
-/* 510 */
+/* 511 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -45410,7 +45565,7 @@
 	exports.default = Paragraph;
 
 /***/ },
-/* 511 */
+/* 512 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45425,7 +45580,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _src = __webpack_require__(506);
+	var _src = __webpack_require__(507);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45501,15 +45656,15 @@
 	});
 
 /***/ },
-/* 512 */
+/* 513 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * Module dependencies.
 	 */
 
-	var Emitter = __webpack_require__(513);
-	var reduce = __webpack_require__(514);
+	var Emitter = __webpack_require__(514);
+	var reduce = __webpack_require__(515);
 
 	/**
 	 * Root reference for iframes.
@@ -46698,7 +46853,7 @@
 
 
 /***/ },
-/* 513 */
+/* 514 */
 /***/ function(module, exports) {
 
 	
@@ -46865,7 +47020,7 @@
 
 
 /***/ },
-/* 514 */
+/* 515 */
 /***/ function(module, exports) {
 
 	

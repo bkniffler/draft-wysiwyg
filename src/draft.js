@@ -1,8 +1,10 @@
 import React, {Component, PropTypes} from "react";
+import ReactDOM from 'react-dom';
 import {Editor, Entity, EditorState, CompositeDecorator, ContentState, convertToRaw, convertFromRaw, Modifier, SelectionState} from "draft-js";
 import {ContainsFiles, GetSelected} from './utils';
 import {AddBlock, RemoveBlock, GetNextBlock, GetPreviousBlock, SelectBlock} from './draft-utils';
 import Toolbar from './draft-toolbar'
+import Sidebar from './draft-sidebar'
 
 export default class DraftWysiwyg extends Component {
    constructor(props) {
@@ -43,6 +45,17 @@ export default class DraftWysiwyg extends Component {
       this.refs.editor.focus();
       e.preventDefault();
       e.stopPropagation();
+
+      /*var comp = ReactDOM.findDOMNode(this.refs.editor);
+      var {y} = getCaretClientPosition();
+      var scrollY = window.scrollY ? window.scrollY : window.pageYOffset;
+      var startY = e.clientY;
+      var startHeight = parseInt(document.defaultView.getComputedStyle(comp).height, 10);
+      var height = (startHeight + e.clientY - startY);
+      var height2 = (startHeight + y - startY);
+      //var selectedComponent = selectionState.anchorKey ? editorState.getCurrentContent().getBlockForKey(selectionState.anchorKey) : null;
+      console.log(height, height2, y, startY, startHeight, scrollY, y-scrollY);*/
+
       return false;
    }
 
@@ -192,23 +205,24 @@ export default class DraftWysiwyg extends Component {
       const onChange = ::this.updateValue;
       // Get current selection (from draft)
       const selectionState = this.state.value.getSelection();
-      // Nothing selected? No toolbar please.
-      if (selectionState.isCollapsed()) {
-         return null;
-      }
-
       // Get current selection (natively)
       var selected = GetSelected();
-      // Get selection rectangle (position, size) and set to state
-      if(!selected.rangeCount){
+
+      // Nothing selected? No toolbar please.
+      if (!selected.rangeCount) {
          return null;
       }
-      var rect = selected.getRangeAt(0).getBoundingClientRect();
 
+      var rect = getSelectionRect(selected);
       var info = {left: rect.left, top: rect.top, width: rect.width};
+      var sidebar = !this.state.active /*&& rect.isEmptyline*/ ? <Sidebar {...info} blockTypes={this.props.blockTypes} editorState={editorState} selectionState={selectionState} onChange={onChange}/> : null;
+
+      if(selectionState.isCollapsed()){
+         return sidebar;
+      }
       return this.props.renderToolbar
           ? this.props.renderToolbar({...info, editorState, selectionState, onChange})
-          : <Toolbar {...info} editorState={editorState} selectionState={selectionState} onChange={onChange}/>;
+          : <div><Toolbar {...info} editorState={editorState} selectionState={selectionState} onChange={onChange}/>{sidebar}</div>;
    }
 
    // Handle drag-over
@@ -344,3 +358,17 @@ const decorator = new CompositeDecorator([{
    strategy: findLinkEntities,
    component: Link,
 }]);
+function getSelectionRect(selected){
+   var _rect = selected.getRangeAt(0).getBoundingClientRect();
+   var rect = _rect && _rect.top ? _rect : selected.getRangeAt(0).getClientRects()[0];//selected.getRangeAt(0).getBoundingClientRect()
+   if (!rect) {
+      if(selected.anchorNode && selected.anchorNode.getBoundingClientRect){
+         rect = selected.anchorNode.getBoundingClientRect();
+         rect.isEmptyline = true;
+      }
+      else{
+         return null;
+      }
+   }
+   return rect;
+}

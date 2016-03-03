@@ -33,7 +33,7 @@ export default class Tooltip extends Component {
    }
 
    componentDidMount(){
-      var {left, top, width} = this.props;
+      var {left, top, width, forceLeft, position} = this.props;
 
       // Was props.parent set? Query parent element and get its rect
       if(this.props.parent){
@@ -56,8 +56,8 @@ export default class Tooltip extends Component {
          var scrollX = window.scrollX ? window.scrollX : window.pageXOffset;
          // Set state
          this.setState({
-            top: top-(refRect.height) + scrollY-5,
-            left: left-(refRect.width/2)+(width/2)+scrollX
+            top: top-(position==='left'?0:refRect.height) + scrollY-(position==='left'?0:5),
+            left: forceLeft||(left-(refRect.width/2)+(width/2)+scrollX)
          });
       }
    }
