@@ -66,7 +66,7 @@ DraftToolbar.defaultProps = {
              },
              (start, end)=>{
                 if(block.getKey()===selection.anchorKey && selection.anchorKey === selection.focusKey){
-                   if(selection.anchorOffset >= start && end <= selection.focusOffset){
+                   if(selection.anchorOffset >= start && selection.focusOffset <= end){
                       active=true;
                    }
                 }
