@@ -84,51 +84,29 @@ export default class DraftWysiwyg extends Component {
    };
 
    // Handle block dropping
-   drop(e) {
-      if(ContainsFiles(e)){
-         return;
-      }
+   drop(selection, dataTransfer, isInternal) {
       // Get data 'text' (anything else won't move the cursor) and expecting kind of data (text/key)
-      var raw = e.dataTransfer.getData("text");
+      var raw = dataTransfer.data.getData("text");
       var data = raw ? raw.split(':') : [];
       if(data.length !== 2){
          return;
       }
-      this.suppress = true;
-      var value = this.state.value;
-      // Set timeout to allow cursor/selection to move to drop location
-      setTimeout(()=> {
-         var selection = this.state.value.getSelection();
-         // Ugly workaround as dropped text (as in raw, e.g. 'type:xy') is inserted to editor, due to setTimeout
-         var newContent = value.getCurrentContent().merge({
-            selectionBefore: value.getSelection(),
-            selectionAfter: new SelectionState({
-               anchorKey: selection.anchorKey,
-               anchorOffset: selection.anchorOffset-raw.length,
-               focusKey: selection.focusKey,
-               focusOffset: selection.focusOffset-raw.length
-            }).set('hasFocus', true)
-         });
-         // Existing block dropped
-         this.suppress = false;
-         if(data[0] === 'key'){
-            var blockKey = data[1];
-            // Get content, selection, block
-            var block = value.getCurrentContent().getBlockForKey(blockKey);
-            var editorStateAfterInsert = AddBlock(EditorState.push(value, newContent, 'insert-fragment'), null, block.getType(), Entity.get(block.getEntityAt(0)).data);
-            this.setState({value: RemoveBlock(editorStateAfterInsert, blockKey)});
-         }
-         // New block dropped
-         else if(data[0] === 'type'){
-            var blockType = data[1];
-            // Get content, selection, block
-            var editorStateAfterInsert = AddBlock(EditorState.push(value, newContent, 'insert-fragment'), null, blockType, {});
-            this.setState({value: editorStateAfterInsert});
-         }
-      }, 1);
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
+      // Existing block dropped
+      if(data[0] === 'key'){
+         var blockKey = data[1];
+         // Get content, selection, block
+         var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
+         var editorStateAfterInsert = AddBlock(this.state.value, selection, block.getType(), Entity.get(block.getEntityAt(0)).data);
+         this.setState({value: RemoveBlock(editorStateAfterInsert, blockKey)});
+      }
+      // New block dropped
+      else if(data[0] === 'type'){
+         var blockType = data[1];
+         // Get content, selection, block
+         var editorStateAfterInsert = AddBlock(this.state.value, selection, blockType, {});
+         this.setState({value: editorStateAfterInsert});
+      }
+      return true;
    }
 
    // Helper function for blocks to set their own data
@@ -290,9 +268,7 @@ export default class DraftWysiwyg extends Component {
             // Progress
             this.setState({percent: percent !== 100 ? percent : null});
          });
-         e.preventDefault();
-         e.stopPropagation();
-         return false;
+         return true;
       }
    }
 
@@ -304,10 +280,11 @@ export default class DraftWysiwyg extends Component {
       }
       // Set drag/drop handlers to outer div as editor won't fire those
       return (
-         <div className={classNames.join(' ')} onKeyDown={::this.keyDown} onDragOver={::this.dragOverFile} onDragLeave={::this.dragLeaveFile} onClick={::this.focus} onDrop={::this.drop} onBlur={::this.blur}>
-            <Editor editorState={this.state.value}
+          <div className={classNames.join(' ')} onKeyDown={::this.keyDown} onDragOver={::this.dragOverFile} onDragLeave={::this.dragLeaveFile} onClick={::this.focus} onBlur={::this.blur}>
+             <Editor editorState={this.state.value}
                     onChange={::this.updateValue}
                     ref="editor"
+                     handleDrop={::this.drop}
                     handleDroppedFiles={::this.dropFile}
                     blockRendererFn={::this.blockRenderer}
                   {...this.props}
