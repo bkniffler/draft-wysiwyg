@@ -13,6 +13,7 @@ export default class DraftWysiwyg extends Component {
       // Create empty state and insert value from JSON if exists
       var value = EditorState.createEmpty(decorator);
       if (props.value) {
+         this.__raw = props.value;
          value = EditorState.push(value, ContentState.createFromBlockArray(convertFromRaw(props.value)));
       }
 
@@ -26,12 +27,21 @@ export default class DraftWysiwyg extends Component {
 
    shouldComponentUpdate(props, state) {
       if(this.suppress) return false;
-      if(this.state.active !== state.active 
+      if(this.props.value !== props.value && props.value !== this.__raw){
+         this.__raw = props.value;
+         this.setState({
+            value: !props.value
+                ? EditorState.createEmpty(decorator)
+                : EditorState.push(this.state.value, ContentState.createFromBlockArray(convertFromRaw(props.value)))
+         });
+         return false;
+      }
+      else if(this.state.active !== state.active
           || this.state.value !== state.value
           || this.state.readOnly !== state.readOnly
           || this.props.readOnly !== props.readOnly
           || this.props.fileDrag !== props.fileDrag 
-          || this.props.uploading !== props.uploading 
+          || this.props.uploading !== props.uploading
           || this.props.percent !== props.percent
           || this.force){
          this.force = false;
@@ -39,7 +49,6 @@ export default class DraftWysiwyg extends Component {
       }
       return false;
    }
-
    // Focus
    focus(e){
       this.refs.editor.focus();
@@ -69,7 +78,8 @@ export default class DraftWysiwyg extends Component {
       if(this.suppress && !force) return;
       this.setState({value: editorState});
       if (this.props.updateValue) {
-         this.props.updateValue(convertToRaw(editorState.getCurrentContent()), editorState);
+         this.__raw = convertToRaw(editorState.getCurrentContent());
+         this.props.updateValue(this.__raw, editorState);
       }
    };
 
