@@ -24,9 +24,8 @@
     "patch": "npm run build; npm version patch --force; npm publish"
   },
   "dependencies": {
-    "draft-js": "^0.1.0",
-    "immutable": "^3.7.4",
-    "superagent": "^1.7.2"
+    "draft-js": "^0.2.2",
+    "immutable": "^3.7.4"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",
@@ -42,10 +41,10 @@
     "eslint-plugin-react": "^3.2.0",
     "express": "^4.13.1",
     "multer": "^1.1.0",
-    "react": "^0.14.0",
-    "react-dom": "^0.14.7",
+    "react": "^15.0.0-rc.1",
+    "react-dom": "^15.0.0-rc.1",
     "react-portal": "^2.0.0",
-    "react-portal-tooltip": "^1.0.4",
+    "superagent": "^1.8.0",
     "webpack": "^1.10.5",
     "webpack-dev-middleware": "^1.5.1"
   }
