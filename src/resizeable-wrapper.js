@@ -12,7 +12,7 @@ class Wrapper extends Component {
       this.listener = this.listener.bind(this);
    }
    componentWillUnmount(){
-      this.listener();
+      //this.listener();
    }
    // Activate the current block
    activateBlock(active){

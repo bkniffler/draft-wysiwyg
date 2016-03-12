@@ -97,14 +97,14 @@ export default class DraftWysiwyg extends Component {
          // Get content, selection, block
          var block = this.state.value.getCurrentContent().getBlockForKey(blockKey);
          var editorStateAfterInsert = AddBlock(this.state.value, selection, block.getType(), Entity.get(block.getEntityAt(0)).data);
-         this.setState({value: RemoveBlock(editorStateAfterInsert, blockKey)});
+         this.updateValue(RemoveBlock(editorStateAfterInsert, blockKey));
       }
       // New block dropped
       else if(data[0] === 'type'){
          var blockType = data[1];
          // Get content, selection, block
          var editorStateAfterInsert = AddBlock(this.state.value, selection, blockType, {});
-         this.setState({value: editorStateAfterInsert});
+         this.updateValue(editorStateAfterInsert);
       }
       return true;
    }
@@ -162,9 +162,7 @@ export default class DraftWysiwyg extends Component {
       var key = e.keyCode || e.charCode;
       // Remove if backspace
       if(key === 8 || key === 46){
-         this.setState({
-            value: RemoveBlock(this.state.value, this.state.active)
-         });
+         this.updateValue(RemoveBlock(this.state.value, this.state.active));
          e.preventDefault();
          return false;
       }
