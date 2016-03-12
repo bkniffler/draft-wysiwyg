@@ -21,7 +21,7 @@ var upload = multer({
   }
 }).array('files', 3);
 
-var APP_PORT = process.env.PORT||3000;
+var APP_PORT = process.env.PORT||3030;
 
 var app = express();
 if(process.env.NODE_ENV !== 'production'){

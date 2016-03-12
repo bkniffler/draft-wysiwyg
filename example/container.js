@@ -102,6 +102,9 @@ export default class Example extends React.Component {
                     <button className="button" onClick={::this.save}>
                         {saved ? 'Saved!' : 'Save to localstorage'}
                     </button>
+                    <button className="button" onClick={(v)=>this.setState({data:null})}>
+                        Clear
+                    </button>
                     {/*<button className="button" onClick={()=>this.setState({data: Draft.AddBlock(data, 'end', 'div', {}, true)})}>
                         Horizontal+Vertical
                     </button>
