@@ -122,7 +122,7 @@ export default class Example extends React.Component {
                 <div className="container-content" style={{display: view!=='json' ? 'block' : 'none'}}>
                     <div className="TeXEditor-root">
                         <div className="TeXEditor-editor">
-                            <Draft updateValue={(v)=>this.setState({data:v})} value={data} blockTypes={Blocks} sidebar={0}/>
+                            <Draft updateValue={(v)=>this.setState({data:v})} value={data} blockTypes={Blocks} sidebar={0} upload={::this.upload}/>
                         </div>
                     </div>
                 </div>
