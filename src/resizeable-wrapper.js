@@ -182,9 +182,15 @@ class Wrapper extends Component {
          width: '100%'
       };
 
+      // ClassNames
+      var classes = ["draft-resizeable-wrapper"];
+      var classesRatio = ['ratiobox'];
+      if(active) classesRatio.push('active');
+
       // Handle alignment for float/margin
       if(this.props.blockProps.align === 'left' || this.props.blockProps.align === 'right'){
          style.float = this.props.blockProps.align;
+         classes.push('draft-float-'+this.props.blockProps.align)
          style.margin = '5px';
          if(this.props.blockProps.align === 'left'){
             style.marginLeft = 0;
@@ -258,10 +264,6 @@ class Wrapper extends Component {
               uniqueId={'id-'+this.props.block.key}/>
       );
 
-      // ClassNames
-      var classes = ["draft-resizeable-wrapper"];
-      var classesRatio = ['ratiobox'];
-      if(active) classesRatio.push('active');
       // Wrap into ratiobox to maintain aspect-ratio
       if(vertical === 'auto' && ratio){
          classesRatio.push('ratio'+round(ratio*100, 5));
