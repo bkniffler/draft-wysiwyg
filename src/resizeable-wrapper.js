@@ -16,7 +16,7 @@ class Wrapper extends Component {
    }
    // Activate the current block
    activateBlock(active){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
       if(this.props.blockProps.activate){
          this.props.blockProps.activate(active);
       }
@@ -26,7 +26,7 @@ class Wrapper extends Component {
    }
    // Set alignment of current block ('left', 'right', 'center')
    align(position){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
       const {setEntityData} = this.props.blockProps;
 
       setEntityData(this.props.block, {align: position});
@@ -39,7 +39,7 @@ class Wrapper extends Component {
 
    // Handle click to activate block
    click(e){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
 
       const active = this.props.blockProps.active||this.state.active;
       const {clicked} = this.state;
@@ -53,7 +53,7 @@ class Wrapper extends Component {
       component.parentElement.parentElement.addEventListener('mousedown', this.listener, false);
    }
    listener(){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
       var component = ReactDOM.findDOMNode(this.refs.div);
       component.parentElement.parentElement.removeEventListener('mousedown', this.listener, false);
       this.activateBlock(false);
@@ -61,13 +61,13 @@ class Wrapper extends Component {
 
    // Handle mouse-move and setState if mouse on edges for resizing
    leave(e){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
       if(!this.state.clicked){
          this.setState({hoverPosition: {}});
       }
    }
    move(e){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
       if(this.state.clicked){
          return;
       }
@@ -98,7 +98,7 @@ class Wrapper extends Component {
    }
    // Handle mousedown for resizing
    mouseDown(e){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
       // No mouse-hover-position data? Nothing to resize!
       if(!this.state.hoverPosition.canResize){
          return;
@@ -170,7 +170,7 @@ class Wrapper extends Component {
    }
    // Handle start-drag and setData with blockKey
    startDrag(e){
-      if(this.props.readOnly) return;
+      if(this.props.blockProps.readOnly) return;
       e.dataTransfer.dropEffect = 'move';
       // Declare data and give info that its an existing key and a block needs to be moved
       e.dataTransfer.setData("text", 'key:'+this.props.block.key);
@@ -178,7 +178,8 @@ class Wrapper extends Component {
    render(){
       const active = !!(this.props.blockProps.active||this.state.active);
       const {width, height, hoverPosition, clicked} = this.state;
-      const {Children, blockProps, vertical, horizontal, ratio, handles, caption, readOnly} = this.props;
+      const {Children, blockProps, vertical, horizontal, ratio, handles, caption} = this.props;
+      const {readOnly} = blockProps;
       const {isTop, isLeft, isRight, isBottom, canResize} = hoverPosition;
 
       // Compose style
