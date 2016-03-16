@@ -149,7 +149,6 @@ export default class DraftWysiwyg extends Component {
          setReadOnly: (state)=>{
             this.setState({readOnly: state ? true : undefined});
          },
-         readOnly: this.props.readOnly,
          editorProps: this.props,
          active: this.state.active  === contentBlock.key
       });

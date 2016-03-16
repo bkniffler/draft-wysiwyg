@@ -26,7 +26,7 @@ export default class DraftEditorBlock extends Component {
     }
 
     focus(e){
-        if(!this.state.readOnly){
+        if(!this.state.readOnly || this.props.readOnly){
             return;
         }
         setTimeout(()=>{
