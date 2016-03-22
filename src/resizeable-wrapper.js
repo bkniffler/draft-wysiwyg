@@ -287,6 +287,7 @@ class Wrapper extends Component {
 
       return (
          <div contentEditable="false"
+              suppressContentEditableWarning
               className={classes.join(' ')}
               style={style}>
             <div className={classesRatio.join(' ')}
