@@ -77,7 +77,7 @@ export default class Tooltip extends Component {
       }
       return (
          <Portal isOpened={true}>
-            <div ref="tooltip" style={{zIndex:3, position: 'absolute', left: this.state.left+'px', top: this.state.top+'px'}}>
+            <div className="draft-tooltip" ref="tooltip" style={{zIndex:3, position: 'absolute', left: this.state.left+'px', top: this.state.top+'px'}}>
                {this.props.children}
             </div>
          </Portal>
