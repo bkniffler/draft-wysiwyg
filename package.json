@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "draft-js": "^0.2.2",
-    "immutable": "^3.7.4"
+    "immutable": "^3.7.4",
+    "react-portal": "^2.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",
