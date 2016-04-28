@@ -11,7 +11,7 @@ export default function (editorState, selection, type, data, asJson) {
     else if (asJson) {
         editorState = EditorState.push(
             EditorState.createEmpty(decorator),
-            ContentState.createFromBlockArray(convertFromRaw(editorState))
+            convertFromRaw(editorState)
         );
     }
 

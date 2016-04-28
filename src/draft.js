@@ -14,7 +14,7 @@ export default class DraftWysiwyg extends Component {
       var value = EditorState.createEmpty(decorator);
       if (props.value) {
          this.__raw = props.value;
-         value = EditorState.push(value, ContentState.createFromBlockArray(convertFromRaw(props.value)));
+         value = EditorState.push(value, convertFromRaw(props.value));
       }
 
       // Set value to state
@@ -32,7 +32,7 @@ export default class DraftWysiwyg extends Component {
          this.setState({
             value: !props.value
                 ? EditorState.createEmpty(decorator)
-                : EditorState.push(this.state.value, ContentState.createFromBlockArray(convertFromRaw(props.value)))
+                : EditorState.push(this.state.value, convertFromRaw(props.value))
          });
          return false;
       }
