@@ -2,11 +2,7 @@ import React from 'react';
 
 import {Data, Blocks} from "./draft";
 import {Draft, DraftToolbar} from '../src';
-import {DisableWarning} from '../src/draft-utils';
 import request from 'superagent';
-
-
-DisableWarning();
 
 export default class Example extends React.Component {
     constructor(props) {
