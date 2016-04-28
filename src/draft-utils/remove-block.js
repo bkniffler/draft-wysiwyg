@@ -16,6 +16,6 @@ export default function(editorState, key){
     // Workaround, removeRange removed entity, but not the block
     var rawContent = convertToRaw(afterRemoval);
     rawContent.blocks = rawContent.blocks.filter(x=>x.key !== block.getKey());
-    var newState = EditorState.push(editorState, ContentState.createFromBlockArray(convertFromRaw(rawContent)), 'remove-range');
+    var newState = EditorState.push(editorState, convertFromRaw(rawContent), 'remove-range');
     return newState;
 }
