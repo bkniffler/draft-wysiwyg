@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from "react";
-import ReactDOM from 'react-dom';
 import {Editor, Entity, EditorState, CompositeDecorator, ContentState, convertToRaw, convertFromRaw, Modifier, SelectionState} from "draft-js";
-import {ContainsFiles, GetSelected} from './utils';
+import {ContainsFiles, GetSelected, CleanupEmpty} from './utils';
 import {AddBlock, RemoveBlock, GetNextBlock, GetPreviousBlock, SelectBlock} from './draft-utils';
 import Toolbar from './draft-toolbar'
 import Sidebar from './draft-sidebar'
@@ -74,8 +73,10 @@ export default class DraftWysiwyg extends Component {
    }
 
    // Propagate editorState changes to parent and to state
-   updateValue(editorState, force){
+   updateValue(_editorState, force){
       if(this.suppress && !force) return;
+
+      const editorState = CleanupEmpty(_editorState, this.props.cleanupTypes);
       this.setState({value: editorState});
       if (this.props.updateValue) {
          this.__raw = convertToRaw(editorState.getCurrentContent());
