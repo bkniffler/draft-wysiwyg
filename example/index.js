@@ -5,7 +5,7 @@ var fs = require('fs');
 var multer = require('multer');
 var storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    callback(null, path.resolve(__dirname, 'public'));
+    callback(null, path.resolve(__dirname, 'assets'));
   },
   filename: function (req, file, callback) {
     callback(null, file.originalname);
@@ -26,7 +26,16 @@ var APP_PORT = process.env.PORT||3030;
 var app = express();
 if(process.env.NODE_ENV !== 'production'){
   process.env.NODE_ENV = 'development';
-  var webpack = require('webpack');
+  var wrappack = require('wrappack');
+  wrappack(app, {
+    root: path.resolve(__dirname, '..'),
+    app: path.resolve(__dirname, 'app.js'), 
+    cssModules: false,
+    alias: {
+      'draft-wysiwyg': path.resolve(__dirname, '..', 'src')
+    }
+  });
+  /*var webpack = require('webpack');
   var webpackMiddleware = require("webpack-dev-middleware");
   var config = require('./webpack');
 
@@ -35,7 +44,7 @@ if(process.env.NODE_ENV !== 'production'){
     contentBase: '/public/',
     publicPath: '/js/',
     stats: {colors: true}
-  }));
+  }));*/
 }
 
 app.post('/upload', upload, function(req, res) {
@@ -63,7 +72,7 @@ app.post('/upload', upload, function(req, res) {
 });
 
 // Serve static resources
-app.use('/', express.static(path.resolve(__dirname, 'public')));
+app.use('/', express.static(path.resolve(__dirname, 'assets')));
 app.use('/css', express.static(path.resolve(__dirname, '..', 'styles')));
 app.use('/node_modules', express.static(path.resolve(__dirname, '..', 'node_modules')));
 app.use(function(err, req, res, next) {

@@ -46,65 +46,6 @@ var rawContent = {
       "type": "TOKEN",
       "mutability": "MUTABLE",
       "data": {
-        "col1": {
-          "entityMap": {},
-          "blocks": [
-            {
-              "key": "378l1",
-              "text": "This is column 1",
-              "type": "header-3",
-              "depth": 0,
-              "inlineStyleRanges": [],
-              "entityRanges": []
-            },
-            {
-              "key": "6lqag",
-              "text": "I could be a real table easily!",
-              "type": "unstyled",
-              "depth": 0,
-              "inlineStyleRanges": [
-                {
-                  "offset": 18,
-                  "length": 5,
-                  "style": "ITALIC"
-                },
-                {
-                  "offset": 18,
-                  "length": 5,
-                  "style": "UNDERLINE"
-                }
-              ],
-              "entityRanges": []
-            }
-          ]
-        },
-        "col2": {
-          "entityMap": {},
-          "blocks": [
-            {
-              "key": "2gu16",
-              "text": "This is column 2",
-              "type": "header-3",
-              "depth": 0,
-              "inlineStyleRanges": [],
-              "entityRanges": []
-            },
-            {
-              "key": "ei87g",
-              "text": "For now, I'm just 2 editable divs.",
-              "type": "unstyled",
-              "depth": 0,
-              "inlineStyleRanges": [],
-              "entityRanges": []
-            }
-          ]
-        }
-      }
-    },
-    "4": {
-      "type": "TOKEN",
-      "mutability": "MUTABLE",
-      "data": {
         "encoding": "7bit",
         "filename": "whoa.jpg",
         "mimetype": "image/jpeg",
@@ -128,7 +69,7 @@ var rawContent = {
         }
       }
     },
-    "5": {
+    "4": {
       "type": "TOKEN",
       "mutability": "MUTABLE",
       "data": {
@@ -149,27 +90,6 @@ var rawContent = {
                   "style": "BOLD"
                 }
               ],
-              "entityRanges": []
-            }
-          ]
-        }
-      }
-    },
-    "6": {
-      "type": "TOKEN",
-      "mutability": "MUTABLE",
-      "data": {
-        "width": 70,
-        "height": 170,
-        "caption": {
-          "entityMap": {},
-          "blocks": [
-            {
-              "key": "1nmt7",
-              "text": "This blue div is freely resizeable (relative horizontal, absolute vertical)",
-              "type": "unstyled",
-              "depth": 0,
-              "inlineStyleRanges": [],
               "entityRanges": []
             }
           ]
@@ -251,20 +171,6 @@ var rawContent = {
       "entityRanges": []
     },
     {
-      "key": "c94gi",
-      "text": " ",
-      "type": "columns2",
-      "depth": 0,
-      "inlineStyleRanges": [],
-      "entityRanges": [
-        {
-          "offset": 0,
-          "length": 1,
-          "key": 3
-        }
-      ]
-    },
-    {
       "key": "1fe43",
       "text": "Drop a file here, or a block, anything!",
       "type": "header-3",
@@ -283,14 +189,14 @@ var rawContent = {
     {
       "key": "dls1m",
       "text": " ",
-      "type": "image",
+      "type": "block-image",
       "depth": 0,
       "inlineStyleRanges": [],
       "entityRanges": [
         {
           "offset": 0,
           "length": 1,
-          "key": 4
+          "key": 3
         }
       ]
     },
@@ -328,7 +234,7 @@ var rawContent = {
     },
     {
       "key": "8m92g",
-      "text": "  ",
+      "text": " ",
       "type": "resizeable-div",
       "depth": 0,
       "inlineStyleRanges": [],
@@ -336,12 +242,7 @@ var rawContent = {
         {
           "offset": 0,
           "length": 1,
-          "key": 5
-        },
-        {
-          "offset": 1,
-          "length": 1,
-          "key": 6
+          "key": 4
         }
       ]
     },

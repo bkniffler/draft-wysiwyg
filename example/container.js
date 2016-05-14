@@ -1,7 +1,7 @@
 import React from 'react';
 
-import {Data, Blocks} from "./draft";
-import {Draft, DraftToolbar} from '../src';
+import Editor from '../src';
+import { Blocks, Data } from './draft';
 import request from 'superagent';
 
 export default class Example extends React.Component {
@@ -47,10 +47,11 @@ export default class Example extends React.Component {
         }, 1500)
     }
 
-    upload(data, success, failed, progress){
+    upload = (data, success, failed, progress) => {
+        console.log(data.formData);
         request.post('/upload')
             .accept('application/json')
-            .send(data)
+            .send(data.formData)
             .on('progress', ({ percent }) => {
                 progress(percent);
             })
@@ -61,14 +62,24 @@ export default class Example extends React.Component {
                 success(res.body.files, 'image');
             });
     }
+    
+    defaultData = (blockType) => {
+        if (blockType === 'block-image') {
+            return {
+                url: '/whoa.jpg',
+            }
+        }
+        return {};
+    }
+
     renderSide(){
        return (
            <div className="sidepanel">
                <span className="info">Drag & Drop one of these</span>
-               {Object.keys(Blocks).filter(key=>key.indexOf('header-')!==0&&key!=='unstyled').map(key=> {
+               {Object.keys(Blocks).filter(key=>key.indexOf('header-')!==0&&key!=='unstyled').concat(['block-image', 'block-table']).map(key=> {
                    var startDrag = (e)=>{
                        e.dataTransfer.dropEffect = 'move';
-                       e.dataTransfer.setData("text", 'type:'+key);
+                       e.dataTransfer.setData("text", 'DRAFTJS_BLOCK_TYPE:'+key);
                    }
                    return (
                        <div key={key} className="item" draggable="true" onDragStart={startDrag} style={{cursor: "move"}}>
@@ -79,7 +90,7 @@ export default class Example extends React.Component {
            </div>
        )
     }
-    render() {
+    render() { 
         const {data, view, saved} = this.state;
         
         return (
@@ -118,7 +129,13 @@ export default class Example extends React.Component {
                 <div className="container-content" style={{display: view!=='json' ? 'block' : 'none'}}>
                     <div className="TeXEditor-root">
                         <div className="TeXEditor-editor">
-                            <Draft updateValue={(v)=>this.setState({data:v})} value={data} blockTypes={Blocks} cleanupTypes="*" sidebar={0} upload={::this.upload}/>
+                            <Editor onChange={data=>this.setState({data})} 
+                                    value={data} 
+                                    blockTypes={Blocks} 
+                                    cleanupTypes="*" 
+                                    sidebar={0} 
+                                    handleDefaultData={this.defaultData}
+                                    handleUpload={this.upload}/>
                         </div>
                     </div>
                 </div>

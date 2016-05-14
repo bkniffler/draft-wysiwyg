@@ -25,28 +25,26 @@
   },
   "dependencies": {
     "draft-js": "^0.6.0",
+    "draft-js-alignment-plugin": "latest",
+    "draft-js-cleanup-empty-plugin": "latest",
+    "draft-js-dnd-plugin": "^1.0.3",
+    "draft-js-entity-props-plugin": "latest",
+    "draft-js-focus-plugin": "^1.0.2",
+    "draft-js-image-plugin": "latest",
+    "draft-js-plugins-editor-wysiwyg": "latest",
+    "draft-js-resizeable-plugin": "^1.0.3",
+    "draft-js-table-plugin": "latest",
+    "draft-js-toolbar-plugin": "latest",
     "immutable": "^3.7.4",
     "react-portal": "^2.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.5.1",
-    "babel-core": "^6.5.2",
-    "babel-eslint": "^4.1.3",
-    "babel-loader": "^6.2.4",
-    "babel-polyfill": "^6.5.0",
-    "babel-preset-es2015": "^6.5.0",
-    "babel-preset-react": "^6.5.0",
-    "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^1.0.0",
-    "eslint-loader": "^1.0.0",
-    "eslint-plugin-react": "^3.2.0",
     "express": "^4.13.1",
     "multer": "^1.1.0",
-    "react": "^15.0.0-rc.1",
-    "react-dom": "^15.0.0-rc.1",
+    "react": "^15.0.2",
+    "react-dom": "^15.0.2",
     "react-portal": "^2.0.0",
     "superagent": "^1.8.0",
-    "webpack": "^1.10.5",
-    "webpack-dev-middleware": "^1.5.1"
+    "wrappack": "^0.3.10"
   }
 }
