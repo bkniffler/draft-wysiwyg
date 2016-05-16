@@ -1,6 +1,6 @@
 {
   "name": "draft-wysiwyg",
-  "version": "0.1.3",
+  "version": "0.2.0-beta1",
   "author": "Benjamin Kniffler",
   "license": "MIT",
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
@@ -20,7 +20,7 @@
     "build": "babel --presets es2015,stage-0,react src/ --out-dir lib/",
     "heroku": "git push heroku master",
     "start:production": "NODE_ENV=production node ./example",
-    "build:example": "webpack --config example/webpack.js",
+    "build:example": "gulp build",
     "patch": "npm run build; npm version patch --force; npm publish"
   },
   "dependencies": {
@@ -29,10 +29,10 @@
     "draft-js-cleanup-empty-plugin": "latest",
     "draft-js-dnd-plugin": "^1.0.3",
     "draft-js-entity-props-plugin": "latest",
-    "draft-js-focus-plugin": "^1.0.2",
+    "draft-js-focus-plugin": "^1.0.5",
     "draft-js-image-plugin": "latest",
     "draft-js-plugins-editor-wysiwyg": "latest",
-    "draft-js-resizeable-plugin": "^1.0.3",
+    "draft-js-resizeable-plugin": "^1.0.4",
     "draft-js-table-plugin": "latest",
     "draft-js-toolbar-plugin": "latest",
     "immutable": "^3.7.4",
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "express": "^4.13.1",
+    "gulp": "^3.9.0",
     "multer": "^1.1.0",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",

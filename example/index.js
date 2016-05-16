@@ -27,14 +27,8 @@ var app = express();
 if(process.env.NODE_ENV !== 'production'){
   process.env.NODE_ENV = 'development';
   var wrappack = require('wrappack');
-  wrappack(app, {
-    root: path.resolve(__dirname, '..'),
-    app: path.resolve(__dirname, 'app.js'), 
-    cssModules: false,
-    alias: {
-      'draft-wysiwyg': path.resolve(__dirname, '..', 'src')
-    }
-  });
+  var config = require('./config');
+  wrappack(app, config());
   /*var webpack = require('webpack');
   var webpackMiddleware = require("webpack-dev-middleware");
   var config = require('./webpack');
