@@ -67,7 +67,6 @@ app.post('/upload', upload, function(req, res) {
 
 // Serve static resources
 app.use('/', express.static(path.resolve(__dirname, 'assets')));
-app.use('/css', express.static(path.resolve(__dirname, '..', 'styles')));
 app.use('/node_modules', express.static(path.resolve(__dirname, '..', 'node_modules')));
 app.use(function(err, req, res, next) {
   res.status(500).json(err);
