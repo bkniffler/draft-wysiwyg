@@ -5,6 +5,10 @@
   "license": "MIT",
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
   "main": "./lib",
+  "engines": {
+    "node": "5.x.x",
+    "npm": "3.x.x"
+  },
   "keywords": [
     "draftjs",
     "draft-js",
