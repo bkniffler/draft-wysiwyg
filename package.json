@@ -28,16 +28,16 @@
     "patch": "npm run build; npm version patch --force; npm publish"
   },
   "dependencies": {
-    "draft-js": "^0.6.0",
+    "draft-js": "^0.7.0",
     "draft-js-alignment-plugin": "latest",
     "draft-js-cleanup-empty-plugin": "latest",
-    "draft-js-dnd-plugin": "^1.0.3",
+    "draft-js-dnd-plugin": "^1.0.4",
     "draft-js-entity-props-plugin": "latest",
-    "draft-js-focus-plugin": "^1.0.5",
+    "draft-js-focus-plugin": "^1.0.6",
     "draft-js-image-plugin": "latest",
     "draft-js-plugins-editor-wysiwyg": "latest",
     "draft-js-resizeable-plugin": "^1.0.4",
-    "draft-js-table-plugin": "latest",
+    "draft-js-table-plugin": "^1.0.3",
     "draft-js-toolbar-plugin": "latest",
     "immutable": "^3.7.4",
     "react-portal": "^2.1.0"

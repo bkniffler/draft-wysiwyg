@@ -3,7 +3,9 @@ import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 
 // Plugin-Editor
 import Editor from 'draft-js-plugins-editor-wysiwyg';
+import {DefaultDraftBlockRenderMap} from 'draft-js';
 import createPlugins from './create-plugins';
+import {Map} from 'immutable';
 
 /*// Components
 import PlaceholderGithub from '../components/placeholder-github';
@@ -19,6 +21,10 @@ class SimpleWysiwygEditor extends Component {
            : EditorState.createEmpty(),
         draggingOver: false,
      };
+     
+     this.blockRenderMap = DefaultDraftBlockRenderMap.merge(
+       this.customBlockRendering(props)
+     );
   }
 
   shouldComponentUpdate(props, state) {
@@ -67,24 +73,42 @@ class SimpleWysiwygEditor extends Component {
       return {
         component: blockTypes[type]
       }
-    }
-    return undefined;
-    if (type === 'placeholder-github') {
-      return { component: PlaceholderGithub };
-    } else if (type === 'block-text') {
-      return { component: BlockText };
     } return undefined;
   }
 
+  customBlockRendering = props => {
+    const { blockTypes } = props;
+    var newObj = {
+      'paragraph': {
+        element: 'div',
+      },
+      'unstyled': {
+        element: 'div',
+      },
+      'block-image': {
+        element: 'div',
+      },
+      'block-table': {
+        element: 'div',
+      }
+    };
+    for (var key in blockTypes) {
+      newObj[key] = {
+        element: 'div'
+      };
+    } return Map(newObj);
+  }
+  
   render() {
     const { editorState } = this.state;
     const { isDragging, progress } = this.props;
     
     return (
 	    <Editor editorState={editorState}
+        plugins={this.plugins}
+        blockRenderMap={this.blockRenderMap}
+        blockRendererFn={this.blockRendererFn}
 	      onChange={this.onChange}
-	      blockRendererFn={this.blockRendererFn}
-	      plugins={this.plugins}
 	      ref="editor"
 	    />
     );
