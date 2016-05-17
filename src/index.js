@@ -101,10 +101,10 @@ class SimpleWysiwygEditor extends Component {
   
   render() {
     const { editorState } = this.state;
-    const { isDragging, progress } = this.props;
+    const { isDragging, progress, readOnly } = this.props;
     
     return (
-	    <Editor editorState={editorState}
+	    <Editor readOnly={readOnly} editorState={editorState}
         plugins={this.plugins}
         blockRenderMap={this.blockRenderMap}
         blockRendererFn={this.blockRendererFn}
