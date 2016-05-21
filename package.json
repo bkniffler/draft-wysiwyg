@@ -1,6 +1,6 @@
 {
   "name": "draft-wysiwyg",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Benjamin Kniffler",
   "license": "MIT",
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
@@ -38,7 +38,7 @@
     "draft-js-plugins-editor-wysiwyg": "^1.0.3",
     "draft-js-resizeable-plugin": "^1.0.8",
     "draft-js-table-plugin": "^1.0.4",
-    "draft-js-toolbar-plugin": "^1.0.3",
+    "draft-js-toolbar-plugin": "^1.0.4",
     "immutable": "^3.7.4"
   },
   "devDependencies": {
