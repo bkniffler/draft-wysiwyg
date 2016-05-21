@@ -57,7 +57,7 @@ export default ({ handleUpload, handleDefaultData }) => [
       remove: props => console.log('Remove toolbar', props),
     }, textActions: [{
       button: <span>H1</span>,
-      label: 'Make H1',
+      label: 'Header 1',
       active: (block, editorState) => block.get('type') === 'header-1',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
@@ -65,18 +65,34 @@ export default ({ handleUpload, handleDefaultData }) => [
       )),
     }, {
       button: <span>H2</span>,
-      label: 'Make H2',
+      label: 'Header 2',
       active: (block, editorState) => block.get('type') === 'header-2',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
         'header-2'
       )),
     }, {
+      button: <span>H3</span>,
+      label: 'Header 3',
+      active: (block, editorState) => block.get('type') === 'header-3',
+      toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
+        editorState,
+        'header-3'
+      )),
+    }, {
+      button: <span>H4</span>,
+      label: 'Header 4',
+      active: (block, editorState) => block.get('type') === 'header-4',
+      toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
+        editorState,
+        'header-4'
+      )),
+    }/*, {
       button: <span>Table</span>,
       label: 'Create a table',
       active: (block, editorState) => editorState.getSelection().isCollapsed(),
       toggle: (block, action, editorState, setEditorState) => setEditorState(addBlock(editorState, editorState.getSelection(), 'block-table', {})),
-    }]
+    }*/]
   }),
   createFocusPlugin({}),
   createAlignmentPlugin({}),
