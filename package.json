@@ -38,7 +38,7 @@
     "draft-js-plugins-editor-wysiwyg": "^1.0.3",
     "draft-js-resizeable-plugin": "^1.0.8",
     "draft-js-table-plugin": "^1.0.4",
-    "draft-js-toolbar-plugin": "^1.0.4",
+    "draft-js-toolbar-plugin": "^1.0.5",
     "immutable": "^3.7.4"
   },
   "devDependencies": {
