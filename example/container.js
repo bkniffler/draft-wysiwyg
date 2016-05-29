@@ -1,9 +1,9 @@
 import React from 'react';
-
+import { RichUtils } from 'draft-js';
 import Editor from '../src';
 import { Blocks, Data } from './draft';
 import request from 'superagent';
-
+import createToolbarPlugin from 'draft-js-toolbar-plugin';
 export default class Example extends React.Component {
     constructor(props) {
         super(props);
@@ -62,7 +62,7 @@ export default class Example extends React.Component {
                 success(res.body.files, 'image');
             });
     }
-    
+
     defaultData = (blockType) => {
         if (blockType === 'block-image') {
             return {
@@ -90,38 +90,11 @@ export default class Example extends React.Component {
            </div>
        )
     }
-    render() { 
+    render() {
         const {data, view, saved} = this.state;
-        
+
         return (
             <div className="flex-container">
-                <div className="head">
-                    <div className="logo">Draft-Wysiwyg</div>
-                    <a className="github-button" href="https://github.com/bkniffler/draft-wysiwyg/" target="_blank">
-                        View on Github
-                    </a>
-                    <button className={"button"+(view==='json'?' active':'')} onClick={()=>this.setState({view: 'json'})}>
-                        See JSON
-                    </button>
-                    <button className={"button"+(view==='edit'?' active':'')} onClick={()=>this.setState({view: 'edit'})}>
-                        See Editor
-                    </button>
-                    <button className="button" onClick={::this.save}>
-                        {saved ? 'Saved!' : 'Save to localstorage'}
-                    </button>
-                    <button className="button" onClick={(v)=>this.setState({data:null})}>
-                        Clear
-                    </button>
-                    {/*<button className="button" onClick={()=>this.setState({data: Draft.AddBlock(data, 'end', 'div', {}, true)})}>
-                        Horizontal+Vertical
-                    </button>
-                    <button className="button" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'div2', {}, true)})}>Add
-                        Horizontal only
-                    </button>
-                    <button className="button" onClick={()=>this.setState({data: Draft.AddBlock(data, 'start', 'youtube', {}, true)})}>Add
-                        Youtube
-                    </button>*/}
-                </div>
                 {this.renderSide()}
                 <div className="container-content" style={{display: view==='json' ? 'block' : 'none'}}>
                     <pre style={{whiteSpace: 'pre-wrap', width: '750px', margin: 'auto'}}>{JSON.stringify(data, null, 3)}</pre>
@@ -129,13 +102,26 @@ export default class Example extends React.Component {
                 <div className="container-content" style={{display: view!=='json' ? 'block' : 'none'}}>
                     <div className="TeXEditor-root">
                         <div className="TeXEditor-editor">
-                            <Editor onChange={data=>this.setState({data})} 
-                                    value={data} 
-                                    blockTypes={Blocks} 
-                                    cleanupTypes="*" 
-                                    sidebar={0} 
+                            <Editor onChange={data=>this.setState({data})}
+                                    value={data}
+                                    blockTypes={Blocks}
+                                    cleanupTypes="*"
+                                    sidebar={0}
                                     handleDefaultData={this.defaultData}
-                                    handleUpload={this.upload}/>
+                                    handleUpload={this.upload}
+                                    toolbar={{
+                                      disableItems: ['H5'],
+                                      textActions: [
+                                      {
+                                        button: <span>Quote</span>,
+                                        label: 'Quote',
+                                        active: (block, editorState) => block.get('type') === 'blockquote',
+                                        toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
+                                          editorState,
+                                          'blockquote'
+                                        )),
+                                      }]
+                                    }}/>
                         </div>
                     </div>
                 </div>
