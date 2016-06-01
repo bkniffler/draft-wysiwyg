@@ -46,7 +46,8 @@ const table = FocusDecorator(
 );
 
 // Init Plugins
-export default ({ handleUpload, handleDefaultData }) => [
+export default ({ handleUpload, handleDefaultData, plugins = ()=>{}, toolbar = { disableItems: [], textActions: []}}) => [
+  plugins,
   createCleanupEmptyPlugin({
     types: ['block-image', 'block-table']
   }),
@@ -55,8 +56,9 @@ export default ({ handleUpload, handleDefaultData }) => [
     __toolbarHandler: {
       add: props => console.log('Add toolbar', props),
       remove: props => console.log('Remove toolbar', props),
-    }, textActions: [{
+    }, textActions: [...[{
       button: <span>H1</span>,
+      key: 'H1',
       label: 'Header 1',
       active: (block, editorState) => block.get('type') === 'header-1',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
@@ -65,6 +67,7 @@ export default ({ handleUpload, handleDefaultData }) => [
       )),
     }, {
       button: <span>H2</span>,
+      key: 'H2',
       label: 'Header 2',
       active: (block, editorState) => block.get('type') === 'header-2',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
@@ -73,6 +76,7 @@ export default ({ handleUpload, handleDefaultData }) => [
       )),
     }, {
       button: <span>H3</span>,
+      key: 'H3',
       label: 'Header 3',
       active: (block, editorState) => block.get('type') === 'header-3',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
@@ -81,18 +85,23 @@ export default ({ handleUpload, handleDefaultData }) => [
       )),
     }, {
       button: <span>H4</span>,
+      key: 'H4',
       label: 'Header 4',
       active: (block, editorState) => block.get('type') === 'header-4',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
         'header-4'
       )),
-    }/*, {
-      button: <span>Table</span>,
-      label: 'Create a table',
-      active: (block, editorState) => editorState.getSelection().isCollapsed(),
-      toggle: (block, action, editorState, setEditorState) => setEditorState(addBlock(editorState, editorState.getSelection(), 'block-table', {})),
-    }*/]
+    }, {
+      button: <span>H5</span>,
+      key: 'H5',
+      label: 'Header 5',
+      active: (block, editorState) => block.get('type') === 'header-4',
+      toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
+        editorState,
+        'header-5'
+      )),
+    }].filter(toolbarItem => !toolbar.disableItems.includes(toolbarItem.key)), ...toolbar.textActions]
   }),
   createFocusPlugin({}),
   createAlignmentPlugin({}),
