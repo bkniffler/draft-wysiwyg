@@ -60,46 +60,46 @@ export default ({ handleUpload, handleDefaultData, plugins = ()=>{}, toolbar = {
       button: <span>H1</span>,
       key: 'H1',
       label: 'Header 1',
-      active: (block, editorState) => block.get('type') === 'header-1',
+      active: (block, editorState) => block.get('type') === 'header-one',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
-        'header-1'
+        'header-one'
       )),
     }, {
       button: <span>H2</span>,
       key: 'H2',
       label: 'Header 2',
-      active: (block, editorState) => block.get('type') === 'header-2',
+      active: (block, editorState) => block.get('type') === 'header-two',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
-        'header-2'
+        'header-two'
       )),
     }, {
       button: <span>H3</span>,
       key: 'H3',
       label: 'Header 3',
-      active: (block, editorState) => block.get('type') === 'header-3',
+      active: (block, editorState) => block.get('type') === 'header-three',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
-        'header-3'
+        'header-three'
       )),
     }, {
       button: <span>H4</span>,
       key: 'H4',
       label: 'Header 4',
-      active: (block, editorState) => block.get('type') === 'header-4',
+      active: (block, editorState) => block.get('type') === 'header-four',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
-        'header-4'
+        'header-four'
       )),
     }, {
       button: <span>H5</span>,
       key: 'H5',
       label: 'Header 5',
-      active: (block, editorState) => block.get('type') === 'header-4',
+      active: (block, editorState) => block.get('type') === 'header-five',
       toggle: (block, action, editorState, setEditorState) => setEditorState(RichUtils.toggleBlockType(
         editorState,
-        'header-5'
+        'header-five'
       )),
     }].filter(toolbarItem => !toolbar.disableItems.includes(toolbarItem.key)), ...toolbar.textActions]
   }),
