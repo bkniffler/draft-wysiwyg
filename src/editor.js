@@ -1,84 +1,76 @@
-import React, { Component } from 'react';
-import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
-import ReactDOM from 'react-dom';
-
-// Plugin-Editor
+import React, {Component} from 'react';
+import {EditorState, convertToRaw, convertFromRaw} from 'draft-js';
 import Editor from 'draft-js-plugins-editor-wysiwyg';
 import {DefaultDraftBlockRenderMap} from 'draft-js';
 import createPlugins from './create-plugins';
 import {Map} from 'immutable';
 
-/*// Components
-import PlaceholderGithub from '../components/placeholder-github';
-import BlockText from '../components/block-text';*/
-
 class WysiwygEditor extends Component {
-  constructor(props, context) {
-     super(props);
-     this.plugins = createPlugins(props);
-     this.state = {
-      editorState: props.value
-         ? EditorState.push(EditorState.createEmpty(), convertFromRaw(props.value))
-         : EditorState.createEmpty(),
-      draggingOver: false,
-     };
-     
-     this.blockRenderMap = DefaultDraftBlockRenderMap.merge(
-       this.customBlockRendering(props)
-     );
+  constructor(props) {
+    super(props);
+    this.batch = batch(200);
+    this.plugins = createPlugins(props);
+    this.editorState = props.value
+      ? EditorState.push(EditorState.createEmpty(), convertFromRaw(props.value))
+      : EditorState.createEmpty();
+
+    this.blockRenderMap = DefaultDraftBlockRenderMap.merge(
+      this.customBlockRendering(props)
+    );
+
+    this.state = {};
   }
-  
+
+  componentWillUnmount(){
+    this.unmounted = true;
+  }
+
   shouldComponentUpdate(props, state) {
-     if(this.suppress) return false;
-     if(this.props.value !== props.value && props.value !== this.__raw){
-        this.__raw = props.value;
-        this.setState({
-           editorState: !props.value
-              ? EditorState.createEmpty()
-              : EditorState.push(this.state.editorState, convertFromRaw(props.value))
-        });
-        return false;
-     }
-     else if(this.state.active !== state.active
-        || this.state.editorState !== state.editorState
-        || this.state.readOnly !== state.readOnly
-        || this.props.readOnly !== props.readOnly
-        || this.props.fileDrag !== props.fileDrag
-        || this.props.uploading !== props.uploading
-        || this.props.percent !== props.percent
-        || this.force){
-        this.force = false;
-        return true;
-     }
-     return false;
+    if (this.props.value !== props.value && this._raw !== props.value) {
+      this.editorState = !props.value
+        ? EditorState.createEmpty()
+        : EditorState.push(this.editorState, convertFromRaw(props.value));
+      return true;
+    } else if (this.state.active !== state.active
+      || this.state.readOnly !== state.readOnly
+      || this.state.editorState !== state.editorState) {
+      return true;
+    } else if (this.props.readOnly !== props.readOnly
+      || this.props.fileDrag !== props.fileDrag
+      || this.props.uploading !== props.uploading
+      || this.props.percent !== props.percent) {
+      return true;
+    }
+    return false;
   }
 
   onChange = (editorState) => {
-     const force = false;
-     if(this.suppress && !force) return;
-     this.setState({editorState});
-     if (this.props.onChange) {
-        this.__raw = convertToRaw(editorState.getCurrentContent());
-        this.props.onChange(this.__raw, editorState);
-     }
+    if (this.unmounted) return;
+    this.editorState = editorState;
+    this.setState({editorState: Date.now()});
+
+    if (this.props.onChange) {
+      this.batch(() => {
+        this._raw = convertToRaw(editorState.getCurrentContent());
+        this.props.onChange(this._raw, editorState);
+      });
+    }
   };
-  
+
   focus = () => {
     this.refs.editor.focus();
   };
 
-  blockRendererFn = (contentBlock) => {
-    const { blockTypes } = this.props;
+  blockRendererFn = contentBlock => {
+    const {blockTypes} = this.props;
     const type = contentBlock.getType();
-    if (blockTypes[type]) {
-      return {
-        component: blockTypes[type]
-      }
-    } return undefined;
+    return blockTypes && blockTypes[type] ? {
+      component: blockTypes[type]
+    } : undefined;
   }
 
   customBlockRendering = props => {
-    const { blockTypes } = props;
+    const {blockTypes} = props;
     var newObj = {
       'paragraph': {
         element: 'div',
@@ -97,23 +89,36 @@ class WysiwygEditor extends Component {
       newObj[key] = {
         element: 'div'
       };
-    } return Map(newObj);
+    }
+    return Map(newObj);
   }
-  
+
   render() {
-    const { editorState } = this.state;
-    const { isDragging, progress, readOnly } = this.props;
-    
+    const {editorState} = this;
+    const {isDragging, progress, readOnly} = this.props;
+
     return (
-	    <Editor readOnly={readOnly} editorState={editorState}
-        plugins={this.plugins}
-        blockRenderMap={this.blockRenderMap}
-        blockRendererFn={this.blockRendererFn}
-	      onChange={this.onChange}
-	      ref="editor"
-	    />
+      <Editor readOnly={readOnly} editorState={editorState}
+              plugins={this.plugins}
+              blockRenderMap={this.blockRenderMap}
+              blockRendererFn={this.blockRendererFn}
+              onChange={this.onChange}
+              ref="editor"
+      />
     );
   }
 }
 
 export default WysiwygEditor;
+
+const batch = (limit=500) => {
+  var _callback = null;
+  return (callback) => {
+    _callback = callback;
+    setTimeout(() => {
+      if (_callback === callback) {
+        callback();
+      }
+    }, limit);
+  }
+}
