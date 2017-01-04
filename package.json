@@ -6,8 +6,8 @@
   "repository": "https://github.com/bkniffler/draft-wysiwyg",
   "main": "./lib",
   "engines": {
-    "node": "5.x.x",
-    "npm": "3.x.x"
+    "node": ">=5.0.0",
+    "npm": ">=3.0.0"
   },
   "keywords": [
     "draftjs",
